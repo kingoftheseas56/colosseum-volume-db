@@ -1,0 +1,383 @@
+{
+  "seriesTitle": "Bleach",
+  "comickHid": "ir_Nk1aG",
+  "comickSlug": "Bleach",
+  "weebCentral": {
+    "seriesId": "01J76XY7E4JCPK14V53BVQWD9Y"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "7"
+    },
+    {
+      "number": 2,
+      "chapterStart": "8",
+      "chapterEnd": "16"
+    },
+    {
+      "number": 3,
+      "chapterStart": "17",
+      "chapterEnd": "25"
+    },
+    {
+      "number": 4,
+      "chapterStart": "26",
+      "chapterEnd": "34"
+    },
+    {
+      "number": 5,
+      "chapterStart": "35",
+      "chapterEnd": "43"
+    },
+    {
+      "number": 6,
+      "chapterStart": "44",
+      "chapterEnd": "52"
+    },
+    {
+      "number": 7,
+      "chapterStart": "53",
+      "chapterEnd": "61"
+    },
+    {
+      "number": 8,
+      "chapterStart": "62",
+      "chapterEnd": "70.5"
+    },
+    {
+      "number": 9,
+      "chapterStart": "71",
+      "chapterEnd": "79"
+    },
+    {
+      "number": 10,
+      "chapterStart": "80",
+      "chapterEnd": "88.5"
+    },
+    {
+      "number": 11,
+      "chapterStart": "89",
+      "chapterEnd": "98"
+    },
+    {
+      "number": 12,
+      "chapterStart": "99",
+      "chapterEnd": "107.5"
+    },
+    {
+      "number": 13,
+      "chapterStart": "108",
+      "chapterEnd": "115.5"
+    },
+    {
+      "number": 14,
+      "chapterStart": "116",
+      "chapterEnd": "123"
+    },
+    {
+      "number": 15,
+      "chapterStart": "124",
+      "chapterEnd": "130"
+    },
+    {
+      "number": 16,
+      "chapterStart": "131",
+      "chapterEnd": "139"
+    },
+    {
+      "number": 17,
+      "chapterStart": "140",
+      "chapterEnd": "149"
+    },
+    {
+      "number": 18,
+      "chapterStart": "150",
+      "chapterEnd": "158"
+    },
+    {
+      "number": 19,
+      "chapterStart": "159",
+      "chapterEnd": "168"
+    },
+    {
+      "number": 20,
+      "chapterStart": "169",
+      "chapterEnd": "178"
+    },
+    {
+      "number": 21,
+      "chapterStart": "179",
+      "chapterEnd": "187"
+    },
+    {
+      "number": 22,
+      "chapterStart": "188",
+      "chapterEnd": "197"
+    },
+    {
+      "number": 23,
+      "chapterStart": "198",
+      "chapterEnd": "205.2"
+    },
+    {
+      "number": 24,
+      "chapterStart": "206",
+      "chapterEnd": "214"
+    },
+    {
+      "number": 25,
+      "chapterStart": "215",
+      "chapterEnd": "223"
+    },
+    {
+      "number": 26,
+      "chapterStart": "224",
+      "chapterEnd": "233"
+    },
+    {
+      "number": 27,
+      "chapterStart": "234",
+      "chapterEnd": "242"
+    },
+    {
+      "number": 28,
+      "chapterStart": "243",
+      "chapterEnd": "251"
+    },
+    {
+      "number": 29,
+      "chapterStart": "252",
+      "chapterEnd": "260"
+    },
+    {
+      "number": 30,
+      "chapterStart": "261",
+      "chapterEnd": "269"
+    },
+    {
+      "number": 31,
+      "chapterStart": "270",
+      "chapterEnd": "278"
+    },
+    {
+      "number": 32,
+      "chapterStart": "279",
+      "chapterEnd": "286"
+    },
+    {
+      "number": 33,
+      "chapterStart": "287",
+      "chapterEnd": "295"
+    },
+    {
+      "number": 34,
+      "chapterStart": "296",
+      "chapterEnd": "305"
+    },
+    {
+      "number": 35,
+      "chapterStart": "306",
+      "chapterEnd": "315"
+    },
+    {
+      "number": 36,
+      "chapterStart": "315.1",
+      "chapterEnd": "315.9"
+    },
+    {
+      "number": 37,
+      "chapterStart": "315.1",
+      "chapterEnd": "322"
+    },
+    {
+      "number": 38,
+      "chapterStart": "323",
+      "chapterEnd": "331"
+    },
+    {
+      "number": 39,
+      "chapterStart": "332",
+      "chapterEnd": "340"
+    },
+    {
+      "number": 40,
+      "chapterStart": "341",
+      "chapterEnd": "349"
+    },
+    {
+      "number": 41,
+      "chapterStart": "350",
+      "chapterEnd": "358"
+    },
+    {
+      "number": 42,
+      "chapterStart": "359",
+      "chapterEnd": "367"
+    },
+    {
+      "number": 43,
+      "chapterStart": "368",
+      "chapterEnd": "377"
+    },
+    {
+      "number": 44,
+      "chapterStart": "378",
+      "chapterEnd": "386"
+    },
+    {
+      "number": 45,
+      "chapterStart": "387",
+      "chapterEnd": "395"
+    },
+    {
+      "number": 46,
+      "chapterStart": "396",
+      "chapterEnd": "404"
+    },
+    {
+      "number": 47,
+      "chapterStart": "405",
+      "chapterEnd": "413"
+    },
+    {
+      "number": 48,
+      "chapterStart": "414",
+      "chapterEnd": "423"
+    },
+    {
+      "number": 49,
+      "chapterStart": "424",
+      "chapterEnd": "432"
+    },
+    {
+      "number": 50,
+      "chapterStart": "433",
+      "chapterEnd": "441"
+    },
+    {
+      "number": 51,
+      "chapterStart": "442",
+      "chapterEnd": "450"
+    },
+    {
+      "number": 52,
+      "chapterStart": "451",
+      "chapterEnd": "459"
+    },
+    {
+      "number": 53,
+      "chapterStart": "460",
+      "chapterEnd": "469"
+    },
+    {
+      "number": 54,
+      "chapterStart": "470",
+      "chapterEnd": "479"
+    },
+    {
+      "number": 55,
+      "chapterStart": "480",
+      "chapterEnd": "489"
+    },
+    {
+      "number": 56,
+      "chapterStart": "490",
+      "chapterEnd": "499"
+    },
+    {
+      "number": 57,
+      "chapterStart": "500",
+      "chapterEnd": "509"
+    },
+    {
+      "number": 58,
+      "chapterStart": "510",
+      "chapterEnd": "520"
+    },
+    {
+      "number": 59,
+      "chapterStart": "521",
+      "chapterEnd": "530"
+    },
+    {
+      "number": 60,
+      "chapterStart": "531",
+      "chapterEnd": "540"
+    },
+    {
+      "number": 61,
+      "chapterStart": "541",
+      "chapterEnd": "550"
+    },
+    {
+      "number": 62,
+      "chapterStart": "551",
+      "chapterEnd": "560"
+    },
+    {
+      "number": 63,
+      "chapterStart": "561",
+      "chapterEnd": "570"
+    },
+    {
+      "number": 64,
+      "chapterStart": "571",
+      "chapterEnd": "580"
+    },
+    {
+      "number": 65,
+      "chapterStart": "581",
+      "chapterEnd": "591"
+    },
+    {
+      "number": 66,
+      "chapterStart": "592",
+      "chapterEnd": "601"
+    },
+    {
+      "number": 67,
+      "chapterStart": "602",
+      "chapterEnd": "611"
+    },
+    {
+      "number": 68,
+      "chapterStart": "612",
+      "chapterEnd": "622"
+    },
+    {
+      "number": 69,
+      "chapterStart": "623",
+      "chapterEnd": "632"
+    },
+    {
+      "number": 70,
+      "chapterStart": "633",
+      "chapterEnd": "642"
+    },
+    {
+      "number": 71,
+      "chapterStart": "643",
+      "chapterEnd": "652"
+    },
+    {
+      "number": 72,
+      "chapterStart": "653",
+      "chapterEnd": "663"
+    },
+    {
+      "number": 73,
+      "chapterStart": "664",
+      "chapterEnd": "674"
+    },
+    {
+      "number": 74,
+      "chapterStart": "675",
+      "chapterEnd": "686"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:47:55Z"
+}

@@ -1,0 +1,123 @@
+{
+  "seriesTitle": "20th Century Boys",
+  "comickHid": "qYxBDqX_",
+  "comickSlug": "20th-Century-Boys",
+  "weebCentral": {
+    "seriesId": "01J76XY7PY911B3RQMZE5DQ57R"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "10"
+    },
+    {
+      "number": 2,
+      "chapterStart": "11",
+      "chapterEnd": "21"
+    },
+    {
+      "number": 3,
+      "chapterStart": "22",
+      "chapterEnd": "32"
+    },
+    {
+      "number": 4,
+      "chapterStart": "33",
+      "chapterEnd": "43"
+    },
+    {
+      "number": 5,
+      "chapterStart": "44",
+      "chapterEnd": "54"
+    },
+    {
+      "number": 6,
+      "chapterStart": "55",
+      "chapterEnd": "65"
+    },
+    {
+      "number": 7,
+      "chapterStart": "66",
+      "chapterEnd": "76"
+    },
+    {
+      "number": 8,
+      "chapterStart": "77",
+      "chapterEnd": "87"
+    },
+    {
+      "number": 9,
+      "chapterStart": "88",
+      "chapterEnd": "98"
+    },
+    {
+      "number": 10,
+      "chapterStart": "99",
+      "chapterEnd": "109"
+    },
+    {
+      "number": 11,
+      "chapterStart": "110",
+      "chapterEnd": "121"
+    },
+    {
+      "number": 12,
+      "chapterStart": "122",
+      "chapterEnd": "133"
+    },
+    {
+      "number": 13,
+      "chapterStart": "134",
+      "chapterEnd": "145"
+    },
+    {
+      "number": 14,
+      "chapterStart": "146",
+      "chapterEnd": "157"
+    },
+    {
+      "number": 15,
+      "chapterStart": "158",
+      "chapterEnd": "170"
+    },
+    {
+      "number": 16,
+      "chapterStart": "171",
+      "chapterEnd": "181"
+    },
+    {
+      "number": 17,
+      "chapterStart": "182",
+      "chapterEnd": "192"
+    },
+    {
+      "number": 18,
+      "chapterStart": "193",
+      "chapterEnd": "203"
+    },
+    {
+      "number": 19,
+      "chapterStart": "204",
+      "chapterEnd": "214"
+    },
+    {
+      "number": 20,
+      "chapterStart": "215",
+      "chapterEnd": "225"
+    },
+    {
+      "number": 21,
+      "chapterStart": "226",
+      "chapterEnd": "236"
+    },
+    {
+      "number": 22,
+      "chapterStart": "237",
+      "chapterEnd": "249"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:39Z"
+}

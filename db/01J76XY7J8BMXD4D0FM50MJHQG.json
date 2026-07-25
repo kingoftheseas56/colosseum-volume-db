@@ -1,0 +1,83 @@
+{
+  "seriesTitle": "Vagabond",
+  "comickHid": "xIrej8Kp",
+  "comickSlug": "Vagabond",
+  "weebCentral": {
+    "seriesId": "01J76XY7J8BMXD4D0FM50MJHQG"
+  },
+  "volumes": [
+    {
+      "number": 25,
+      "chapterStart": "216",
+      "chapterEnd": "224"
+    },
+    {
+      "number": 26,
+      "chapterStart": "225",
+      "chapterEnd": "233"
+    },
+    {
+      "number": 27,
+      "chapterStart": "234",
+      "chapterEnd": "242"
+    },
+    {
+      "number": 28,
+      "chapterStart": "243",
+      "chapterEnd": "251"
+    },
+    {
+      "number": 29,
+      "chapterStart": "252",
+      "chapterEnd": "260"
+    },
+    {
+      "number": 30,
+      "chapterStart": "261",
+      "chapterEnd": "269"
+    },
+    {
+      "number": 31,
+      "chapterStart": "270",
+      "chapterEnd": "278"
+    },
+    {
+      "number": 32,
+      "chapterStart": "279",
+      "chapterEnd": "287"
+    },
+    {
+      "number": 33,
+      "chapterStart": "288",
+      "chapterEnd": "296"
+    },
+    {
+      "number": 34,
+      "chapterStart": "297",
+      "chapterEnd": "303"
+    },
+    {
+      "number": 35,
+      "chapterStart": "304",
+      "chapterEnd": "309"
+    },
+    {
+      "number": 36,
+      "chapterStart": "310",
+      "chapterEnd": "315"
+    },
+    {
+      "number": 37,
+      "chapterStart": "316",
+      "chapterEnd": "322"
+    },
+    {
+      "number": 38,
+      "chapterStart": "323",
+      "chapterEnd": "327"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:33Z"
+}

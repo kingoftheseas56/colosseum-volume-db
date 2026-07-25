@@ -1,0 +1,228 @@
+{
+  "seriesTitle": "Berserk",
+  "comickHid": "udwf1dTf",
+  "comickSlug": "Berserk",
+  "weebCentral": {
+    "seriesId": "01J76XY7EF75DJNQCV04HTPDZK"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "0.01",
+      "chapterEnd": "0.03"
+    },
+    {
+      "number": 2,
+      "chapterStart": "0.04",
+      "chapterEnd": "0.05"
+    },
+    {
+      "number": 3,
+      "chapterStart": "0.06",
+      "chapterEnd": "0.09"
+    },
+    {
+      "number": 4,
+      "chapterStart": "0.1",
+      "chapterEnd": "0.14"
+    },
+    {
+      "number": 5,
+      "chapterStart": "0.15",
+      "chapterEnd": "6"
+    },
+    {
+      "number": 6,
+      "chapterStart": "7",
+      "chapterEnd": "16"
+    },
+    {
+      "number": 7,
+      "chapterStart": "17",
+      "chapterEnd": "26"
+    },
+    {
+      "number": 8,
+      "chapterStart": "27",
+      "chapterEnd": "36"
+    },
+    {
+      "number": 9,
+      "chapterStart": "37",
+      "chapterEnd": "47"
+    },
+    {
+      "number": 10,
+      "chapterStart": "48",
+      "chapterEnd": "58"
+    },
+    {
+      "number": 11,
+      "chapterStart": "59",
+      "chapterEnd": "69"
+    },
+    {
+      "number": 12,
+      "chapterStart": "70",
+      "chapterEnd": "79"
+    },
+    {
+      "number": 13,
+      "chapterStart": "80",
+      "chapterEnd": "91"
+    },
+    {
+      "number": 14,
+      "chapterStart": "92",
+      "chapterEnd": "99.5"
+    },
+    {
+      "number": 15,
+      "chapterStart": "100",
+      "chapterEnd": "110"
+    },
+    {
+      "number": 16,
+      "chapterStart": "111",
+      "chapterEnd": "121"
+    },
+    {
+      "number": 17,
+      "chapterStart": "122",
+      "chapterEnd": "132"
+    },
+    {
+      "number": 18,
+      "chapterStart": "133",
+      "chapterEnd": "143"
+    },
+    {
+      "number": 19,
+      "chapterStart": "144",
+      "chapterEnd": "154"
+    },
+    {
+      "number": 20,
+      "chapterStart": "155",
+      "chapterEnd": "165"
+    },
+    {
+      "number": 21,
+      "chapterStart": "166",
+      "chapterEnd": "176"
+    },
+    {
+      "number": 22,
+      "chapterStart": "177",
+      "chapterEnd": "186"
+    },
+    {
+      "number": 23,
+      "chapterStart": "187",
+      "chapterEnd": "196"
+    },
+    {
+      "number": 24,
+      "chapterStart": "197",
+      "chapterEnd": "206"
+    },
+    {
+      "number": 25,
+      "chapterStart": "207",
+      "chapterEnd": "216"
+    },
+    {
+      "number": 26,
+      "chapterStart": "217",
+      "chapterEnd": "226"
+    },
+    {
+      "number": 27,
+      "chapterStart": "227",
+      "chapterEnd": "236"
+    },
+    {
+      "number": 28,
+      "chapterStart": "237",
+      "chapterEnd": "246"
+    },
+    {
+      "number": 29,
+      "chapterStart": "247",
+      "chapterEnd": "256"
+    },
+    {
+      "number": 30,
+      "chapterStart": "257",
+      "chapterEnd": "266"
+    },
+    {
+      "number": 31,
+      "chapterStart": "267",
+      "chapterEnd": "276"
+    },
+    {
+      "number": 32,
+      "chapterStart": "277",
+      "chapterEnd": "286"
+    },
+    {
+      "number": 33,
+      "chapterStart": "287",
+      "chapterEnd": "296"
+    },
+    {
+      "number": 34,
+      "chapterStart": "297",
+      "chapterEnd": "306"
+    },
+    {
+      "number": 35,
+      "chapterStart": "307",
+      "chapterEnd": "315"
+    },
+    {
+      "number": 36,
+      "chapterStart": "316",
+      "chapterEnd": "324"
+    },
+    {
+      "number": 37,
+      "chapterStart": "325",
+      "chapterEnd": "333"
+    },
+    {
+      "number": 38,
+      "chapterStart": "334",
+      "chapterEnd": "342"
+    },
+    {
+      "number": 39,
+      "chapterStart": "343",
+      "chapterEnd": "350"
+    },
+    {
+      "number": 40,
+      "chapterStart": "351",
+      "chapterEnd": "357"
+    },
+    {
+      "number": 41,
+      "chapterStart": "358",
+      "chapterEnd": "364"
+    },
+    {
+      "number": 42,
+      "chapterStart": "365",
+      "chapterEnd": "373"
+    },
+    {
+      "number": 43,
+      "chapterStart": "374",
+      "chapterEnd": "382"
+    }
+  ],
+  "numberingQuirk": true,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:07Z"
+}

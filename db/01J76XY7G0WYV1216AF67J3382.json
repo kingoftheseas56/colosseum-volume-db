@@ -1,0 +1,148 @@
+{
+  "seriesTitle": "Fullmetal Alchemist",
+  "comickHid": "hWxJb63f",
+  "comickSlug": "Fullmetal-Alchemist",
+  "weebCentral": {
+    "seriesId": "01J76XY7G0WYV1216AF67J3382"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "4"
+    },
+    {
+      "number": 2,
+      "chapterStart": "5",
+      "chapterEnd": "8"
+    },
+    {
+      "number": 3,
+      "chapterStart": "9",
+      "chapterEnd": "12.5"
+    },
+    {
+      "number": 4,
+      "chapterStart": "13",
+      "chapterEnd": "16.5"
+    },
+    {
+      "number": 5,
+      "chapterStart": "17",
+      "chapterEnd": "21"
+    },
+    {
+      "number": 6,
+      "chapterStart": "22",
+      "chapterEnd": "25"
+    },
+    {
+      "number": 7,
+      "chapterStart": "26",
+      "chapterEnd": "29.5"
+    },
+    {
+      "number": 8,
+      "chapterStart": "30",
+      "chapterEnd": "33"
+    },
+    {
+      "number": 9,
+      "chapterStart": "34",
+      "chapterEnd": "37"
+    },
+    {
+      "number": 10,
+      "chapterStart": "38",
+      "chapterEnd": "41"
+    },
+    {
+      "number": 11,
+      "chapterStart": "42",
+      "chapterEnd": "45"
+    },
+    {
+      "number": 12,
+      "chapterStart": "46",
+      "chapterEnd": "49"
+    },
+    {
+      "number": 13,
+      "chapterStart": "50",
+      "chapterEnd": "53"
+    },
+    {
+      "number": 14,
+      "chapterStart": "54",
+      "chapterEnd": "57.5"
+    },
+    {
+      "number": 15,
+      "chapterStart": "58",
+      "chapterEnd": "61"
+    },
+    {
+      "number": 16,
+      "chapterStart": "62",
+      "chapterEnd": "65"
+    },
+    {
+      "number": 17,
+      "chapterStart": "66",
+      "chapterEnd": "69"
+    },
+    {
+      "number": 18,
+      "chapterStart": "70",
+      "chapterEnd": "73"
+    },
+    {
+      "number": 19,
+      "chapterStart": "74",
+      "chapterEnd": "78"
+    },
+    {
+      "number": 20,
+      "chapterStart": "79",
+      "chapterEnd": "83"
+    },
+    {
+      "number": 21,
+      "chapterStart": "84",
+      "chapterEnd": "87"
+    },
+    {
+      "number": 22,
+      "chapterStart": "88",
+      "chapterEnd": "91"
+    },
+    {
+      "number": 23,
+      "chapterStart": "92",
+      "chapterEnd": "95.5"
+    },
+    {
+      "number": 24,
+      "chapterStart": "96",
+      "chapterEnd": "99"
+    },
+    {
+      "number": 25,
+      "chapterStart": "100",
+      "chapterEnd": "103"
+    },
+    {
+      "number": 26,
+      "chapterStart": "104",
+      "chapterEnd": "106"
+    },
+    {
+      "number": 27,
+      "chapterStart": "107",
+      "chapterEnd": "108.7"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:45Z"
+}

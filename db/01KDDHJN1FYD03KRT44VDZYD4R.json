@@ -1,0 +1,53 @@
+{
+  "seriesTitle": "Chainsmoker Cat",
+  "comickHid": "AVrtN8nS",
+  "comickSlug": "chainsmoker-cat",
+  "weebCentral": {
+    "seriesId": "01KDDHJN1FYD03KRT44VDZYD4R"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "27.2"
+    },
+    {
+      "number": 2,
+      "chapterStart": "28",
+      "chapterEnd": "58.2"
+    },
+    {
+      "number": 3,
+      "chapterStart": "59",
+      "chapterEnd": "91.2"
+    },
+    {
+      "number": 4,
+      "chapterStart": "92",
+      "chapterEnd": "126.2"
+    },
+    {
+      "number": 5,
+      "chapterStart": "127",
+      "chapterEnd": "157.1"
+    },
+    {
+      "number": 6,
+      "chapterStart": "158",
+      "chapterEnd": "187.1"
+    },
+    {
+      "number": 7,
+      "chapterStart": "188",
+      "chapterEnd": "218.1"
+    },
+    {
+      "number": 8,
+      "chapterStart": "219",
+      "chapterEnd": "224"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:26Z"
+}

@@ -1,0 +1,153 @@
+{
+  "seriesTitle": "Vinland Saga",
+  "comickHid": "xui1JrAT",
+  "comickSlug": "Vinland-Saga",
+  "weebCentral": {
+    "seriesId": "01J76XY7FQY59WRK2YWX5T4E5N"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "0",
+      "chapterEnd": "4"
+    },
+    {
+      "number": 2,
+      "chapterStart": "5",
+      "chapterEnd": "16"
+    },
+    {
+      "number": 3,
+      "chapterStart": "17",
+      "chapterEnd": "21.5"
+    },
+    {
+      "number": 4,
+      "chapterStart": "22",
+      "chapterEnd": "28"
+    },
+    {
+      "number": 5,
+      "chapterStart": "29",
+      "chapterEnd": "35"
+    },
+    {
+      "number": 6,
+      "chapterStart": "36",
+      "chapterEnd": "42.5"
+    },
+    {
+      "number": 7,
+      "chapterStart": "43",
+      "chapterEnd": "49"
+    },
+    {
+      "number": 8,
+      "chapterStart": "50",
+      "chapterEnd": "56"
+    },
+    {
+      "number": 9,
+      "chapterStart": "57",
+      "chapterEnd": "64"
+    },
+    {
+      "number": 10,
+      "chapterStart": "65",
+      "chapterEnd": "71.5"
+    },
+    {
+      "number": 11,
+      "chapterStart": "72",
+      "chapterEnd": "78"
+    },
+    {
+      "number": 12,
+      "chapterStart": "79",
+      "chapterEnd": "86"
+    },
+    {
+      "number": 13,
+      "chapterStart": "87",
+      "chapterEnd": "93"
+    },
+    {
+      "number": 14,
+      "chapterStart": "94",
+      "chapterEnd": "100"
+    },
+    {
+      "number": 15,
+      "chapterStart": "101",
+      "chapterEnd": "107"
+    },
+    {
+      "number": 16,
+      "chapterStart": "108",
+      "chapterEnd": "115"
+    },
+    {
+      "number": 17,
+      "chapterStart": "116",
+      "chapterEnd": "122"
+    },
+    {
+      "number": 18,
+      "chapterStart": "123",
+      "chapterEnd": "129"
+    },
+    {
+      "number": 19,
+      "chapterStart": "130",
+      "chapterEnd": "136"
+    },
+    {
+      "number": 20,
+      "chapterStart": "137",
+      "chapterEnd": "144"
+    },
+    {
+      "number": 21,
+      "chapterStart": "145",
+      "chapterEnd": "152"
+    },
+    {
+      "number": 22,
+      "chapterStart": "153",
+      "chapterEnd": "160"
+    },
+    {
+      "number": 23,
+      "chapterStart": "161",
+      "chapterEnd": "166"
+    },
+    {
+      "number": 24,
+      "chapterStart": "167",
+      "chapterEnd": "175"
+    },
+    {
+      "number": 25,
+      "chapterStart": "176",
+      "chapterEnd": "183"
+    },
+    {
+      "number": 26,
+      "chapterStart": "184",
+      "chapterEnd": "191"
+    },
+    {
+      "number": 27,
+      "chapterStart": "192",
+      "chapterEnd": "201"
+    },
+    {
+      "number": 28,
+      "chapterStart": "202",
+      "chapterEnd": "209"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "scrapedAt": "2026-07-25T04:48:19Z"
+}
