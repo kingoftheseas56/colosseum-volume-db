@@ -198,19 +198,52 @@ def test_gate_rejects_overlapping_spans():
     assert not ok and "overlap" in reason and "49" in reason
 
 
-def test_gate_rejects_unmapped_chapters_between_volumes():
-    # Vinland Saga shape: 210-218 carry no volume tag in ANY language, so volume 29 claims to
-    # start at 219 with nine chapters stranded in between -- inside an otherwise perfect 1..29.
-    clean = _span_volumes(range(1, 28), per=7)
-    vols = clean + [{"number": 28, "chapterStart": "202", "chapterEnd": "209"},
-                    {"number": 29, "chapterStart": "219", "chapterEnd": "220"}]
+def test_gate_rejects_chapters_stranded_between_volumes():
+    # Vinland Saga shape: nine whole chapters carry no volume tag in ANY language, so the volume
+    # after them starts past the hole -- inside an otherwise perfect 1..29. The chapter run here
+    # is unbroken from end to end, so the stranding is the only thing under test.
+    clean = _span_volumes(range(1, 28), per=7)                     # volumes 1..27, chapters 7..195
+    vols = clean + [{"number": 28, "chapterStart": "196", "chapterEnd": "203"},
+                    {"number": 29, "chapterStart": "213", "chapterEnd": "214"}]
     rows = _rows_for(clean)
-    rows += [{"chap": str(c), "vol": "28"} for c in range(202, 210)]
-    rows += [{"chap": str(c), "vol": None} for c in range(210, 219)]   # exist, untagged
-    rows += [{"chap": str(c), "vol": "29"} for c in (219, 220)]
+    rows += [{"chap": str(c), "vol": "28"} for c in range(196, 204)]
+    rows += [{"chap": str(c), "vol": None} for c in range(204, 213) for _ in range(4)]  # untagged
+    rows += [{"chap": str(c), "vol": "29"} for c in (213, 214)]
     ok, reason = gate(vols, False, rows)
-    assert not ok and "unmapped" in reason
-    assert "28" in reason and "29" in reason
+    assert not ok and "no volume" in reason
+    assert "9 chapter" in reason and "204" in reason
+
+
+def test_gate_rejects_chapters_swallowed_inside_a_volume():
+    # The sparse-anchor case: volume 2 is tagged on chapters 11 and 20 ONLY, so its span stretches
+    # across 12-19 -- eight whole chapters nobody tagged, silently absorbed. The volume numbers and
+    # the seams between spans both look perfect, so only a coverage check can see it.
+    rows = [{"chap": str(c), "vol": "1"} for c in range(1, 11)]
+    rows += [{"chap": "11", "vol": "2"}]
+    # each untagged chapter arrives on several rows, one per language -- the count in the reason
+    # is chapters, not rows
+    rows += [{"chap": str(c), "vol": None} for c in range(12, 20) for _ in range(5)]
+    rows += [{"chap": "20", "vol": "2"}]
+    rows += [{"chap": str(c), "vol": "3"} for c in range(21, 31)]
+
+    vols = group_volumes(rows)
+    assert [(v["number"], v["chapterStart"], v["chapterEnd"]) for v in vols] == [
+        (1, "1", "10"), (2, "11", "20"), (3, "21", "30")]              # spans look flawless
+    ok, reason = gate(vols, False, rows)
+    assert not ok and "no volume" in reason
+    assert "8 chapter" in reason and "12" in reason
+
+
+def test_gate_ignores_chapters_outside_the_shelf():
+    # Below the first volume: Bleach's untagged chapter 0 one-shot, genuinely in no book.
+    # Above the last volume: the uncollected tail of an ongoing series, which the app shows as
+    # "Latest chapters". Neither is a hole in the shelf.
+    vols = _span_volumes(range(1, 6))
+    rows = _rows_for(vols)
+    rows += [{"chap": "0", "vol": None}, {"chap": "5", "vol": None}]   # before volume 1 starts
+    rows += [{"chap": str(c), "vol": None} for c in range(60, 70)]     # after volume 5 ends
+    ok, reason = gate(vols, False, rows)
+    assert ok, reason
 
 
 def test_gate_allows_an_untagged_extra_between_back_to_back_volumes():

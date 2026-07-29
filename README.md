@@ -53,12 +53,29 @@ the chapters they came from:
 | the shelf opens past volume 1 | `first mapped volume is 25, not 0/1` |
 | a volume number is missing mid-run | `gap after volume 18` |
 | one volume's chapters run into the next's | `volume 49 span overlaps volume 50` |
-| whole chapters sit between two volumes, in no book | `unmapped chapters between volume 28 and volume 29` |
+| a whole chapter inside the shelf is in no volume | `9 chapter(s) in no volume (first: 210)` |
 
-The last two need the source rows, not just the spans — Vinland Saga's volume numbers run 1–29
-unbroken while chapters 210–218 carry no volume tag in any language, so nine chapters belong to no
-book. An untagged **side** chapter (`168.5`) between two back-to-back volumes is an extra that was
-never in either book, not a hole, so it does not reject.
+The last two need the source rows, not just the spans. The coverage rule is one check doing three
+jobs — every whole chapter between the **first** volume's start and the **last** volume's end must
+be assigned to some volume:
+
+- chapters stranded *between* volumes — Vinland Saga's volume numbers run 1–29 unbroken while
+  chapters 210–218 carry no volume tag in any language, so nine chapters belong to no book;
+- chapters swallowed *inside* a volume — tag only chapters 11 and 20 as volume 2 and its span
+  stretches to `11–20`, quietly absorbing eight chapters nobody tagged. This is the sparse-anchor
+  interpolation the gate exists to refuse, and spans alone cannot show it;
+- chapters *before* volume 1, which the old pairwise seam check never looked at.
+
+Out of scope by design: chapters after the last volume's end (the uncollected tail of an ongoing
+series, shown as "Latest chapters") and chapters before the first volume's start (Bleach's untagged
+chapter `0` one-shot, genuinely in no book).
+
+Only **whole** chapters are covered. An untagged **side** chapter (`168.5`) between two back-to-back
+volumes is assumed to be an extra that was never bound into either book. That assumption is an
+inference from today's data, not something the code verifies — all it checks is whether the label
+has a dot. Side chapters can be real volume content (Bleach volume 36 is `315.1–315.9`), so a long
+untagged run of them would slip through; the longest run observed anywhere is 2, against the 9 it
+would take to matter. Revisit with evidence if that grows.
 
 We never estimate or interpolate a missing boundary — that would invent book edges that don't
 exist. `volumes` is kept either way so failing data stays inspectable.

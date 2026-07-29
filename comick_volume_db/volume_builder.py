@@ -45,20 +45,26 @@ def _fmt(key):
 
 
 def _fix_stray_tags(assign):
-    """Physical volumes are sequential -- a later chapter is never bound into an earlier book --
-    so walking chapters in order the volume must never go down. Where one chapter breaks that and
-    the chapters on BOTH sides of it agree with each other, that one chapter is a stray tag and
-    joins its neighbours. Real cases, both a single mis-tagged row against 4-12 agreeing rows:
-    Naruto 459.3 tagged volume 50 between two volume-49 chapters, Berserk 106.5 tagged volume 13
-    between two volume-15 chapters.
+    """A volume is a contiguous run of chapters, so if the chapters either side of one chapter are
+    both in the same volume, that chapter is in it too -- whatever a single row claims. Where a
+    chapter disagrees with two neighbours that agree with each other, it takes theirs. Both real
+    cases are one mis-tagged row against 4-12 agreeing ones: Naruto 459.3 tagged volume 50 between
+    two volume-49 chapters, Berserk 106.5 tagged volume 13 between two volume-15 chapters.
 
-    The outlier moves, never the consensus. (Capping each chapter by the lowest volume claimed
-    after it also produces a monotonic run, but it resolves the wrong way: Berserk's single stray
-    row would drag 16 well-attested chapters down into volume 13 with it. Measured 2026-07-29.)
+    The chapter that moves is chosen POSITIONALLY -- the one in the middle -- not by vote weight.
+    So a well-attested chapter flanked by two single-vote neighbours that happen to agree would be
+    the one to move. That has never fired in this corpus (2 chapters moved in total, both the lone
+    stray row), and the contiguous-run argument above holds regardless of who has more votes, but
+    the code is not weighing evidence and should not be read as if it were.
+
+    This also keeps the run monotonic, which matters because physical volumes are sequential -- a
+    later chapter is never bound into an earlier book. (Capping each chapter by the lowest volume
+    claimed after it is monotonic too, but resolves the wrong way: Berserk's single stray row would
+    drag 16 well-attested chapters down into volume 13 with it. Measured 2026-07-29.)
 
     Nothing is invented: an UNASSIGNED chapter stays unassigned, so a real hole still reaches the
-    gate. Anything a stray-tag fix can't settle leaves the run non-monotonic, which shows up as
-    overlapping spans -- and `gate` refuses those, so it can never reach the shelf.
+    gate. Anything this can't settle leaves the run non-monotonic, which shows up as overlapping
+    spans -- and `gate` refuses those, so it can never reach the shelf.
     """
     keys = sorted(assign)
     settled = dict(assign)
@@ -128,21 +134,43 @@ def numbering_is_oddball(chapters):
 
 def gate(volumes, numbering_quirk, chapters):
     """(qualified, reason). Qualified = the mapped volumes are a complete, honest shelf, judged
-    against the source rows they came from: at least one volume, integer numbers in one unbroken
-    run starting at 0 or 1, no numbering quirk, spans that don't overlap, and no chapter stranded
-    between two volumes. Anything else -> the app shows the flat chapter list instead.
-    NEVER soften this into estimation -- sparse anchors + interpolation invents book boundaries,
-    which Hemanth explicitly rejected.
+    against the source rows they came from. Anything else -> the app shows the flat chapter list
+    instead. NEVER soften this into estimation -- sparse anchors + interpolation invents book
+    boundaries, which Hemanth explicitly rejected.
 
-    The chapter-axis checks need the source, not just the collapsed spans: a run no uploader ever
-    tagged (Vinland Saga 210-218) leaves the volume numbers looking perfect while nine chapters
-    belong to no book. `chapters` is the same row list majority_assign consumes.
+    Checks, in order:
+      1. no numbering quirk;
+      2. at least one volume;
+      3. the first volume is 0 or 1;
+      4. the volume numbers are one unbroken run;
+      5. no volume's chapter span runs into the next one's;
+      6. COVERAGE -- every whole chapter between the first volume's chapterStart and the last
+         volume's chapterEnd is assigned to some volume.
 
-    Only WHOLE chapters count as stranded. An untagged side chapter between two volumes that are
-    already back to back is an extra that was never bound into either book, not a hole in the
-    shelf -- measured 2026-07-29, the only thing sitting between Bleach volumes 19 (159-168) and
-    20 (169-178) is one untagged "168.5", and One Piece 101/102 and Vinland Saga 19/20 are the
-    same shape. Vinland's REAL hole is nine whole chapters, and it still fails on those.
+    Coverage is one rule doing three jobs: it catches chapters stranded at the seam BETWEEN two
+    volumes (Vinland Saga 210-218, untagged in every language, while the volume numbers 1..29 read
+    perfectly), and chapters swallowed INSIDE a volume whose span was stretched across a hole by
+    two distant anchors (volume 2 tagged on chapters 11 and 20 only, 12-19 tagged by nobody --
+    which is the sparse-anchor interpolation this whole gate exists to refuse), and it removes the
+    old pairwise loop's blind spot before the first volume by defining the range explicitly.
+
+    Deliberately OUT of scope: chapters after the last volume's end -- the legitimate uncollected
+    tail of an ongoing series, which the app surfaces as "Latest chapters" -- and chapters before
+    the first volume's start, e.g. Bleach's untagged chapter 0 one-shot, which genuinely is in no
+    book.
+
+    Coverage needs to know which chapters are ASSIGNED, which the collapsed spans can't say, so it
+    re-derives the assignment from `chapters` (the same row list group_volumes was given; the
+    derivation is pure, so this is the same map, not a second opinion).
+
+    Only WHOLE chapters are checked for coverage. An untagged SIDE chapter (168.5) between two
+    volumes is assumed to be an extra that was never bound into either book -- e.g. Bleach volume
+    19 ends at 168 and volume 20 starts at 169, back to back, with an untagged "168.5" between
+    them. That assumption is an inference from today's corpus, NOT something this code verifies:
+    all it actually checks is whether the label has a dot. Side chapters can be real volume
+    content (Bleach volume 36 is 315.1-315.9), so a long untagged run of them would slip through.
+    The longest run observed anywhere in the corpus is 2 (measured 2026-07-29), against the 9 it
+    would take to matter. If that ever grows, revisit this with the evidence rather than a guess.
     """
     if numbering_quirk:
         return False, "numbering quirk (fractional chapter origin)"
@@ -159,13 +187,19 @@ def gate(volumes, numbering_quirk, chapters):
 
     spans = [(v["number"], _to_num(v["chapterStart"]), _to_num(v["chapterEnd"])) for v in ordered]
     spans = [s for s in spans if s[1] is not None and s[2] is not None]
+    if not spans:
+        return True, ""
     for (num_a, _, end_a), (num_b, start_b, _) in zip(spans, spans[1:]):
         if start_b <= end_a:
             return False, "volume %d span overlaps volume %d" % (num_a, num_b)
 
-    known_whole = {k for k in (_to_num(c.get("chap")) for c in chapters)
-                   if k is not None and not _is_side_chapter(k)}
-    for (num_a, _, end_a), (num_b, start_b, _) in zip(spans, spans[1:]):
-        if any(end_a < k < start_b for k in known_whole):
-            return False, "unmapped chapters between volume %d and volume %d" % (num_a, num_b)
+    first_chapter, last_chapter = spans[0][1], spans[-1][2]
+    assigned = set(majority_assign(chapters))
+    # a set, not a list: one chapter arrives on many rows (one per language), and the count in
+    # the reason has to be chapters, not rows
+    stranded = sorted({k for k in (_to_num(c.get("chap")) for c in chapters)
+                       if k is not None and not _is_side_chapter(k)
+                       and first_chapter <= k <= last_chapter and k not in assigned})
+    if stranded:
+        return False, "%d chapter(s) in no volume (first: %s)" % (len(stranded), _fmt(stranded[0]))
     return True, ""
