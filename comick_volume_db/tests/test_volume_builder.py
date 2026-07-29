@@ -2,7 +2,7 @@ import json
 import pathlib
 
 from comick_volume_db.volume_builder import (
-    gate, group_volumes, majority_assign, numbering_is_oddball)
+    _fmt, gate, group_volumes, majority_assign, numbering_is_oddball)
 
 FIX = pathlib.Path(__file__).parent / "fixtures"
 
@@ -13,6 +13,24 @@ def _chapters(slug):
 
 def _mha_chapters():
     return json.loads((FIX / "mha_all_lang_pairs.json").read_text(encoding="utf-8"))["chapters"]
+
+
+def _labels(assign):
+    """majority_assign keys are sort keys, not labels -- read them back as the source wrote them."""
+    return {_fmt(k): v for k, v in assign.items()}
+
+
+def _span_volumes(numbers, per=10):
+    """Volumes each holding `per` consecutive chapters, spans ascending and non-overlapping."""
+    return [{"number": n, "chapterStart": str(n * per), "chapterEnd": str(n * per + per - 1)}
+            for n in numbers]
+
+
+def _rows_for(volumes):
+    """Source rows that exactly fill the given spans -- nothing unmapped, nothing missing."""
+    return [{"chap": str(c), "vol": str(v["number"])}
+            for v in volumes
+            for c in range(int(v["chapterStart"]), int(v["chapterEnd"]) + 1)]
 
 
 def test_death_note_volume_ranges():
@@ -49,20 +67,92 @@ def test_oddball_numbering_detection():
     assert numbering_is_oddball(_chapters("death-note")) is False  # clean integers 1,2,3...
 
 
+def test_subchapter_labels_are_ordinals_not_fractions():
+    # Real Bleach rows: 315.1-315.9 are volume 36, 315.10-315.12 are volume 37. Read as floats,
+    # "315.10" == "315.1" -- the two pooled into one vote and chapter 315.10 vanished.
+    vols = group_volumes(_chapters("bleach"))
+    by_num = {v["number"]: v for v in vols}
+    assert (by_num[36]["chapterStart"], by_num[36]["chapterEnd"]) == ("315.1", "315.9")
+    assert (by_num[37]["chapterStart"], by_num[37]["chapterEnd"]) == ("315.10", "322")
+
+
+def test_no_source_chapter_is_dropped_by_key_collision():
+    rows = _chapters("bleach")
+    tagged = {str(c["chap"]) for c in rows if c.get("chap") and c.get("vol")}
+    assert "315.10" in tagged and "315.1" in tagged            # both really are in the source
+    assert set(_labels(majority_assign(rows))) == tagged       # and both survive the vote
+
+
+def test_fmt_round_trips_padded_subchapter_label():
+    # "110.30" is the 30th sub-chapter of 110, not 110.3 -- the app joins these labels
+    # against WeebCentral's, so a drifted label is a broken join.
+    vols = group_volumes([{"vol": "9", "chap": "110.30"}, {"vol": "9", "chap": "110.5"}])
+    assert (vols[0]["chapterStart"], vols[0]["chapterEnd"]) == ("110.5", "110.30")
+    assert group_volumes([{"vol": "3", "chap": "25.02"}])[0]["chapterStart"] == "25.02"
+
+
 def test_majority_assign_resolves_stray_tags():
     # ch 7: two rows say vol 1, one stray row says vol 2 -> majority wins
     chapters = [
         {"chap": "7", "vol": "1"}, {"chap": "7", "vol": "1"}, {"chap": "7", "vol": "2"},
         {"chap": "8", "vol": "2"},
     ]
-    assign = majority_assign(chapters)
-    assert assign[7.0] == 1
-    assert assign[8.0] == 2
+    assign = _labels(majority_assign(chapters))
+    assert assign["7"] == 1
+    assert assign["8"] == 2
 
 
-def test_majority_assign_tie_takes_smaller_volume():
-    chapters = [{"chap": "7", "vol": "1"}, {"chap": "7", "vol": "2"}]
-    assert majority_assign(chapters)[7.0] == 1
+def test_majority_assign_tie_leaves_chapter_unassigned():
+    # A dead tie means the sources contradict each other. Guessing a winner would invent a
+    # boundary; dropping the chapter leaves a hole the gate can see.
+    chapters = [{"chap": "7", "vol": "1"}, {"chap": "7", "vol": "2"}, {"chap": "8", "vol": "2"}]
+    assign = _labels(majority_assign(chapters))
+    assert "7" not in assign
+    assert assign["8"] == 2
+
+
+def test_majority_assign_is_monotonic_over_chapters():
+    # Naruto shape: one uploader put 459.3 in volume 50 while its neighbours are all volume 49.
+    # Physical volumes are sequential, so a later chapter is never in an earlier book.
+    chapters = [{"chap": str(c), "vol": "49"} for c in range(454, 464) for _ in range(4)]
+    chapters += [{"chap": "459.3", "vol": "50"}]
+    chapters += [{"chap": str(c), "vol": "50"} for c in range(464, 474) for _ in range(4)]
+    assign = _labels(majority_assign(chapters))
+    assert assign["459.3"] == 49
+    assert assign["463"] == 49 and assign["464"] == 50
+
+
+def test_stray_tag_moves_but_the_consensus_never_does():
+    # Berserk shape, the mirror image of Naruto's: chapter 106.5 carries ONE row tagging it
+    # volume 13 while 106 and 107 carry eleven rows each for volume 15. The stray chapter joins
+    # its neighbours -- the sixteen well-attested chapters around it must not budge.
+    chapters = [{"chap": str(c), "vol": "15"} for c in range(100, 111) for _ in range(11)]
+    chapters += [{"chap": "106.5", "vol": "13"}]
+    assign = _labels(majority_assign(chapters))
+    assert assign["106.5"] == 15
+    assert {v for k, v in assign.items() if k != "106.5"} == {15}
+
+
+def test_a_run_that_stays_out_of_order_never_reaches_the_shelf():
+    # Two adjacent mis-tags are not a lone stray, so nothing corrects them. The volumes then
+    # overlap, and the gate refuses -- the series falls back to a chapter list rather than
+    # having its well-attested chapters silently reshaped to force an order.
+    chapters = [{"chap": str(c), "vol": "1"} for c in (1, 2, 3)]
+    chapters += [{"chap": str(c), "vol": "3"} for c in (4, 5)]      # both mis-tagged
+    chapters += [{"chap": str(c), "vol": "2"} for c in (6, 7)]
+    vols = group_volumes(chapters)
+    assert {v["number"] for v in vols} == {1, 2, 3}                 # nothing dropped or invented
+    ok, reason = gate(vols, False, chapters)
+    assert not ok and "overlap" in reason and "2" in reason
+
+
+def test_monotonic_correction_never_invents_an_assignment():
+    # 8 is untagged by every source; correcting 9's stray tag must not conjure a volume for 8.
+    chapters = [{"chap": "7", "vol": "1"}, {"chap": "8", "vol": None}, {"chap": "9", "vol": "2"},
+                {"chap": "10", "vol": "1"}, {"chap": "10", "vol": "1"}]
+    assign = _labels(majority_assign(chapters))
+    assert "8" not in assign
+    assert assign["9"] == 1                                    # pulled back to its neighbours
 
 
 def test_group_from_majority_mha_all_language_is_complete():
@@ -74,30 +164,83 @@ def test_group_from_majority_mha_all_language_is_complete():
 
 
 def test_gate_accepts_contiguous_run_from_1():
-    vols = [{"number": n, "chapterStart": "1", "chapterEnd": "9"} for n in range(1, 43)]
-    ok, reason = gate(vols, numbering_quirk=False)
+    vols = _span_volumes(range(1, 43))
+    ok, reason = gate(vols, False, _rows_for(vols))
     assert ok, reason
 
 
 def test_gate_accepts_volume_zero_start():
-    vols = [{"number": n, "chapterStart": "1", "chapterEnd": "9"} for n in range(0, 13)]
-    ok, _ = gate(vols, numbering_quirk=False)
+    vols = _span_volumes(range(0, 13))
+    ok, _ = gate(vols, False, _rows_for(vols))
     assert ok                                       # Death Note: vol 0..12
 
 
 def test_gate_rejects_mid_run_gap():
-    vols = [{"number": n, "chapterStart": "1", "chapterEnd": "9"} for n in (1, 19, 38)]
-    ok, reason = gate(vols, numbering_quirk=False)
+    vols = _span_volumes((1, 19, 38))
+    ok, reason = gate(vols, False, _rows_for(vols))
     assert not ok and "gap" in reason               # en-only MHA shape
 
 
 def test_gate_rejects_late_start():
-    vols = [{"number": n, "chapterStart": "1", "chapterEnd": "9"} for n in range(25, 39)]
-    ok, reason = gate(vols, numbering_quirk=False)
-    assert not ok                                   # Vagabond record shape (starts at 25)
+    vols = _span_volumes(range(25, 39))
+    ok, reason = gate(vols, False, _rows_for(vols))
+    assert not ok and "25" in reason                # a shelf that opens at volume 25 is not a shelf
+
+
+def test_gate_rejects_overlapping_spans():
+    # Naruto shape: a stray row dragged volume 50's start back inside volume 49's span. The
+    # volume numbers still read 1..50, so only a span check can catch it.
+    clean = _span_volumes(range(1, 49))
+    vols = clean + [{"number": 49, "chapterStart": "490", "chapterEnd": "499"},
+                    {"number": 50, "chapterStart": "495", "chapterEnd": "509"}]
+    rows = _rows_for(clean) + [{"chap": str(c), "vol": "49"} for c in range(490, 510)]
+    ok, reason = gate(vols, False, rows)
+    assert not ok and "overlap" in reason and "49" in reason
+
+
+def test_gate_rejects_unmapped_chapters_between_volumes():
+    # Vinland Saga shape: 210-218 carry no volume tag in ANY language, so volume 29 claims to
+    # start at 219 with nine chapters stranded in between -- inside an otherwise perfect 1..29.
+    clean = _span_volumes(range(1, 28), per=7)
+    vols = clean + [{"number": 28, "chapterStart": "202", "chapterEnd": "209"},
+                    {"number": 29, "chapterStart": "219", "chapterEnd": "220"}]
+    rows = _rows_for(clean)
+    rows += [{"chap": str(c), "vol": "28"} for c in range(202, 210)]
+    rows += [{"chap": str(c), "vol": None} for c in range(210, 219)]   # exist, untagged
+    rows += [{"chap": str(c), "vol": "29"} for c in (219, 220)]
+    ok, reason = gate(vols, False, rows)
+    assert not ok and "unmapped" in reason
+    assert "28" in reason and "29" in reason
+
+
+def test_gate_allows_an_untagged_extra_between_back_to_back_volumes():
+    # Real Bleach: volume 19 is 159-168 and volume 20 is 169-178 -- back to back, every whole
+    # chapter in a book. The only thing "between" them is one untagged 168.5 extra, which was
+    # never bound into either volume. That is not a hole in the shelf.
+    clean = _span_volumes(range(1, 19), per=8)                     # a clean run up to volume 18
+    vols = clean + [{"number": 19, "chapterStart": "159", "chapterEnd": "168"},
+                    {"number": 20, "chapterStart": "169", "chapterEnd": "178"}]
+    rows = _rows_for(clean) + [{"chap": str(c), "vol": "19"} for c in range(159, 169)]
+    rows += [{"chap": "168.5", "vol": None}]                       # exists, untagged, an extra
+    rows += [{"chap": str(c), "vol": "20"} for c in range(169, 179)]
+    ok, reason = gate(vols, False, rows)
+    assert ok, reason
+
+
+def test_gate_allows_a_subchapter_between_volumes():
+    # 432.5 sits after one volume ends and IS the next volume's first chapter -- a real Bleach
+    # shape, and not a hole.
+    clean = _span_volumes(range(1, 49))
+    vols = clean + [{"number": 49, "chapterStart": "490", "chapterEnd": "499"},
+                    {"number": 50, "chapterStart": "499.5", "chapterEnd": "509"}]
+    rows = _rows_for(clean) + [{"chap": str(c), "vol": "49"} for c in range(490, 500)]
+    rows += [{"chap": "499.5", "vol": "50"}]
+    rows += [{"chap": str(c), "vol": "50"} for c in range(500, 510)]
+    ok, reason = gate(vols, False, rows)
+    assert ok, reason
 
 
 def test_gate_rejects_quirk_and_empty():
     assert not gate([{"number": 1, "chapterStart": "1", "chapterEnd": "9"}],
-                    numbering_quirk=True)[0]        # Berserk-class
-    assert not gate([], numbering_quirk=False)[0]
+                    True, [])[0]                    # Berserk-class
+    assert not gate([], False, [])[0]

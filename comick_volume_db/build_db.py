@@ -6,7 +6,7 @@ import time
 from datetime import datetime, timezone
 
 from comick_volume_db import comick_client, record, weebcentral_client
-from comick_volume_db.volume_builder import group_volumes, numbering_is_oddball
+from comick_volume_db.volume_builder import gate, group_volumes, numbering_is_oddball
 
 HERE = pathlib.Path(__file__).parent
 DB = HERE.parent / "db"          # repo-root db/  (becomes the GitHub DB repo contents)
@@ -24,10 +24,13 @@ def build_one(title):
     sid, slug = weebcentral_client.resolve(title)
     if not sid:
         return None, f"no weebcentral id for {title!r}"
+    oddball = numbering_is_oddball(chapters)
+    qualified, gate_reason = gate(volumes, oddball, chapters)
     rec = record.build_record(
         series_title=title, weebcentral_id=sid, comick_hid=hid, comick_slug=slug or "",
-        volumes=volumes, oddball=numbering_is_oddball(chapters),
-        scraped_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), complete=True)
+        volumes=volumes, oddball=oddball,
+        scraped_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), complete=True,
+        qualified=qualified, gate_reason=gate_reason)
     return rec, sid
 
 

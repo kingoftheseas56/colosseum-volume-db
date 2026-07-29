@@ -23,7 +23,7 @@
     },
     {
       "number": 4,
-      "chapterStart": "0.1",
+      "chapterStart": "0.10",
       "chapterEnd": "0.14"
     },
     {
@@ -69,7 +69,7 @@
     {
       "number": 13,
       "chapterStart": "80",
-      "chapterEnd": "106.5"
+      "chapterEnd": "91"
     },
     {
       "number": 14,
@@ -226,5 +226,5 @@
   "complete": true,
   "qualified": false,
   "gateReason": "numbering quirk (fractional chapter origin)",
-  "scrapedAt": "2026-07-29T10:11:30Z"
+  "scrapedAt": "2026-07-29T11:49:06Z"
 }

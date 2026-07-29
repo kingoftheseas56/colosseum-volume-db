@@ -154,7 +154,7 @@
   ],
   "numberingQuirk": false,
   "complete": true,
-  "qualified": true,
-  "gateReason": "",
-  "scrapedAt": "2026-07-29T10:11:47Z"
+  "qualified": false,
+  "gateReason": "unmapped chapters between volume 28 and volume 29",
+  "scrapedAt": "2026-07-29T11:49:21Z"
 }

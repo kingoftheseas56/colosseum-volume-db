@@ -6,7 +6,7 @@ def test_build_record_shape():
     rec = build_record(series_title="Death Note", weebcentral_id="01J76XY7FYW2T2SDXP32NEFY8H",
                        comick_hid="CKlytjyb", comick_slug="death-note",
                        volumes=volumes, oddball=False, scraped_at="2026-07-25T00:00:00Z",
-                       complete=True)
+                       complete=True, qualified=True, gate_reason="")
     assert rec["weebCentral"]["seriesId"] == "01J76XY7FYW2T2SDXP32NEFY8H"
     assert rec["comickHid"] == "CKlytjyb"
     assert rec["volumes"][0]["chapterEnd"] == "7"
@@ -15,9 +15,11 @@ def test_build_record_shape():
 
 
 def test_build_record_carries_gate_rejection():
-    rec = build_record(series_title="Vagabond", weebcentral_id="01J76XY7J8BMXD4D0FM50MJHQG",
-                       comick_hid="x", comick_slug="vagabond",
-                       volumes=[{"number": 25, "chapterStart": "1", "chapterEnd": "9"}],
-                       oddball=False, scraped_at="2026-07-29T00:00:00Z", complete=True)
-    assert rec["qualified"] is False and "25" in rec["gateReason"]
+    rec = build_record(series_title="Vinland Saga", weebcentral_id="01J76XY7FQY59WRK2YWX5T4E5N",
+                       comick_hid="x", comick_slug="vinland-saga",
+                       volumes=[{"number": 28, "chapterStart": "202", "chapterEnd": "209"},
+                                {"number": 29, "chapterStart": "219", "chapterEnd": "220"}],
+                       oddball=False, scraped_at="2026-07-29T00:00:00Z", complete=True,
+                       qualified=False, gate_reason="unmapped chapters between volume 28 and 29")
+    assert rec["qualified"] is False and "unmapped" in rec["gateReason"]
     assert rec["volumes"]  # failing data stays inspectable
