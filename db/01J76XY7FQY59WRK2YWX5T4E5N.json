@@ -14,7 +14,7 @@
     {
       "number": 2,
       "chapterStart": "5",
-      "chapterEnd": "16"
+      "chapterEnd": "16.5"
     },
     {
       "number": 3,
@@ -145,9 +145,16 @@
       "number": 28,
       "chapterStart": "202",
       "chapterEnd": "209"
+    },
+    {
+      "number": 29,
+      "chapterStart": "219",
+      "chapterEnd": "220"
     }
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:19Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:47Z"
 }

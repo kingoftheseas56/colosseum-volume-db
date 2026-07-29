@@ -9,7 +9,7 @@
     {
       "number": 1,
       "chapterStart": "1",
-      "chapterEnd": "8"
+      "chapterEnd": "8.5"
     },
     {
       "number": 2,
@@ -63,7 +63,7 @@
     },
     {
       "number": 12,
-      "chapterStart": "101",
+      "chapterStart": "100",
       "chapterEnd": "108"
     },
     {
@@ -88,7 +88,7 @@
     },
     {
       "number": 17,
-      "chapterStart": "147",
+      "chapterStart": "146",
       "chapterEnd": "155"
     },
     {
@@ -195,6 +195,11 @@
       "number": 38,
       "chapterStart": "358",
       "chapterEnd": "367"
+    },
+    {
+      "number": 39,
+      "chapterStart": "368",
+      "chapterEnd": "377"
     },
     {
       "number": 40,
@@ -308,7 +313,7 @@
     },
     {
       "number": 62,
-      "chapterStart": "605",
+      "chapterStart": "604",
       "chapterEnd": "614"
     },
     {
@@ -322,8 +327,43 @@
       "chapterEnd": "636"
     },
     {
+      "number": 65,
+      "chapterStart": "637",
+      "chapterEnd": "646"
+    },
+    {
+      "number": 66,
+      "chapterStart": "647",
+      "chapterEnd": "656"
+    },
+    {
+      "number": 67,
+      "chapterStart": "657",
+      "chapterEnd": "667"
+    },
+    {
+      "number": 68,
+      "chapterStart": "668",
+      "chapterEnd": "678"
+    },
+    {
+      "number": 69,
+      "chapterStart": "679",
+      "chapterEnd": "690"
+    },
+    {
+      "number": 70,
+      "chapterStart": "691",
+      "chapterEnd": "700"
+    },
+    {
+      "number": 71,
+      "chapterStart": "701",
+      "chapterEnd": "711"
+    },
+    {
       "number": 72,
-      "chapterStart": "717",
+      "chapterStart": "712",
       "chapterEnd": "721"
     },
     {
@@ -379,11 +419,16 @@
     {
       "number": 83,
       "chapterStart": "828",
-      "chapterEnd": "833"
+      "chapterEnd": "838"
+    },
+    {
+      "number": 84,
+      "chapterStart": "839",
+      "chapterEnd": "848"
     },
     {
       "number": 85,
-      "chapterStart": "851",
+      "chapterStart": "849",
       "chapterEnd": "858"
     },
     {
@@ -392,9 +437,99 @@
       "chapterEnd": "869"
     },
     {
+      "number": 87,
+      "chapterStart": "870",
+      "chapterEnd": "879"
+    },
+    {
+      "number": 88,
+      "chapterStart": "880",
+      "chapterEnd": "889"
+    },
+    {
       "number": 89,
-      "chapterStart": "893",
-      "chapterEnd": "899"
+      "chapterStart": "890",
+      "chapterEnd": "900"
+    },
+    {
+      "number": 90,
+      "chapterStart": "901",
+      "chapterEnd": "910"
+    },
+    {
+      "number": 91,
+      "chapterStart": "911",
+      "chapterEnd": "921"
+    },
+    {
+      "number": 92,
+      "chapterStart": "922",
+      "chapterEnd": "931"
+    },
+    {
+      "number": 93,
+      "chapterStart": "932",
+      "chapterEnd": "942"
+    },
+    {
+      "number": 94,
+      "chapterStart": "943",
+      "chapterEnd": "953"
+    },
+    {
+      "number": 95,
+      "chapterStart": "954",
+      "chapterEnd": "964"
+    },
+    {
+      "number": 96,
+      "chapterStart": "965",
+      "chapterEnd": "974"
+    },
+    {
+      "number": 97,
+      "chapterStart": "975",
+      "chapterEnd": "984"
+    },
+    {
+      "number": 98,
+      "chapterStart": "985",
+      "chapterEnd": "994"
+    },
+    {
+      "number": 99,
+      "chapterStart": "995",
+      "chapterEnd": "1004"
+    },
+    {
+      "number": 100,
+      "chapterStart": "1005",
+      "chapterEnd": "1015"
+    },
+    {
+      "number": 101,
+      "chapterStart": "1016",
+      "chapterEnd": "1025"
+    },
+    {
+      "number": 102,
+      "chapterStart": "1026",
+      "chapterEnd": "1035"
+    },
+    {
+      "number": 103,
+      "chapterStart": "1036",
+      "chapterEnd": "1046"
+    },
+    {
+      "number": 104,
+      "chapterStart": "1047",
+      "chapterEnd": "1055"
+    },
+    {
+      "number": 105,
+      "chapterStart": "1056",
+      "chapterEnd": "1065"
     },
     {
       "number": 106,
@@ -415,9 +550,41 @@
       "number": 109,
       "chapterStart": "1101",
       "chapterEnd": "1110"
+    },
+    {
+      "number": 110,
+      "chapterStart": "1111",
+      "chapterEnd": "1121"
+    },
+    {
+      "number": 111,
+      "chapterStart": "1122",
+      "chapterEnd": "1133"
+    },
+    {
+      "number": 112,
+      "chapterStart": "1134",
+      "chapterEnd": "1144"
+    },
+    {
+      "number": 113,
+      "chapterStart": "1145",
+      "chapterEnd": "1155"
+    },
+    {
+      "number": 114,
+      "chapterStart": "1156",
+      "chapterEnd": "1166"
+    },
+    {
+      "number": 115,
+      "chapterStart": "1167",
+      "chapterEnd": "1179"
     }
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:47:50Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:04Z"
 }

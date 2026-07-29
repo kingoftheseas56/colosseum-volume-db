@@ -44,10 +44,12 @@
     {
       "number": 8,
       "chapterStart": "219",
-      "chapterEnd": "224"
+      "chapterEnd": "232"
     }
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:26Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:58Z"
 }

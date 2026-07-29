@@ -24,8 +24,12 @@ def search(title):
 
 
 def fetch_chapters(hid):
+    # No `lang` filter on purpose: English scanlators often leave `vol` untagged, so an
+    # en-only pull comes out sparse (My Hero Academia: 3 volumes vs 42 all-language).
+    # Chapter numbers are canonical across translations, so ranges transfer safely; the
+    # extra cross-language disagreement is resolved by majority vote in volume_builder.
     r = requests.get(f"{BASE}/comic/{hid}/chapters",
-                     params={"lang": "en", "limit": 100000, "chap-order": 1},
+                     params={"limit": 100000, "chap-order": 1},
                      headers=HEADERS, timeout=60)
     r.raise_for_status()
     return r.json().get("chapters", [])

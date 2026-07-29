@@ -1,0 +1,225 @@
+{
+  "seriesTitle": "My Hero Academia",
+  "comickHid": "q1hZ1dbv",
+  "comickSlug": "my-hero-academia-color",
+  "weebCentral": {
+    "seriesId": "01JQH0FBS5BGDMBDC0BJW034N2"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "7.5"
+    },
+    {
+      "number": 2,
+      "chapterStart": "8",
+      "chapterEnd": "17.5"
+    },
+    {
+      "number": 3,
+      "chapterStart": "18",
+      "chapterEnd": "26.5"
+    },
+    {
+      "number": 4,
+      "chapterStart": "27",
+      "chapterEnd": "35"
+    },
+    {
+      "number": 5,
+      "chapterStart": "36",
+      "chapterEnd": "44"
+    },
+    {
+      "number": 6,
+      "chapterStart": "45",
+      "chapterEnd": "53"
+    },
+    {
+      "number": 7,
+      "chapterStart": "54",
+      "chapterEnd": "62"
+    },
+    {
+      "number": 8,
+      "chapterStart": "63",
+      "chapterEnd": "71"
+    },
+    {
+      "number": 9,
+      "chapterStart": "72",
+      "chapterEnd": "80.5"
+    },
+    {
+      "number": 10,
+      "chapterStart": "81",
+      "chapterEnd": "89.5"
+    },
+    {
+      "number": 11,
+      "chapterStart": "90",
+      "chapterEnd": "99"
+    },
+    {
+      "number": 12,
+      "chapterStart": "100",
+      "chapterEnd": "108"
+    },
+    {
+      "number": 13,
+      "chapterStart": "109",
+      "chapterEnd": "118"
+    },
+    {
+      "number": 14,
+      "chapterStart": "119",
+      "chapterEnd": "128"
+    },
+    {
+      "number": 15,
+      "chapterStart": "129",
+      "chapterEnd": "137"
+    },
+    {
+      "number": 16,
+      "chapterStart": "138",
+      "chapterEnd": "147"
+    },
+    {
+      "number": 17,
+      "chapterStart": "148",
+      "chapterEnd": "157"
+    },
+    {
+      "number": 18,
+      "chapterStart": "158",
+      "chapterEnd": "167"
+    },
+    {
+      "number": 19,
+      "chapterStart": "168",
+      "chapterEnd": "177"
+    },
+    {
+      "number": 20,
+      "chapterStart": "178",
+      "chapterEnd": "188"
+    },
+    {
+      "number": 21,
+      "chapterStart": "189",
+      "chapterEnd": "200"
+    },
+    {
+      "number": 22,
+      "chapterStart": "201",
+      "chapterEnd": "212"
+    },
+    {
+      "number": 23,
+      "chapterStart": "213",
+      "chapterEnd": "224"
+    },
+    {
+      "number": 24,
+      "chapterStart": "225",
+      "chapterEnd": "235"
+    },
+    {
+      "number": 25,
+      "chapterStart": "236",
+      "chapterEnd": "246"
+    },
+    {
+      "number": 26,
+      "chapterStart": "247",
+      "chapterEnd": "258"
+    },
+    {
+      "number": 27,
+      "chapterStart": "259",
+      "chapterEnd": "267"
+    },
+    {
+      "number": 28,
+      "chapterStart": "268",
+      "chapterEnd": "276"
+    },
+    {
+      "number": 29,
+      "chapterStart": "277",
+      "chapterEnd": "285"
+    },
+    {
+      "number": 30,
+      "chapterStart": "286",
+      "chapterEnd": "295"
+    },
+    {
+      "number": 31,
+      "chapterStart": "296",
+      "chapterEnd": "306"
+    },
+    {
+      "number": 32,
+      "chapterStart": "307",
+      "chapterEnd": "318"
+    },
+    {
+      "number": 33,
+      "chapterStart": "319",
+      "chapterEnd": "328"
+    },
+    {
+      "number": 34,
+      "chapterStart": "329",
+      "chapterEnd": "339"
+    },
+    {
+      "number": 35,
+      "chapterStart": "340",
+      "chapterEnd": "350"
+    },
+    {
+      "number": 36,
+      "chapterStart": "351",
+      "chapterEnd": "362"
+    },
+    {
+      "number": 37,
+      "chapterStart": "363",
+      "chapterEnd": "374"
+    },
+    {
+      "number": 38,
+      "chapterStart": "375",
+      "chapterEnd": "386"
+    },
+    {
+      "number": 39,
+      "chapterStart": "387",
+      "chapterEnd": "398"
+    },
+    {
+      "number": 40,
+      "chapterStart": "399",
+      "chapterEnd": "410"
+    },
+    {
+      "number": 41,
+      "chapterStart": "411",
+      "chapterEnd": "422"
+    },
+    {
+      "number": 42,
+      "chapterStart": "423",
+      "chapterEnd": "431"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:12:34Z"
+}

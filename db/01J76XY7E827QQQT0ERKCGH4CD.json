@@ -253,7 +253,7 @@
     },
     {
       "number": 50,
-      "chapterStart": "464",
+      "chapterStart": "459.3",
       "chapterEnd": "473"
     },
     {
@@ -369,5 +369,7 @@
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:12Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:38Z"
 }

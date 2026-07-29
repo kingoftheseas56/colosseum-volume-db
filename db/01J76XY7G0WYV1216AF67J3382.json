@@ -34,7 +34,7 @@
     {
       "number": 6,
       "chapterStart": "22",
-      "chapterEnd": "25"
+      "chapterEnd": "25.5"
     },
     {
       "number": 7,
@@ -44,12 +44,12 @@
     {
       "number": 8,
       "chapterStart": "30",
-      "chapterEnd": "33"
+      "chapterEnd": "33.5"
     },
     {
       "number": 9,
       "chapterStart": "34",
-      "chapterEnd": "37"
+      "chapterEnd": "37.5"
     },
     {
       "number": 10,
@@ -59,12 +59,12 @@
     {
       "number": 11,
       "chapterStart": "42",
-      "chapterEnd": "45"
+      "chapterEnd": "45.5"
     },
     {
       "number": 12,
       "chapterStart": "46",
-      "chapterEnd": "49"
+      "chapterEnd": "49.5"
     },
     {
       "number": 13,
@@ -144,5 +144,7 @@
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:45Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:12:25Z"
 }

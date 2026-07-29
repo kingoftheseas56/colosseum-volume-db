@@ -7,6 +7,126 @@
   },
   "volumes": [
     {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "10"
+    },
+    {
+      "number": 2,
+      "chapterStart": "11",
+      "chapterEnd": "21"
+    },
+    {
+      "number": 3,
+      "chapterStart": "22",
+      "chapterEnd": "31"
+    },
+    {
+      "number": 4,
+      "chapterStart": "32",
+      "chapterEnd": "40"
+    },
+    {
+      "number": 5,
+      "chapterStart": "41",
+      "chapterEnd": "49"
+    },
+    {
+      "number": 6,
+      "chapterStart": "50",
+      "chapterEnd": "59"
+    },
+    {
+      "number": 7,
+      "chapterStart": "60",
+      "chapterEnd": "68"
+    },
+    {
+      "number": 8,
+      "chapterStart": "69",
+      "chapterEnd": "78"
+    },
+    {
+      "number": 9,
+      "chapterStart": "79",
+      "chapterEnd": "87"
+    },
+    {
+      "number": 10,
+      "chapterStart": "88",
+      "chapterEnd": "97"
+    },
+    {
+      "number": 11,
+      "chapterStart": "98",
+      "chapterEnd": "107"
+    },
+    {
+      "number": 12,
+      "chapterStart": "108",
+      "chapterEnd": "117"
+    },
+    {
+      "number": 13,
+      "chapterStart": "118",
+      "chapterEnd": "127"
+    },
+    {
+      "number": 14,
+      "chapterStart": "128",
+      "chapterEnd": "136"
+    },
+    {
+      "number": 15,
+      "chapterStart": "137",
+      "chapterEnd": "143"
+    },
+    {
+      "number": 16,
+      "chapterStart": "144",
+      "chapterEnd": "150"
+    },
+    {
+      "number": 17,
+      "chapterStart": "151",
+      "chapterEnd": "157"
+    },
+    {
+      "number": 18,
+      "chapterStart": "158",
+      "chapterEnd": "164"
+    },
+    {
+      "number": 19,
+      "chapterStart": "165",
+      "chapterEnd": "171"
+    },
+    {
+      "number": 20,
+      "chapterStart": "172",
+      "chapterEnd": "179"
+    },
+    {
+      "number": 21,
+      "chapterStart": "180",
+      "chapterEnd": "188"
+    },
+    {
+      "number": 22,
+      "chapterStart": "189",
+      "chapterEnd": "197"
+    },
+    {
+      "number": 23,
+      "chapterStart": "198",
+      "chapterEnd": "206"
+    },
+    {
+      "number": 24,
+      "chapterStart": "207",
+      "chapterEnd": "215"
+    },
+    {
       "number": 25,
       "chapterStart": "216",
       "chapterEnd": "224"
@@ -79,5 +199,7 @@
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:33Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:12:07Z"
 }

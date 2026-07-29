@@ -8,7 +8,7 @@
   "volumes": [
     {
       "number": 1,
-      "chapterStart": "0.01",
+      "chapterStart": "0.001",
       "chapterEnd": "0.03"
     },
     {
@@ -69,7 +69,7 @@
     {
       "number": 13,
       "chapterStart": "80",
-      "chapterEnd": "91"
+      "chapterEnd": "106.5"
     },
     {
       "number": 14,
@@ -219,10 +219,12 @@
     {
       "number": 43,
       "chapterStart": "374",
-      "chapterEnd": "382"
+      "chapterEnd": "383"
     }
   ],
   "numberingQuirk": true,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:07Z"
+  "qualified": false,
+  "gateReason": "numbering quirk (fractional chapter origin)",
+  "scrapedAt": "2026-07-29T10:11:30Z"
 }

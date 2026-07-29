@@ -19,7 +19,7 @@
     {
       "number": 3,
       "chapterStart": "17",
-      "chapterEnd": "25"
+      "chapterEnd": "25.02"
     },
     {
       "number": 4,
@@ -79,7 +79,7 @@
     {
       "number": 15,
       "chapterStart": "124",
-      "chapterEnd": "130"
+      "chapterEnd": "130.5"
     },
     {
       "number": 16,
@@ -164,7 +164,7 @@
     {
       "number": 32,
       "chapterStart": "279",
-      "chapterEnd": "286"
+      "chapterEnd": "286.5"
     },
     {
       "number": 33,
@@ -188,7 +188,7 @@
     },
     {
       "number": 37,
-      "chapterStart": "315.1",
+      "chapterStart": "315.11",
       "chapterEnd": "322"
     },
     {
@@ -253,7 +253,7 @@
     },
     {
       "number": 50,
-      "chapterStart": "433",
+      "chapterStart": "432.5",
       "chapterEnd": "441"
     },
     {
@@ -268,7 +268,7 @@
     },
     {
       "number": 53,
-      "chapterStart": "460",
+      "chapterStart": "459.5",
       "chapterEnd": "469"
     },
     {
@@ -294,7 +294,7 @@
     {
       "number": 58,
       "chapterStart": "510",
-      "chapterEnd": "520"
+      "chapterEnd": "520.5"
     },
     {
       "number": 59,
@@ -379,5 +379,7 @@
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:47:55Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:14Z"
 }

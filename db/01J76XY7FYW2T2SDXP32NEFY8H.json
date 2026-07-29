@@ -70,9 +70,16 @@
       "number": 12,
       "chapterStart": "98",
       "chapterEnd": "108"
+    },
+    {
+      "number": 13,
+      "chapterStart": "109",
+      "chapterEnd": "115.2"
     }
   ],
   "numberingQuirk": false,
   "complete": true,
-  "scrapedAt": "2026-07-25T04:48:01Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-29T10:11:21Z"
 }

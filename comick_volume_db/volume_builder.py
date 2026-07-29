@@ -5,6 +5,10 @@ Output: [{ "number": 1, "chapterStart": "1", "chapterEnd": "7" }, ...] ascending
 Chapters with no `vol` are ignored here (they become the app's "Latest chapters" shelf, derived live
 from WeebCentral -- never from this DB). Covers are assigned app-side in Phase 1 (first chapter's
 thumbnail), never stored here.
+
+Rows come from ALL languages (see comick_client.fetch_chapters), so one chapter number arrives many
+times and uploaders occasionally disagree about its volume; `majority_assign` settles that per
+chapter before grouping. `gate` then decides whether the result is a shelf the app may show.
 """
 
 
@@ -20,14 +24,27 @@ def _fmt(n):
     return str(int(n)) if float(n).is_integer() else str(n)
 
 
-def group_volumes(chapters):
-    buckets = {}  # vol_number(int) -> set of chap floats
+def majority_assign(chapters):
+    """{chapter_number(float): volume(int)} — each chapter goes to the volume the most
+    rows voted for; ties break to the SMALLER volume (earlier book claims the boundary).
+    Rows missing chap or vol don't vote."""
+    votes = {}
     for ch in chapters:
         vnum = _to_num(ch.get("vol"))
         cnum = _to_num(ch.get("chap"))
         if vnum is None or cnum is None:
             continue
-        buckets.setdefault(int(vnum), set()).add(cnum)
+        per = votes.setdefault(cnum, {})
+        per[int(vnum)] = per.get(int(vnum), 0) + 1
+    return {c: min(v for v, n in per.items() if n == max(per.values()))
+            for c, per in votes.items()}
+
+
+def group_volumes(chapters):
+    assign = majority_assign(chapters)
+    buckets = {}  # vol_number(int) -> set of chap floats
+    for cnum, vnum in assign.items():
+        buckets.setdefault(vnum, set()).add(cnum)
 
     vols = []
     for vnum in sorted(buckets):
@@ -52,3 +69,22 @@ def numbering_is_oddball(chapters):
     if not nums:
         return True
     return not float(min(nums)).is_integer()
+
+
+def gate(volumes, numbering_quirk):
+    """(qualified, reason). Qualified = the mapped volumes are a complete, honest shelf:
+    at least one volume, integer numbers in one unbroken run starting at 0 or 1, and no
+    numbering quirk. Anything else -> the app shows the flat chapter list instead.
+    NEVER soften this into estimation — sparse anchors + interpolation invents book
+    boundaries, which Hemanth explicitly rejected."""
+    if numbering_quirk:
+        return False, "numbering quirk (fractional chapter origin)"
+    if not volumes:
+        return False, "no mapped volumes"
+    nums = [v["number"] for v in volumes]
+    if nums[0] not in (0, 1):
+        return False, "first mapped volume is %d, not 0/1" % nums[0]
+    for a, b in zip(nums, nums[1:]):
+        if b != a + 1:
+            return False, "gap after volume %d" % a
+    return True, ""
