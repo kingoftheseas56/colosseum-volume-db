@@ -151,10 +151,11 @@ def test_parse_word_prefix_space_terminator():
     assert vols is not None and vols[0]["chapterStart"] == "1"
 
 
-def test_parse_refuses_numbered_list_template():
-    # {{Numbered list|start=N}} and MediaWiki '#' ordered lists are DERIVATION schemas: the
-    # chapter number is list-position + offset, never written as a token. Reading them would
-    # interpolate, which the plan forbids. Such a block must yield None (volume skipped).
+def test_parse_derives_numbered_list_template():
+    # {{Numbered list|start=N}}: ``start`` is a WRITTEN token, the item COUNT is READ (each ``|``
+    # line is discrete), and start + count - 1 is arithmetic over two visible things -- NOT
+    # interpolation (which would be inventing an unseen boundary). Two items starting at 1 -> 1-2.
+    # The cross-volume tiling guard in fallback.py (_volumes_are_contiguous) catches a miscount.
     wt = """{{Graphic novel list
 |VolumeNumber = 1
 |ChapterList =
@@ -163,18 +164,97 @@ def test_parse_refuses_numbered_list_template():
 | {{Nihongo|"Two"|x|y}}
 }}
 }}"""
-    assert ws.parse_volumes_from_wikitext(wt) is None
+    vols = ws.parse_volumes_from_wikitext(wt)
+    assert vols == [{"number": 1, "chapterStart": "1", "chapterEnd": "2"}]
 
 
-def test_parse_refuses_hash_ordered_list():
-    # '#' markers: implicit numbering by position. No number is written as a token.
+def test_parse_derives_numbered_list_template_with_offset():
+    # start=8 with three items -> 8-10. Proves the start token is read, not assumed 1, and the
+    # count drives the end (start + count - 1, not start + count).
+    wt = """{{Graphic novel list
+|VolumeNumber = 1
+|ChapterList =
+{{Numbered list|start=8
+| {{Nihongo|"Eight"|x|y}}
+| {{Nihongo|"Nine"|x|y}}
+| {{Nihongo|"Ten"|x|y}}
+}}
+}}"""
+    vols = ws.parse_volumes_from_wikitext(wt)
+    assert vols == [{"number": 1, "chapterStart": "8", "chapterEnd": "10"}]
+
+
+def test_parse_derives_hash_ordered_list():
+    # '#' ordered list with no start=: implicit start = 1 per the MediaWiki spec (not a guess --
+    # the spec IS the source). Count is read from the '#' lines. Two items -> 1-2.
     wt = """{{Graphic novel list
 |VolumeNumber = 1
 |ChapterList =
 #{{Nihongo4|"First"|x|y}}
 #{{Nihongo4|"Second"|x|y}}
 }}"""
+    vols = ws.parse_volumes_from_wikitext(wt)
+    assert vols == [{"number": 1, "chapterStart": "1", "chapterEnd": "2"}]
+
+
+def test_parse_two_column_derivation_tiles_within_volume():
+    # The mixed-schema case the tiling guard was built for: col1 is a # list (implicit 1-4), col2
+    # is {{Numbered list|start=5}} with 3 items (5-7). Columns must TILE (col1.end+1 == col2.start)
+    # or the volume is refused. Here they tile -> volume range is 1-7.
+    wt = """{{Graphic novel list
+|VolumeNumber=1
+|ChapterListCol1=
+# Item one
+# Item two
+# Item three
+# Item four
+|ChapterListCol2=
+{{Numbered list|start=5
+| Five
+| Six
+| Seven
+}}
+}}"""
+    vols = ws.parse_volumes_from_wikitext(wt)
+    assert vols == [{"number": 1, "chapterStart": "1", "chapterEnd": "7"}]
+
+
+def test_parse_refuses_volume_when_columns_do_not_tile():
+    # Negative control for the within-volume tiling guard: col1 = # list of 4 (1-4), col2 =
+    # {{Numbered list|start=10}} (10-12). col1.end+1=5 != col2.start=10 -> gap -> volume refused.
+    # A miscounted item count or wrong start token breaks tiling; the guard catches it.
+    wt = """{{Graphic novel list
+|VolumeNumber=1
+|ChapterListCol1=
+# Item one
+# Item two
+# Item three
+# Item four
+|ChapterListCol2=
+{{Numbered list|start=10
+| Ten
+| Eleven
+| Twelve
+}}
+}}"""
     assert ws.parse_volumes_from_wikitext(wt) is None
+
+
+def test_count_nl_items_reads_pipe_brace_shape_no_space():
+    # Regression for the batch-scraping-critical bug: item lines come in TWO shapes --
+    # '| {{...}}' (pipe-space, e.g. Dandadan vol1) and '|{{...}}' (pipe-brace, no space, e.g.
+    # Chainsaw Man / Demon Slayer / Dandadan vol5 col2) -- sometimes within the SAME series.
+    # An earlier counter required pipe+whitespace and silently undercounted the pipe-brace
+    # shape, which then broke cross-volume tiling. Both shapes must count.
+    # This template has 3 pipe-space items then 3 pipe-brace items (6 total).
+    inner = ("Numbered list|start=1\n"
+             "| {{Nihongo|\"One\"|x|y}}\n"
+             "| {{Nihongo|\"Two\"|x|y}}\n"
+             "| {{Nihongo|\"Three\"|x|y}}\n"
+             "|{{Nihongo|\"Four\"|x|y}}\n"
+             "|{{Nihongo|\"Five\"|x|y}}\n"
+             "|{{Nihongo|\"Six\"|x|y}}\n")
+    assert ws._count_numbered_list_items(inner) == 6
 
 
 # --- NEGATIVE CONTROLS (a check that CAN fail must be shown to fail correctly) --------
