@@ -281,6 +281,53 @@ def test_slugify_strips_punctuation_and_spaces():
     assert fs._slugify("JoJo's Bizarre Adventure") == "jojosbizarreadventure"
 
 
+# --- DNS 63-octet label cap on the slug-derived host (2026-07-31 LocationParseError fix)
+
+# One of the three real offending romaji titles from the 2026-07-31 catalogue sample
+# (reports/identity_rate_catalogue.json, row 32): its slug collapses to 87 chars, well past
+# DNS's 63-octet single-label cap (RFC 1035). urllib3 raised LocationParseError on the resulting
+# host, which previously crashed the whole sample loop. The fix: _host_for returns None, and
+# fandom_volumes returns None (clean 'no data'), never raises.
+_LONG_ROMAJI_TITLE = (
+    "shinu unmei ni aru akuyaku reijou no ani ni tensei shita node "
+    "imouto o sodatete mirai o kaetai to omoimasu"
+)
+
+
+def test_slugify_preserves_long_slug_without_truncation():
+    # We do NOT truncate the slug -- a truncated label would be a DIFFERENT, wrong series' host.
+    slug = fs._slugify(_LONG_ROMAJI_TITLE)
+    assert len(slug) == 87, f"expected 87-char slug, got {len(slug)}"
+    assert slug == (
+        "shinuunmeiniaruakuyakureijounoaninitenseishitanode"
+        "imoutoosodatetemiraiokaetaitoomoimasu"
+    )
+
+
+def test_host_for_returns_none_when_slug_exceeds_dns_label_cap():
+    # A 87-char slug cannot be a Fandom subdomain label -- no DNS resolver will serve it.
+    assert fs._host_for(_LONG_ROMAJI_TITLE) is None
+
+
+def test_host_for_returns_host_under_cap():
+    # A short title still builds a valid host.
+    assert fs._host_for("Vinland Saga") == "vinlandsaga.fandom.com"
+
+
+def test_fandom_volumes_returns_none_for_overcap_title_without_raising(monkeypatch):
+    # The whole point: a title whose slug exceeds the cap is clean 'no data', not an exception.
+    # If _host_for's None guard were removed, _walk_via_next_links would build
+    # 'https://None/api.php' and urllib3 would raise LocationParseError -- the original crash.
+    monkeypatch.setattr(fs, "_enumerate_via_category", lambda *a, **k: None)
+    assert fs.fandom_volumes(_LONG_ROMAJI_TITLE) is None
+
+
+def test_fetch_fandom_synopses_returns_none_pair_for_overcap_title(monkeypatch):
+    # The synopsis-fetch path mirrors fandom_volumes: same guard, same clean negative.
+    monkeypatch.setattr(fs, "_walk_synopses_via_category", lambda *a, **k: (None, None))
+    assert fs.fetch_fandom_synopses(_LONG_ROMAJI_TITLE) == (None, None)
+
+
 # --- volume display-name extraction (additive, optional, never gates) ----------------
 
 def test_clean_name_strips_italic_markup():

@@ -75,14 +75,38 @@ _LINK = re.compile(r"\[\[([^\]|]+?)(?:\|[^\]]*)?\]\]")
 
 
 def _slugify(title):
-    """Series title -> fandom subdomain slug. 'Vinland Saga' -> 'vinlandsaga'."""
-    # lowercase, drop punctuation, drop whitespace. Crockford-clean ASCII for the subdomain.
+    """Series title -> fandom subdomain slug. 'Vinland Saga' -> 'vinlandsaga'.
+
+    lowercase, drop punctuation, drop whitespace. Crockford-clean ASCII for the subdomain.
+    """
     keep = (ch for ch in title.lower() if ch in string.ascii_lowercase + string.digits)
     return "".join(keep)
 
 
+# DNS (RFC 1035) limits a single label to 63 octets. A Fandom host is one label -- the slug --
+# immediately followed by '.fandom.com'. Fandom subdomains derived from long light-novel / isekai
+# romaji titles routinely blow past 63 chars (observed in the wild 2026-07-31: slugs of 76, 87,
+# and 103 chars all raised urllib3 LocationParseError, which previously crashed the whole batch).
+# Such a host CAN NEVER EXIST -- no DNS resolver will serve a >63-char label -- so a series whose
+# slug exceeds the cap has no reachable Fandom wiki under the slug-derived host. We do not truncate
+# (a truncated label is a different, wrong series' potential host); we return None so the caller
+# treats it as clean 'no data', never as an exception. See _host_for.
+DNS_LABEL_MAX = 63
+
+
 def _host_for(title):
-    return f"{_slugify(title)}.fandom.com"
+    """Fandom host for a series title, or None when no valid host can be built.
+
+    Returns f"{slug}.fandom.com" when slug fits DNS's 63-octet label limit; None when it does not.
+    A None here is a settled negative -- the slug-derived host cannot exist, so there is no Fandom
+    wiki reachable under that name -- NOT a transport failure. Callers that fetched the host and
+    got None should treat it as 'no data' (the series simply has no slug-valid Fandom wiki), not as
+    'unreachable' (which means a real host could not be contacted).
+    """
+    slug = _slugify(title)
+    if len(slug) > DNS_LABEL_MAX:
+        return None
+    return f"{slug}.fandom.com"
 
 
 def _fetch_wikitext(host, page):
@@ -510,6 +534,10 @@ def fandom_volumes(series_title, max_volumes=200):
     and the whole series returns None (we will not publish a mapping with a hole in it).
     """
     host = _host_for(series_title)
+    if host is None:
+        # Slug-derived host cannot exist (DNS 63-octet label cap exceeded). Clean 'no data',
+        # not an exception -- see _host_for.
+        return None
 
     walked, complete = _walk_via_next_links(host, max_volumes)
     if complete and walked:
@@ -637,6 +665,10 @@ def fetch_fandom_synopses(series_title, max_volumes=200):
       B. Category enumeration (One Piece-style category wikis).
     """
     host = _host_for(series_title)
+    if host is None:
+        # Slug-derived host cannot exist (DNS 63-octet label cap exceeded). Clean 'no data',
+        # not an exception -- see _host_for.
+        return None, None
     synopses, url = _walk_synopses_via_next_links(host, max_volumes)
     if synopses is not None:
         return synopses, url
