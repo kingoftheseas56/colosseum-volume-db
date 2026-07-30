@@ -226,7 +226,7 @@ def test_enumerate_via_category_filters_to_volume_pages_only(monkeypatch):
         page = params.get("page")
         return _FakeResp({"parse": {"wikitext": {"*": pages_wt.get(page)}}} if page in pages_wt else {"error": {"code": "missingtitle"}})
 
-    monkeypatch.setattr(fs.requests, "get", fake_get)
+    monkeypatch.setattr(fs, "fetch_with_retry", fake_get)
     monkeypatch.setattr(fs, "_host_for", lambda title: "x.fandom.com")
     vols = fs._enumerate_via_category("x.fandom.com", "Whatever", 200)
     assert [v["number"] for v in vols] == [1, 2]
@@ -248,7 +248,7 @@ def test_enumerate_via_category_probes_both_category_spellings(monkeypatch):
         page = params.get("page")
         return _FakeResp({"parse": {"wikitext": {"*": pages_wt[page]}}})
 
-    monkeypatch.setattr(fs.requests, "get", fake_get)
+    monkeypatch.setattr(fs, "fetch_with_retry", fake_get)
     vols = fs._enumerate_via_category("x.fandom.com", "Whatever", 200)
     assert "Category:Whatever Volumes" in calls and "Category:Volumes" in calls
     assert vols and vols[0]["chapterEnd"] == "5"
@@ -268,7 +268,7 @@ def test_enumerate_via_category_refuses_a_hole(monkeypatch):
         page = params.get("page")
         return _FakeResp({"parse": {"wikitext": {"*": pages_wt[page]}}})
 
-    monkeypatch.setattr(fs.requests, "get", fake_get)
+    monkeypatch.setattr(fs, "fetch_with_retry", fake_get)
     assert fs._enumerate_via_category("x.fandom.com", "Whatever", 200) is None
 
 

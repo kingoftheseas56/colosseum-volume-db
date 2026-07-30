@@ -61,7 +61,7 @@ import json
 import pathlib
 import re
 
-import requests
+from comick_volume_db.http_retry import SourceUnreachable, fetch_with_retry
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36"
 HEADERS = {"User-Agent": UA, "Accept": "application/json"}
@@ -176,7 +176,10 @@ def enumerate_transcluding_pages(max_batches=50):
               "eilimit": 500, "einamespace": 0, "format": "json"}
     titles = []
     for _ in range(max_batches):
-        r = requests.get(API, params=params, headers=HEADERS, timeout=TIMEOUT)
+        # fetch_with_retry raises SourceUnreachable on transport failure (distinct from 'no
+        # data'); it returns the Response for any HTTP status. The discovery endpoint is not
+        # expected to 404, so raise_for_status surfaces an unexpected server error normally.
+        r = fetch_with_retry(API, params=params, headers=HEADERS, timeout=TIMEOUT)
         r.raise_for_status()
         data = r.json()
         titles.extend(p["title"] for p in data.get("query", {}).get("embeddedin", []))
@@ -245,10 +248,16 @@ def _match_page(series_title, candidate_titles):
 
 
 def _fetch_wikitext(page):
-    """Raw wikitext for a page, following redirects. None if the page does not exist."""
-    r = requests.get(API, params={"action": "parse", "page": page, "prop": "wikitext",
-                                  "format": "json", "redirects": 1},
-                     headers=HEADERS, timeout=TIMEOUT)
+    """Raw wikitext for a page, following redirects. None if the page does not exist.
+
+    Raises ``SourceUnreachable`` on transport failure (distinct from the None 'no page' path).
+    A 404 or a MediaWiki ``error`` is a REAL server response -> None ('no data', settled). A
+    connection refused / timeout / reset raises -> the caller propagates an 'unreachable'
+    outcome, never confused with 'no data'. See http_retry for the discipline.
+    """
+    r = fetch_with_retry(API, params={"action": "parse", "page": page, "prop": "wikitext",
+                                      "format": "json", "redirects": 1},
+                         headers=HEADERS, timeout=TIMEOUT)
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -421,6 +430,12 @@ def wikipedia_volumes(series_title):
     ascending by number, or None when Wikipedia has no usable Graphic novel list ChapterList
     for the series (no transcluding page matched, or the matched page carries no ChapterList).
 
+    Raises ``SourceUnreachable`` (from http_retry) when the Wikipedia API could not be reached
+    after retries. This is DISTINCT from the None 'no data' return: a None means 'reached the
+    server, the series genuinely has no usable GNL data' (a settled fact, don't re-run); a
+    SourceUnreachable means 'could not reach the server at all' (a transient failure, DO
+    re-run). The caller MUST carry this distinction through to its report.
+
     Discovery is deterministic: the transclusion set is enumerated (cached) and the series is
     matched against it -- no URL is ever guessed.
     """
@@ -428,10 +443,9 @@ def wikipedia_volumes(series_title):
     page = _match_page(series_title, titles)
     if page is None:
         return None
-    try:
-        wikitext = _fetch_wikitext(page)
-    except requests.RequestException:
-        return None
+    # No try/except here: _fetch_wikitext retries internally and raises SourceUnreachable on
+    # transport failure. We deliberately do NOT catch it as None -- that was the Task 5b bug.
+    wikitext = _fetch_wikitext(page)
     if wikitext is None:
         return None
     volumes = parse_volumes_from_wikitext(wikitext)

@@ -35,7 +35,7 @@ import re
 import string
 import time
 
-import requests
+from comick_volume_db.http_retry import SourceUnreachable, fetch_with_retry
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36"
 HEADERS = {"User-Agent": UA, "Accept": "application/json"}
@@ -87,10 +87,16 @@ def _host_for(title):
 
 def _fetch_wikitext(host, page):
     """Return wikitext for a page, following redirects. None if the page does not exist
-    (404 or MediaWiki ``missingtitle``). Raises on transport errors so the caller can decide."""
+    (404 or MediaWiki ``missingtitle``).
+
+    Raises ``SourceUnreachable`` (from http_retry) on transport failure after retries -- a
+    DISTINCT outcome from the None 'no page' return. A 404 / missingtitle is a REAL server
+    response -> None ('no data', settled); a connection refused / timeout / reset raises ->
+    'unreachable', the caller propagates it so a batch run can re-run the series. The two must
+    never collapse to the same value (Task 5b)."""
     params = {"action": "parse", "page": page, "prop": "wikitext", "format": "json",
               "redirects": 1}
-    r = requests.get(f"https://{host}/api.php", params=params, headers=HEADERS, timeout=TIMEOUT)
+    r = fetch_with_retry(f"https://{host}/api.php", params=params, headers=HEADERS, timeout=TIMEOUT)
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -385,10 +391,11 @@ def _walk_via_next_links(host, max_volumes):
         visited.add(page)
         if volumes:  # not the first fetch -> polite gap between Volume_N fetches
             time.sleep(FETCH_DELAY)
-        try:
-            wt = _fetch_wikitext(host, page)
-        except requests.RequestException:
-            return [], False
+        # _fetch_wikitext retries internally and raises SourceUnreachable on transport failure.
+        # We do NOT catch it as ([], False) -- that was the Task 5b bug (a blip returned the same
+        # value as 'this wiki has no nav links'). Let it propagate so the caller reports
+        # 'unreachable', distinct from the [],False 'defer to category' / None 'no data' paths.
+        wt = _fetch_wikitext(host, page)
         if wt is None:
             break  # no such page -> end (or no wiki at all on the first iteration)
         parsed, nxt, has_nav, name, synopsis = _parse_one_volume(wt)
@@ -431,12 +438,13 @@ def _enumerate_via_category(host, series_title, max_volumes):
     series that long ever appears, rather than guessing it never will.
     """
     for cat in (f"Category:{series_title} Volumes", "Category:Volumes"):
-        try:
-            r = requests.get(f"https://{host}/api.php", params={
-                "action": "query", "list": "categorymembers", "cmtitle": cat,
-                "cmlimit": 500, "format": "json"}, headers=HEADERS, timeout=TIMEOUT)
-        except requests.RequestException:
-            continue
+        # fetch_with_retry retries transport failures and raises SourceUnreachable after the
+        # last attempt -- we do NOT catch that as `continue` (Task 5b): a transport failure is
+        # "unreachable," not "this category has no data." A non-200 or API error is a real server
+        # response, so those still `continue` to the next category spelling.
+        r = fetch_with_retry(f"https://{host}/api.php", params={
+            "action": "query", "list": "categorymembers", "cmtitle": cat,
+            "cmlimit": 500, "format": "json"}, headers=HEADERS, timeout=TIMEOUT)
         if r.status_code != 200:
             continue
         data = r.json()
@@ -458,10 +466,10 @@ def _enumerate_via_category(host, series_title, max_volumes):
         for idx, (number, page) in enumerate(numbered):
             if idx > 0:
                 time.sleep(FETCH_DELAY)  # polite gap between sequential Volume_N fetches
-            try:
-                wt = _fetch_wikitext(host, page)
-            except requests.RequestException:
-                return None
+            # _fetch_wikitext retries internally and raises SourceUnreachable on transport
+            # failure. We do NOT catch it as `return None` (Task 5b): that was the bug -- a
+            # hiccup mid-walk returned None, identical to "this series has no volume data."
+            wt = _fetch_wikitext(host, page)
             if wt is None:
                 return None  # category listed a page that 404s -> inconsistent, refuse
             parsed, _, _, name, synopsis = _parse_one_volume(wt)

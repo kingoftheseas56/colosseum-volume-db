@@ -329,7 +329,89 @@ def test_write_synopsis_sibling_only_writes_when_non_empty(tmp_path, monkeypatch
     assert data["synopses"] == {"1": "blurb one", "3": "blurb three"}  # keys stringified for JSON
 
 
+# --- Task 5b: network failure vs missing data ------------------------------------------
+#
+# The plan (verbatim): "when [a network failure] still fails, return a DISTINCT outcome --
+# 'unreachable' -- never the same value as 'no data.' Every caller must carry that through to the
+# report so an unreachable series is listed separately from an unqualified one and can be re-run
+# on its own."
+#
+# Three cases prove the whole chain:
+#   1. forced failure -> resolve_fallback RAISES SourceUnreachable (NOT returns None)
+#   2. build_fallback_record carries that through as action == "unreachable" (distinct from
+#      "no_fallback_data") -- this is the report-level distinction the plan demands
+#   3. NEGATIVE CONTROL: wikipedia unreachable BUT fandom has data -> the series is NOT
+#      unreachable; it resolves via fandom. Proves a partial outage does not strand a series that
+#      another source can serve.
 
+from comick_volume_db.http_retry import SourceUnreachable
+
+
+def test_resolve_raises_source_unreachable_when_all_sources_transport_fail(monkeypatch):
+    # THE FIX. Before Task 5b both _try_* caught RequestException and returned None -> resolve
+    # returned None -> build_fallback_record reported "no_fallback_data." A network stutter was
+    # indistinguishable from "this series genuinely has no fallback data." Now it raises.
+    def _unreachable(_title):
+        raise SourceUnreachable("simulated transport failure (forced)")
+    monkeypatch.setattr(fb, "_try_wikipedia", _unreachable)
+    monkeypatch.setattr(fb, "_try_fandom", _unreachable)
+    with pytest.raises(SourceUnreachable):
+        fb.resolve_fallback("Whatever")
+
+
+def test_build_fallback_record_carries_unreachable_as_distinct_action(monkeypatch):
+    # The report-level distinction the plan demands. "unreachable" != "no_fallback_data" so a
+    # batch report can list unreachable series separately and re-run them on their own.
+    def _unreachable(_title):
+        raise SourceUnreachable("simulated transport failure (forced)")
+    monkeypatch.setattr(fb, "_try_wikipedia", _unreachable)
+    monkeypatch.setattr(fb, "_try_fandom", _unreachable)
+    rec, action, _ = fb.build_fallback_record(
+        "Flaky", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action == "unreachable"           # NOT "no_fallback_data"
+    assert action != "no_fallback_data"      # the distinction is load-bearing
+    assert rec is None                       # nothing written -- re-run later
+
+
+def test_negative_control_unreachable_wikipedia_but_fandom_has_data_resolves(monkeypatch):
+    # NEGATIVE CONTROL. A partial outage (Wikipedia unreachable) must NOT strand a series that
+    # Fandom can serve. resolve_fallback tries the next source; if it produces data, the
+    # unreachable note is dropped -- the series is settled (qualified or unqualified), not
+    # reported as unreachable. This proves the fix does not over-reach: unreachable is reported
+    # ONLY when NO source produced data AND at least one was unreachable.
+    def _wiki_unreachable(_title):
+        raise SourceUnreachable("Wikipedia down (forced)")
+    monkeypatch.setattr(fb, "_try_wikipedia", _wiki_unreachable)
+    monkeypatch.setattr(fb, "_try_fandom",
+                        lambda t: (list(VINLAND_FANDOM), "https://x.fandom.com/wiki/Volume_1"))
+    res = fb.resolve_fallback("Whatever")
+    assert res is not None                   # resolved via fandom despite wikipedia outage
+    assert res["source"] == "fandom"
+    # And at the build layer the action is a normal fallback outcome, NOT "unreachable".
+    rec, action, _ = fb.build_fallback_record(
+        "Whatever", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action in ("fallback_qualified", "fallback_unqualified")
+    assert action != "unreachable"
+
+
+def test_unreachable_distinct_from_no_data_at_build_layer(monkeypatch):
+    # The two settled outcomes a report must tell apart. Same inputs EXCEPT the _try_* behavior:
+    # one returns None (no data, a real server negative), the other raises (unreachable). The
+    # actions MUST differ so a re-run script can target only the unreachable set.
+    monkeypatch.setattr(fb, "_try_wikipedia", lambda t: None)
+    monkeypatch.setattr(fb, "_try_fandom", lambda t: None)
+    _, no_data_action, _ = fb.build_fallback_record(
+        "GenuinelyEmpty", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert no_data_action == "no_fallback_data"
+
+    def _unreachable(_title):
+        raise SourceUnreachable("forced")
+    monkeypatch.setattr(fb, "_try_wikipedia", _unreachable)
+    monkeypatch.setattr(fb, "_try_fandom", _unreachable)
+    _, unreachable_action, _ = fb.build_fallback_record(
+        "Flaky", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert unreachable_action == "unreachable"
+    assert no_data_action != unreachable_action   # the whole point
 
 @pytest.mark.live
 def test_live_vinland_saga_resolves_via_wikipedia_and_passes_gate():

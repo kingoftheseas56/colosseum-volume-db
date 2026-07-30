@@ -59,6 +59,7 @@ TAIL / ONGOING SERIES (verified 2026-07-30):
   handling is needed here; the gate already does the right thing.
 """
 from comick_volume_db import fandom_source, record, wikipedia_source
+from comick_volume_db.http_retry import SourceUnreachable
 from comick_volume_db.volume_builder import gate
 
 
@@ -144,9 +145,21 @@ def _attempt(source_name, series_title):
     capture the original functions and silently ignore test monkeypatching of the module
     attributes. Calling the module-level ``_try_*`` functions by name here resolves them fresh on
     each call, so a patched attribute is honoured.
+
+    Returns one of:
+      - a resolution dict {source, source_url, volumes, qualified, gate_reason} on success,
+      - None when the source has NO DATA for this series (a settled negative -- a real server
+        response: page does not exist, no ChapterList, no Volume_1, etc.), or
+      - the sentinel ``_UNREACHABLE`` when the source could not be REACHED after retries
+        (transport failure). This is the Task 5b discipline: unreachable MUST NOT collapse to
+        None. If it did, a network hiccup would be recorded as "this series has no fallback data"
+        -- a stutter baked into the database as a fact.
     """
     fetcher = globals()[f"_try_{source_name}"]
-    got = fetcher(series_title)
+    try:
+        got = fetcher(series_title)
+    except SourceUnreachable:
+        return _UNREACHABLE
     if got is None:
         return None
     volumes, source_url = got
@@ -166,12 +179,34 @@ def _attempt(source_name, series_title):
     }
 
 
+# Sentinel for "the source could not be reached" -- distinct object from None ("no data") and from
+# any resolution dict. Identity comparison (``is _UNREACHABLE``) is the only intended use.
+class _UnreachableSentinel:
+    """Distinct from None and from a result dict. Use ``is _UNREACHABLE`` to test."""
+
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __repr__(self):
+        return "<UNREACHABLE>"
+
+    def __bool__(self):
+        return False  # so `_attempt(...) or _attempt(...)` does NOT skip on it
+
+
+_UNREACHABLE = _UnreachableSentinel()
+
+
 def resolve_fallback(series_title):
     """Resolve a series' volumes from fallback sources, gated exactly like Comick.
 
     Returns a dict suitable for ``record.build_record``:
         {source, source_url, volumes, qualified, gate_reason}
-    or None if NO fallback source had data for this series.
+    or None if NO fallback source had data for this series AND none were unreachable.
 
     Precedence wikipedia > fandom. The first source that returns volumes wins; later sources are
     not consulted (we do not merge across sources -- that would be interpolation).
@@ -180,8 +215,30 @@ def resolve_fallback(series_title):
     own derived source rows (see module docstring). A gate failure does NOT fall through to the
     next source -- a structurally-broken Wikipedia answer is not improved by also trying Fandom;
     it stays unqualified and the app shows the flat list.
+
+    UNREACHABLE PROPAGATION (Task 5b): if a source cannot be reached (transport failure after
+    retries), ``_attempt`` returns the ``_UNREACHABLE`` sentinel rather than None. We still try
+    the next source -- a Wikipedia outage should not block a series Fandom can serve -- BUT the
+    sentinel is remembered. The function then raises ``SourceUnreachable`` ONLY when no source
+    produced data AND at least one was unreachable: that is the case where "no fallback data"
+    would be a lie (we don't actually know -- we couldn't reach a source). A series that lands
+    here is reported as unreachable, not unqualified, and can be re-run on its own. When any
+    source DOES return data, unreachable notes are dropped (the series is settled either way).
     """
-    return _attempt("wikipedia", series_title) or _attempt("fandom", series_title)
+    unreachable_seen = False
+    for source_name in ("wikipedia", "fandom"):
+        outcome = _attempt(source_name, series_title)
+        if outcome is _UNREACHABLE:
+            unreachable_seen = True
+            continue
+        if outcome is not None:
+            return outcome
+    if unreachable_seen:
+        raise SourceUnreachable(
+            f"all reachable fallback sources had no data for {series_title!r}; "
+            f"at least one source was unreachable"
+        )
+    return None
 
 
 def build_fallback_record(series_title, existing_record, comick_hid, comick_slug,
@@ -205,6 +262,10 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
                               records. qualified is False; the app shows the flat list.
       - "fallback_qualified"   : a fallback was found AND the gate accepted it -> a qualified
                               record is written with source/sourceUrl provenance. This is the win.
+      - "unreachable"          : a fallback source could not be reached (transport failure after
+                              retries) AND no source produced data -> None, nothing written, but
+                              DISTINCT from "no_fallback_data" so the report lists this series
+                              separately and can re-run it on its own (Task 5b).
 
     ``synopses`` is a {volume_number: blurb} dict for per-volume publisher/fan blurbs (Fandom
     only -- Wikipedia pages carry no synopsis section). It is returned SEPARATELY from the record
@@ -236,7 +297,13 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
     if existing_record is not None and existing_record.get("numberingQuirk") is True:
         return None, "skipped_numbering_quirk", {}
 
-    res = resolve_fallback(series_title)
+    try:
+        res = resolve_fallback(series_title)
+    except SourceUnreachable:
+        # Transport failure on at least one source and no source produced data. Distinct from
+        # "no_fallback_data" (a settled negative) so the report lists this series as unreachable
+        # and it can be re-run on its own. See Task 5b in the plan.
+        return None, "unreachable", {}
     if res is None:
         return None, "no_fallback_data", {}
 
