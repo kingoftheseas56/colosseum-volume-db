@@ -100,6 +100,83 @@ def test_parse_isbn_refs_not_mistaken_for_chapters():
     assert vols[0]["chapterEnd"] == "5"     # not "1"
 
 
+# --- word-prefix bullets and two-column split (Task 4 parser extensions) -------------
+
+# Sakamoto Days: '*Days N:' -- word prefix, colon terminator. The number is WRITTEN as a token;
+# we read it, we do not derive it from list position.
+_SAKAMOTO_V1 = _dedent("""\
+{{Graphic novel list
+|VolumeNumber = 1
+|ChapterList =
+*Days 1: {{Nihongo|"The Legendary Hit Man"|伝説の殺し屋|Densetsu no Koroshiya}}
+*Days 2: {{Nihongo|"Sakamoto Family Rules"|坂本家家訓|Sakamoto Kekakun}}
+*Days 7: {{Nihongo|"Hard-Boiled"|ハードボイルド|Hado Boirudo}}
+}}""")
+
+
+def test_parse_word_prefix_bullets_colon_terminator():
+    # '*Days N:' -- the number follows a word prefix and a colon terminator. Range is first..last.
+    vols = ws.parse_volumes_from_wikitext(_SAKAMOTO_V1)
+    assert vols == [{"number": 1, "chapterStart": "1", "chapterEnd": "7"}]
+
+
+# Battle Angel Alita: two-column split ChapterListCol1 / ChapterListCol2 with '*Fight N ' word
+# prefix and a SPACE terminator (no dot/colon). Col1 holds the first half of the run, col2 the
+# second; bullets concatenate in source order.
+_ALITA_V1 = _dedent("""\
+{{Graphic novel list
+|VolumeNumber=1
+|ChapterListCol1=
+*Fight 1 {{nihongo|"Rusty Angel"|x|y}}
+*Fight 2 {{nihongo|"Fight on Instinct"|x|y}}
+*Fight 3 {{nihongo|"Only Value"|x|y}}
+|ChapterListCol2=
+*Fight 4 {{nihongo|"Resurgents"|x|y}}
+*Fight 5 {{nihongo|"Sanctuary"|x|y}}
+*Fight 6 {{nihongo|"Battle Angel"|x|y}}
+|Summary=
+}}""")
+
+
+def test_parse_two_column_split_concatenates_in_order():
+    # Col1 = ch 1-3, Col2 = ch 4-6; the volume's range is 1..6 spanning both columns.
+    vols = ws.parse_volumes_from_wikitext(_ALITA_V1)
+    assert vols == [{"number": 1, "chapterStart": "1", "chapterEnd": "6"}]
+
+
+def test_parse_word_prefix_space_terminator():
+    # '*Fight 1 {{...}}' -- number followed by a space (no punctuation). The space terminator
+    # branch of _BULLET must catch this or Alita silently yields None.
+    vols = ws.parse_volumes_from_wikitext(_ALITA_V1)
+    assert vols is not None and vols[0]["chapterStart"] == "1"
+
+
+def test_parse_refuses_numbered_list_template():
+    # {{Numbered list|start=N}} and MediaWiki '#' ordered lists are DERIVATION schemas: the
+    # chapter number is list-position + offset, never written as a token. Reading them would
+    # interpolate, which the plan forbids. Such a block must yield None (volume skipped).
+    wt = """{{Graphic novel list
+|VolumeNumber = 1
+|ChapterList =
+{{Numbered list|start=1
+| {{Nihongo|"One"|x|y}}
+| {{Nihongo|"Two"|x|y}}
+}}
+}}"""
+    assert ws.parse_volumes_from_wikitext(wt) is None
+
+
+def test_parse_refuses_hash_ordered_list():
+    # '#' markers: implicit numbering by position. No number is written as a token.
+    wt = """{{Graphic novel list
+|VolumeNumber = 1
+|ChapterList =
+#{{Nihongo4|"First"|x|y}}
+#{{Nihongo4|"Second"|x|y}}
+}}"""
+    assert ws.parse_volumes_from_wikitext(wt) is None
+
+
 # --- NEGATIVE CONTROLS (a check that CAN fail must be shown to fail correctly) --------
 
 def test_parse_no_gnl_blocks_returns_none():
@@ -150,12 +227,41 @@ def test_match_returns_none_when_nothing_matches():
     assert ws._match_page("Totally Unknown Series", ["One Piece", "Naruto"]) is None
 
 
+def test_match_containment_fallback_for_subtitle():
+    # Demon Slayer: page is 'List of Demon Slayer: Kimetsu no Yaiba chapters' -- the want is a
+    # strict substring of the candidate, and the candidate ends in 'chapters'. No exact/norm
+    # equality holds, so the containment tier (added Task 4) must reach it.
+    titles = ["List of Demon Slayer: Kimetsu no Yaiba chapters",
+              "List of Welcome to Demon School! Iruma-kun chapters"]
+    assert ws._match_page("Demon Slayer", titles) == "List of Demon Slayer: Kimetsu no Yaiba chapters"
+
+
+def test_match_containment_requires_chapters_or_volumes_suffix():
+    # Without a '...chapters'/'...volumes' suffix, a substring match is rejected -- 'Hunter'
+    # must not resolve to 'Marine Hunter' (a different series).
+    assert ws._match_page("Hunter", ["Marine Hunter", "The Fire Hunter"]) is None
+
+
+def test_match_containment_prefers_chapters_over_volumes():
+    # When both a '...chapters' and a '...volumes' page contain the want, the chapters page wins
+    # (it carries per-volume ChapterList data; a volumes page often does not, e.g. JoJo).
+    titles = ["List of Foo chapters", "List of Foo volumes"]
+    assert ws._match_page("Foo", titles) == "List of Foo chapters"
+
+
 # --- _normalize_title ----------------------------------------------------------------
 
 def test_normalize_is_ascii_alphanumerics_only():
     assert ws._normalize_title("Vinland Saga!") == "vinlandsaga"
     assert ws._normalize_title("20th Century Boys") == "20thcenturyboys"
     assert ws._normalize_title("JoJo's Bizarre Adventure") == "jojosbizarreadventure"
+
+
+def test_normalize_folds_multiplication_sign_to_x():
+    # Wikipedia uses the typographic U+00D7 in 'Hunter × Hunter'; our request spells it 'x'.
+    # Without the fold they compare unequal (page -> 'hunterhunter', want -> 'hunterxhunter').
+    assert ws._normalize_title("Hunter \u00d7 Hunter") == "hunterxhunter"
+    assert ws._normalize_title("Hunter \u00d7 Hunter") == ws._normalize_title("Hunter x Hunter")
 
 
 # --- LIVE: the proof case ------------------------------------------------------------

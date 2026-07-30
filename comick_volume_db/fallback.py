@@ -191,6 +191,13 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
     Returns (new_record_or_None, action) where action is one of:
       - "skipped_qualified" : existing record is qualified:true -> NEVER touched (the fence).
                               new_record_or_None is None; the existing record stands.
+      - "skipped_numbering_quirk" : existing record carries numberingQuirk:true -> refused before
+                              any fetch. The fallback gate is STRUCTURALLY BLIND to a fractional
+                              chapter origin (see NUMBERING-QUIRK BLINDNESS note below), so a
+                              fallback for such a series can publish ranges that are internally
+                              consistent but mismatched to WeebCentral's real chapter numbers.
+                              Refusing is the conservative, honest call. new_record_or_None is
+                              None; the existing record stands.
       - "no_fallback_data"  : no fallback source had data for this series -> None, nothing written.
       - "fallback_unqualified" : a fallback was found but the gate refused it -> a record IS
                               written (unqualified, with the fallback volumes + provenance so the
@@ -203,9 +210,23 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
     volume shelf for this series. Fallback NEVER overwrites, re-scrapes, or touches such a record
     (plan's HARD SCOPE FENCE: precedence comick > wikipedia > fandom). Only records Comick left
     unqualified -- the gap this module exists to close -- are eligible.
+
+    NUMBERING-QUIRK BLINDNESS (discovered Task 4, 2026-07-30, on Battle Angel Alita / Soul Eater):
+      ``volume_builder.gate``'s numbering-quirk check (check 1) runs ``numbering_is_oddball(chapters)``
+      on the EARLIEST chapter number in the provided rows. The fallback path feeds it
+      ``_chapters_from_volumes`` rows, which are synthesised from the fallback's whole-number
+      volume ranges -- so they are ALWAYS clean integers and the check ALWAYS passes, even when
+      the real series (per Comick) starts at a fractional chapter like 0.01 or 1.5. A fallback
+      record for a numbering-quirk series would therefore claim "volume 1 = chapters 1-6" against
+      a WeebCentral shelf whose chapter 1 is actually served at a different number -- internally
+      consistent but wrong at the join. The fallback gate cannot see this because it never sees
+      Comick's raw rows. So a series Comick flagged numberingQuirk:true is refused at the fence,
+      before any fetch, rather than allowed to publish a gate-passing-but-mismatched record.
     """
     if existing_record is not None and existing_record.get("qualified") is True:
         return None, "skipped_qualified"
+    if existing_record is not None and existing_record.get("numberingQuirk") is True:
+        return None, "skipped_numbering_quirk"
 
     res = resolve_fallback(series_title)
     if res is None:

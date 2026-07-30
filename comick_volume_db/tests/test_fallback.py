@@ -196,6 +196,28 @@ def test_fence_never_overwrites_qualified_record(monkeypatch):
     assert wiki_called == []  # fence short-circuits; fallback never even consulted
 
 
+def test_fence_refuses_numbering_quirk_series(monkeypatch):
+    # NUMBERING-QUIRK BLINDNESS (Task 4): a series whose existing record carries
+    # numberingQuirk:true is refused at the fence, BEFORE any fetch. The fallback gate feeds the
+    # numbering-quirk check its own derived rows, which are always clean integers -- so it cannot
+    # see the real series' fractional chapter origin. A fallback for such a series would publish
+    # ranges that are internally consistent but mismatched to WeebCentral's actual numbering.
+    # Refusing is the honest call; Battle Angel Alita / Soul Eater are the two real cases.
+    existing = {"seriesTitle": "Battle Angel Alita", "qualified": False,
+                "numberingQuirk": True,
+                "gateReason": "numbering quirk (fractional chapter origin)"}
+    # Wikipedia WOULD resolve and the fallback gate WOULD pass (derived rows are clean) -- but the
+    # fence must short-circuit before that happens.
+    wiki_called = []
+    monkeypatch.setattr(fb, "_try_wikipedia",
+                        lambda t: wiki_called.append(t) or (VINLAND_WIKI, "https://en.wikipedia.org/wiki/X"))
+    rec, action = fb.build_fallback_record(
+        "Battle Angel Alita", existing, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action == "skipped_numbering_quirk"
+    assert rec is None
+    assert wiki_called == []  # fence short-circuits; no fetch attempted
+
+
 def test_fence_applies_to_unqualified_record(monkeypatch):
     # An unqualified record (Comick left a gap) -> fallback is attempted and, if it gates clean,
     # a qualified fallback record is written with provenance.

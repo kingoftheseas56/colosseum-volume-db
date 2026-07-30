@@ -27,9 +27,26 @@ via ``continue``), cache the title set, and match the series against it (exact, 
 
 CHAPTERLIST BULLET FORMAT (recon-verified, not assumed): entries are zero-padded bullets like
 ``*001.`` / ``*002.``, sometimes bare ``*210.``, with non-numeric entries mixed in
-(``*Bonus Material.``). The parser strips leading zeros, skips non-numeric bullets, and takes
-the first and last NUMERIC chapter in source order as the volume's range (strings preserved so
-fractional forms survive, matching volume_builder's contract).
+(``*Bonus Material.``). Two written-number shapes are read:
+  - bare number, dot terminator: ``*001.``, ``*210.`` (most series)
+  - word prefix + number, colon/space terminator: ``*Days 1:``, ``*Fight 4 `` (Sakamoto Days,
+    Battle Angel Alita)
+In BOTH shapes the chapter number is written as a token in the wikitext -- we read it, we never
+derive it. The parser strips leading zeros, skips non-numeric bullets, and takes the first and
+last NUMERIC chapter in source order as the volume's range (strings preserved so fractional
+forms survive, matching volume_builder's contract). A two-column ``ChapterListCol1`` /
+``ChapterListCol2`` split is concatenated in source order (col1 = first half of the run, col2 =
+second half).
+
+DERIVATION SCHEMAS ARE REFUSED, NOT PARSED. Some ChapterList fields use MediaWiki ordered-list
+``#`` markers or the nested ``{{Numbered list|start=N}}`` template, where the chapter number is
+the list POSITION plus an offset and is NEVER written as a token (Black Clover, Dandadan,
+Chainsaw Man, Demon Slayer, One-Punch Man). Reading those would mean counting items and adding
+an offset to produce chapter numbers -- that is interpolation, which the plan forbids. These
+series yield None and stay unqualified; that is a correct outcome, not a parser gap to close.
+A page that exists but carries only ISBNs and dates (Tower of God: every ChapterList field
+empty) likewise yields None, and a series whose only list page uses a different template with
+no GNL blocks at all (JoJo's 'List of ... volumes') yields None for the same reason.
 """
 import json
 import pathlib
@@ -55,17 +72,51 @@ _VOLNUM = re.compile(r"\|\s*VolumeNumber\s*=\s*(\d+)")
 # the block body WITHOUT the closing braces, so when this regex runs on an extracted block the
 # "\n}}" terminator is absent -- without \Z the last block's ChapterList would silently match
 # None and drop the volume.
-_CHAPTERLIST = re.compile(r"\|\s*ChapterList\s*=\s*(.*?)(?=\n\s*\||\n\s*\}\}|\Z)", re.S)
-# A chapter bullet: "*001.", "*210.", "*1.". Capture the number, strip leading zeros later.
-# Skips non-numeric bullets like "*Bonus Material." because there is no digit right after the dot.
-_BULLET = re.compile(r"^\s*\*\s*0*(\d+)\.", re.M)
+#
+# Matches the two field-name variants in the corpus: a single ``ChapterList`` (most series) and
+# a two-column ``ChapterListCol1`` / ``ChapterListCol2`` split (Battle Angel Alita, Sakamoto
+# Days). findall returns every match in source order, so a Col1/Col2 block yields two segments
+# whose bullets concatenate into the volume's full chapter run -- col1 holds the first half of
+# the chapters, col2 the second half, in publication order.
+_CHAPTERLIST = re.compile(
+    r"\|\s*(ChapterList(?:Col[12])?)\s*=\s*(.*?)(?=\n\s*\||\n\s*\}\}|\Z)", re.S)
+# A chapter bullet. Two written-number shapes appear in the corpus:
+#   "*001.", "*210.", "*1."            -- bare number, dot terminator (most series)
+#   "*Days 1:", "*Fight 4 "            -- word prefix + number, colon or space terminator
+#                                       (Sakamoto Days, Battle Angel Alita)
+# The number is ALWAYS WRITTEN as a token in both shapes -- we read it, we never derive it
+# by counting list position. The optional non-numeric prefix is tolerated, not required.
+#
+# Skips non-numeric bullets like "*Bonus Material." (no digit at the number slot) and the
+# derivation-only schemas -- MediaWiki "#" ordered lists and {{Numbered list|start=N}} nested
+# templates where the chapter number is the list POSITION plus an offset, never written as a
+# token. Those (Black Clover, Dandadan, Chainsaw Man, Demon Slayer, One-Punch Man) are left
+# unqualified on purpose: reading them would require interpolating chapter numbers, which the
+# plan forbids.
+# The terminator after the captured number is one of: ``.`` / ``:`` / whitespace. ``.`` covers the
+# common ``*001.``; ``:`` covers ``*Days 1:``; whitespace covers ``*Fight 1 {{...}}`` where no
+# punctuation separates the number from the title. A bare ``*1`` at end-of-line (no terminator)
+# is intentionally not matched -- every real bullet in the corpus carries a title after the
+# number, so requiring a terminator is a sound guard against a stray number in prose.
+_BULLET = re.compile(r"^\s*\*(?:\s*[A-Za-z]+\s+)?0*(\d+)(?:[.:]|\s)", re.M)
 
 
 def _normalize_title(title):
     """ASCII-lowercase alphanumerics, for fuzzy title matching across spellings.
     Mirrors comick_client._norm's intent (a-z0-9) without importing it, to keep this module
-    independent of the Comick path."""
-    return "".join(c for c in title.lower() if ("a" <= c <= "z") or ("0" <= c <= "9"))
+    independent of the Comick path.
+
+    One romanisation equivalence is applied before stripping: the Unicode multiplication sign
+    U+00D7 (``\u00d7``) is folded to ASCII ``x``. Wikipedia titles use the typographic ``\u00d7``
+    ("Hunter \u00d7 Hunter", "Yotsuba&!") while Comick, WeebCentral, and our gap_rate sample all
+    spell it ``x``. Without this fold the two never compare equal -- ``\u00d7`` is non-ASCII and
+    gets stripped, so the page normalises to ``hunterhunter`` while the request normalises to
+    ``hunterxhunter``. Folding to ``x`` matches how every other source romanises it and is the
+    only way the Hunter x Hunter list page becomes reachable. This is normalisation parity, not
+    data fabrication: it changes how two spellings of the SAME title compare, never what a title
+    IS."""
+    folded = title.replace("\u00d7", "x")
+    return "".join(c for c in folded.lower() if ("a" <= c <= "z") or ("0" <= c <= "9"))
 
 
 def enumerate_transcluding_pages(max_batches=50):
@@ -103,7 +154,20 @@ def cache_page_list(force_refresh=False):
 def _match_page(series_title, candidate_titles):
     """Find the best Wikipedia page for a series among the transcluding titles.
 
-    Order (deterministic): exact title, then 'List of <title> chapters', then normalised match.
+    Order (deterministic, strictest first):
+      1. exact title
+      2. 'List of <title> chapters'
+      3. normalised equality with the 'List of ... chapters' form
+      4. normalised equality with the bare title
+      5. CONTAINMENT fallback (added Task 4): the normalised series title is a substring of the
+         normalised candidate, AND the candidate ends in 'chapters' or 'volumes'. This reaches
+         pages whose title carries a subtitle or alternate spelling the strict tiers miss:
+           'Demon Slayer' -> 'List of Demon Slayer: Kimetsu no Yaiba chapters'
+           'Hunter x Hunter' -> 'List of Hunter \u00d7 Hunter chapters' (after the \u00d7->x fold)
+         The '...chapters'/'...volumes' suffix gate prevents a short want from matching an
+         unrelated longer title ('Hunter' must not hit 'Marine Hunter'). Containment is
+         intentionally LAST -- it is looser than equality, so a series with a real exact-match
+         page never falls through to a substring match on a different series.
     Returns the page title or None."""
     want_exact = series_title
     want_list = f"List of {series_title} chapters"
@@ -121,6 +185,16 @@ def _match_page(series_title, candidate_titles):
     exact_norm = [t for t in candidate_titles if normed[t] == want_norm]
     if exact_norm:
         return exact_norm[0]
+    # Containment fallback: want is a substring of the candidate AND the candidate is a
+    # chapter/volume list page. Prefer a '...chapters' page over '...volumes' when both contain
+    # the want (a chapters page carries per-volume ChapterList data; a volumes page often does
+    # not, e.g. JoJo's 'List of ... volumes' has zero GNL blocks).
+    suffix_pages = [t for t in candidate_titles
+                    if (t.endswith("chapters") or t.endswith("volumes"))
+                    and want_norm and want_norm in normed[t]]
+    if suffix_pages:
+        chapters_first = [t for t in suffix_pages if t.endswith("chapters")]
+        return (chapters_first or suffix_pages)[0]
     return None
 
 
@@ -157,10 +231,15 @@ def parse_volumes_from_wikitext(wikitext):
         if not vm:
             continue  # a GNL block without a VolumeNumber is not a volume row
         number = int(vm.group(1))
-        clm = _CHAPTERLIST.search(block)
-        if not clm:
+        # _CHAPTERLIST now has two capture groups (field name, content); pull all ChapterList
+        # segments in the block (one for a plain ChapterList, two for a Col1/Col2 split) and
+        # concatenate their bullets in source order to form the volume's chapter run.
+        segments = [content for _field, content in _CHAPTERLIST.findall(block)]
+        if not segments:
             continue  # no ChapterList field -> not usable (volume count without boundaries)
-        chapters = _BULLET.findall(clm.group(1))
+        chapters = []
+        for seg in segments:
+            chapters.extend(_BULLET.findall(seg))
         if not chapters:
             continue  # ChapterList present but no numeric bullets (e.g. only "Bonus Material")
         first, last = chapters[0], chapters[-1]
