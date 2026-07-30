@@ -311,7 +311,32 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
     # The record the app fetches to draw a shelf stays lean; blurbs go to a sibling file the app
     # lazy-loads per volume. Only Fandom volume entries carry a synopsis key (Wikipedia yields
     # plain volume dicts), so split_synopses is a no-op for Wikipedia sources.
-    clean_volumes, synopses = fandom_source.split_synopses(res["volumes"])
+    clean_volumes, inline_synopses = fandom_source.split_synopses(res["volumes"])
+
+    # TASK 6 DECOUPLING (Agent 1 ruled the old behaviour a bug, not a tradeoff): synopses are
+    # fetched from Fandom INDEPENDENTLY of which source won the chapter ranges. Range precedence
+    # (wikipedia > fandom) settles a CONTEST for chapter ranges; Wikipedia carries no synopses at
+    # all, so there is nothing to compete over. Letting the range contest decide whether we ever
+    # looked for a blurb was a category error -- it left a Wikipedia-ranged series (Mushishi) with
+    # zero blurbs even though its Fandom wiki has clean per-volume summaries.
+    #
+    #   - range source == fandom  -> blurbs already in hand via split_synopses; no re-fetch.
+    #   - range source == wikipedia -> fetch Fandom blurbs independently here (the fix).
+    #
+    # Synopses are OPTIONAL and never affect the gate (plan). A synopsis-fetch transport failure
+    # is caught here -> empty synopses, record still ships on its ranges. NOTE the fence
+    # interaction: once a record is qualified:true it is skipped on re-run, so synopses stranded
+    # by an unreachable fetch this pass would not get a second chance through this path. That is
+    # flagged for Agent 1's harvest ruling; for the proof-and-report phase (db/ untouched) it is
+    # documented, not silently collapsed.
+    if res["source"] == "wikipedia":
+        try:
+            fan_syn, _fan_url = fandom_source.fetch_fandom_synopses(series_title)
+            synopses = fan_syn if fan_syn else {}
+        except SourceUnreachable:
+            synopses = {}  # synopsis fetch unreachable -> deferred; record ships on ranges
+    else:
+        synopses = inline_synopses
 
     rec = record.build_record(
         series_title=series_title,

@@ -48,17 +48,24 @@ def synopsis_sibling_path(weebcentral_id):
     return DB_DIR / f"{weebcentral_id}.synopsis.json"
 
 
-def write_synopsis_sibling(weebcentral_id, synopses):
+def write_synopsis_sibling(weebcentral_id, synopses, source="fandom", source_url=None):
     """Write the per-volume synopsis sibling file for a series.
 
-    ``synopses`` is a {volume_number (int): blurb (str)} dict (see
-    ``fandom_source.split_synopses``). The sibling is written ONLY when it is non-empty -- a
-    series with no blurbs gets no file, so absence of the file is a reliable "no blurbs" signal
-    and the app never wastes a fetch.
+    ``synopses`` is a {volume_number (int): blurb (str)} dict. The sibling is written ONLY when
+    it is non-empty -- a series with no blurbs gets no file, so absence of the file is a reliable
+    "no blurbs" signal and the app never wastes a fetch.
 
-    The sibling carries the same provenance discipline as the record: a ``source`` field mirrors
-    the record's source so a consumer knows whether the blurbs are fandom-sourced. It does NOT
-    re-state per-volume chapters or names (those live in the record); it is blurbs-only.
+    PROVENANCE IS OWN, NOT MIRRORED (Task 6). The blurbs come from Fandom INDEPENDENTLY of which
+    source won the chapter ranges -- a Wikipedia-ranged series (Mushishi) still gets Fandom
+    blurbs, and those blurbs carry their own ``source`` / ``sourceUrl`` here. Mirroring the
+    record's source would mis-label Wikipedia-sourced blurbs as "wikipedia" when in fact no
+    synopsis text ever comes from Wikipedia. The default ``source="fandom"`` reflects that all
+    synopses in scope today are Fandom-sourced; a caller with a different blurb source passes it
+    explicitly. ``source_url`` is the Fandom URL the blurbs were read from (optional: pass None
+    when the specific page is unknown).
+
+    The sibling does NOT re-state per-volume chapters or names (those live in the record); it is
+    blurbs-only.
 
     Returns the path written, or None when nothing was written (empty synopses). ``db/`` is NOT
     touched by this function in the current proof-and-report phase -- the caller decides whether
@@ -68,8 +75,11 @@ def write_synopsis_sibling(weebcentral_id, synopses):
         return None
     sibling = {
         "weebcentralId": weebcentral_id,
+        "source": source,
         "synopses": {str(vol): text for vol, text in synopses.items()},
     }
+    if source_url is not None:
+        sibling["sourceUrl"] = source_url
     DB_DIR.mkdir(parents=True, exist_ok=True)
     path = synopsis_sibling_path(weebcentral_id)
     path.write_text(json.dumps(sibling, indent=2, ensure_ascii=False), encoding="utf-8")

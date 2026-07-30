@@ -523,6 +523,126 @@ def fandom_volumes(series_title, max_volumes=200):
     return None
 
 
+def _walk_synopses_via_next_links(host, max_volumes):
+    """Synopsis-only next-link walk -> (synopses, source_url) or (None, None).
+
+    Same page-to-page chain as ``_walk_via_next_links``, but collects ONLY synopses (and names
+    them by walk POSITION, since the synopsis walk does not gate on chapter readability). A
+    volume with no blurb on its page is simply absent from the dict -- it does not terminate
+    the chain, because synopses are independent of chapter data. This is the heart of the
+    decoupling (Task 6): a series whose chapters came from Wikipedia still gets its Fandom
+    blurbs fetched here, independently.
+
+    Returns (None, None) when the wiki does not chain by next/previous links (defers to the
+    category strategy) or when Volume_1 does not exist.
+    """
+    page = "Volume_1"
+    synopses = {}
+    visited = set()
+    number = 0
+    while number < max_volumes:
+        if page in visited:
+            break
+        visited.add(page)
+        if number:  # not the first fetch -> polite gap
+            time.sleep(FETCH_DELAY)
+        # _fetch_wikitext retries internally and raises SourceUnreachable on transport failure.
+        # We do NOT catch it as (None, None) (Task 5b): that would conflate a network stutter
+        # with "no synopsis here." SourceUnreachable propagates to the caller as an unreachable
+        # outcome for the whole synopsis fetch, distinct from "no blurbs."
+        wt = _fetch_wikitext(host, page)
+        if wt is None:
+            break
+        _, nxt, has_nav, _, synopsis = _parse_one_volume(wt)
+        if not has_nav:
+            return None, None  # not link-chained -> defer to category strategy
+        number += 1
+        if synopsis is not None:
+            synopses[number] = synopsis
+        if not nxt:
+            return synopses, f"https://{host}/wiki/Volume_1"
+        page = nxt
+    return None, None
+
+
+def _walk_synopses_via_category(host, series_title, max_volumes):
+    """Synopsis-only category walk -> (synopses, source_url) or (None, None).
+
+    Mirrors ``_enumerate_via_category`` but collects ONLY synopses, keyed by the volume NUMBER
+    from the page title (``Volume N``). A volume page with no blurb is simply absent from the
+    dict. Independent of chapter readability -- the decoupling that lets a Wikipedia-ranged
+    series still gain Fandom blurbs.
+    """
+    for cat in (f"Category:{series_title} Volumes", "Category:Volumes"):
+        # fetch_with_retry retries transport failures and raises SourceUnreachable after the
+        # last attempt -- we do NOT catch it as `continue` (Task 5b): a transport failure is
+        # "unreachable," not "this category has no data." A non-200 or API error is a real
+        # server response, so those still `continue` to the next category spelling.
+        r = fetch_with_retry(f"https://{host}/api.php", params={
+            "action": "query", "list": "categorymembers", "cmtitle": cat,
+            "cmlimit": 500, "format": "json"}, headers=HEADERS, timeout=TIMEOUT)
+        if r.status_code != 200:
+            continue
+        data = r.json()
+        if "error" in data:
+            continue
+        titles = [m["title"] for m in data.get("query", {}).get("categorymembers", [])]
+        numbered = []
+        for t in titles:
+            m = _VOLUME_PAGE.match(t)
+            if m:
+                n = int(m.group(1))
+                if 1 <= n <= max_volumes:
+                    numbered.append((n, t.replace(" ", "_")))
+        if not numbered:
+            continue
+        numbered.sort()
+        synopses = {}
+        for idx, (number, page) in enumerate(numbered):
+            if idx > 0:
+                time.sleep(FETCH_DELAY)
+            # _fetch_wikitext retries and raises SourceUnreachable on transport failure; we do
+            # NOT catch it as (None, None) (Task 5b). A missing page (404) is a real None and is
+            # skipped -- it does not kill the synopsis walk, only that one volume.
+            wt = _fetch_wikitext(host, page)
+            if wt is None:
+                continue  # a missing page does not kill the synopsis walk -- skip it
+            _, _, _, _, synopsis = _parse_one_volume(wt)
+            if synopsis is not None:
+                synopses[number] = synopsis
+        if synopses:
+            return synopses, f"https://{host}/wiki/Volume_1"
+        # category listed pages but none had a blurb -> still a valid "no blurbs" outcome,
+        # not a fall-through to the other category spelling. Return empty.
+        return {}, f"https://{host}/wiki/Volume_1"
+    return None, None
+
+
+def fetch_fandom_synopses(series_title, max_volumes=200):
+    """Fetch per-volume synopses from the series' Fandom wiki, INDEPENDENT of range precedence.
+
+    This is the Task 6 decoupling. Range precedence (comick > wikipedia > fandom) settles a
+    CONTEST between sources for chapter RANGES. Synopses are not a contest -- Wikipedia carries
+    no blurbs at all, so there is nothing to compete over. Letting the range contest decide
+    whether we ever look for a blurb was a category error (Agent 1, ruled a bug): a series
+    whose ranges came from Wikipedia should still get its Fandom blurbs fetched here.
+
+    Returns (synopses, source_url) where synopses is {volume_number (int): blurb (str)}, or
+    (None, None) when the wiki is absent / has no Volume_1 / no blurb was found on any page.
+    An empty-but-present result ({}, url) means the wiki exists but no volume carried a blurb
+    -- a valid "no blurbs" signal, distinct from None (no wiki / not reachable).
+
+    Two strategies, tried in order, mirroring ``fandom_volumes``:
+      A. Next-link walk (Mushishi-style link-chained wikis).
+      B. Category enumeration (One Piece-style category wikis).
+    """
+    host = _host_for(series_title)
+    synopses, url = _walk_synopses_via_next_links(host, max_volumes)
+    if synopses is not None:
+        return synopses, url
+    return _walk_synopses_via_category(host, series_title, max_volumes)
+
+
 def split_synopses(volumes):
     """Strip per-volume ``synopsis`` keys out of a volumes list -> (clean_volumes, synopses).
 

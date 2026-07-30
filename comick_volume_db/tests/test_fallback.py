@@ -300,17 +300,48 @@ def test_synopses_not_inlined_into_record_volumes(monkeypatch):
     assert "volume one" in synopses[1]
 
 
-def test_synopses_empty_for_wikipedia_source(monkeypatch):
-    # Wikipedia volume dicts carry no synopsis key (Wikipedia pages have no summary section).
-    # split_synopses is a no-op: synopses is empty, record volumes are unchanged.
+def test_synopses_decoupled_from_range_precedence_for_wikipedia_source(monkeypatch):
+    # TASK 6 (Agent 1 ruled the old behaviour a bug, not a tradeoff). When Wikipedia WINS the
+    # chapter ranges, synopses are STILL fetched -- independently, from Fandom. The old code let
+    # the range contest decide whether to look for a blurb: since Wikipedia carries no synopses,
+    # a Wikipedia-ranged series got zero blurbs even when its Fandom wiki had clean summaries
+    # (Mushishi was the known-good case). The fix decouples them: ranges from Wikipedia, blurbs
+    # from Fandom, each with its own recorded source.
     wiki_vols = [{"number": 1, "chapterStart": "1", "chapterEnd": "5"}]
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: (list(wiki_vols), "https://en.wikipedia.org/wiki/X"))
+    # Stub the INDEPENDENT Fandom synopsis fetch (no live network here): it returns blurbs even
+    # though Fandom lost the range contest. This is exactly the Mushishi shape.
+    monkeypatch.setattr(fb.fandom_source, "fetch_fandom_synopses",
+                        lambda t, max_volumes=200: ({1: "Fandom blurb for vol 1."},
+                                                    "https://x.fandom.com/wiki/Volume_1"))
     rec, action, synopses = fb.build_fallback_record(
         "Vinland Saga", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "fallback_qualified"
-    assert synopses == {}
+    # The RECORD still says ranges came from Wikipedia (the contest winner) -- untouched.
+    assert rec["source"] == "wikipedia"
     assert rec["volumes"] == wiki_vols
+    # But synopses ARE present, sourced independently from Fandom. This is the bug fix.
+    assert synopses == {1: "Fandom blurb for vol 1."}
+
+
+def test_synopses_fetch_unreachable_for_wikipedia_source_does_not_block_record(monkeypatch):
+    # Task 5b + 6 interaction: if the independent Fandom synopsis fetch is unreachable, the record
+    # STILL ships on its ranges (synopses are optional, never affect the gate). The unreachable
+    # synopsis fetch is caught -> empty synopses, but the record is unaffected. (See the fence
+    # caveat in build_fallback_record: once qualified, a re-run skips it, so synopses stranded by
+    # an unreachable synopsis fetch this pass are flagged for Agent 1's harvest ruling.)
+    wiki_vols = [{"number": 1, "chapterStart": "1", "chapterEnd": "5"}]
+    monkeypatch.setattr(fb, "_try_wikipedia",
+                        lambda t: (list(wiki_vols), "https://en.wikipedia.org/wiki/X"))
+    def _boom(_t, max_volumes=200):
+        raise fb.SourceUnreachable("Fandom synopsis fetch unreachable (forced)")
+    monkeypatch.setattr(fb.fandom_source, "fetch_fandom_synopses", _boom)
+    rec, action, synopses = fb.build_fallback_record(
+        "Vinland Saga", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action == "fallback_qualified"     # record ships on ranges, unaffected
+    assert synopses == {}                     # synopsis fetch failed -> no blurbs this pass
+    assert rec["source"] == "wikipedia"
 
 
 def test_write_synopsis_sibling_only_writes_when_non_empty(tmp_path, monkeypatch):
@@ -327,6 +358,22 @@ def test_write_synopsis_sibling_only_writes_when_non_empty(tmp_path, monkeypatch
     data = json.loads(path.read_text(encoding="utf-8"))
     assert data["weebcentralId"] == "WID2"
     assert data["synopses"] == {"1": "blurb one", "3": "blurb three"}  # keys stringified for JSON
+
+
+def test_write_synopsis_sibling_carries_own_fandom_provenance(tmp_path, monkeypatch):
+    # Task 6: the sibling carries its OWN source, NOT a mirror of the record's source. A
+    # Wikipedia-ranged series (Mushishi) has blurbs that came from Fandom -- labelling them
+    # "wikipedia" would be a category error (no synopsis text ever comes from Wikipedia). The
+    # default source is "fandom"; a non-default caller passes it explicitly.
+    import comick_volume_db.record as rec_mod
+    monkeypatch.setattr(rec_mod, "DB_DIR", tmp_path)
+    path = rec_mod.write_synopsis_sibling("WID3", {1: "blurb"},
+                                          source="fandom",
+                                          source_url="https://mushishi.fandom.com/wiki/Volume_1")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["source"] == "fandom"                      # OWN provenance, not the record's
+    assert data["sourceUrl"] == "https://mushishi.fandom.com/wiki/Volume_1"
+    assert data["synopses"] == {"1": "blurb"}
 
 
 # --- Task 5b: network failure vs missing data ------------------------------------------
