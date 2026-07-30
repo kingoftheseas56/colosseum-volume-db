@@ -188,7 +188,7 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
                           weebcentral_id, scraped_at):
     """Apply fallback sourcing to ONE series, respecting the HARD SCOPE FENCE.
 
-    Returns (new_record_or_None, action) where action is one of:
+    Returns (new_record_or_None, action, synopses) where action is one of:
       - "skipped_qualified" : existing record is qualified:true -> NEVER touched (the fence).
                               new_record_or_None is None; the existing record stands.
       - "skipped_numbering_quirk" : existing record carries numberingQuirk:true -> refused before
@@ -205,6 +205,14 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
                               records. qualified is False; the app shows the flat list.
       - "fallback_qualified"   : a fallback was found AND the gate accepted it -> a qualified
                               record is written with source/sourceUrl provenance. This is the win.
+
+    ``synopses`` is a {volume_number: blurb} dict for per-volume publisher/fan blurbs (Fandom
+    only -- Wikipedia pages carry no synopsis section). It is returned SEPARATELY from the record
+    so the caller can write the SIBLING file ``db/<id>.synopsis.json`` (see record.write_synopsis_sibling)
+    and keep blurbs OUT of the shelf record the app loads in one shot. Empty dict when the source
+    carried no blurbs (the common case -- Wikipedia, and Fandom wikis with no blurb section like
+    One Piece). Synopses are NEVER inlined into the record's volumes list: split_synopses strips
+    them before build_record, so the gate and the app see the same pre-synopsis volume shape.
 
     The fence: ``existing_record["qualified"] is True`` means Comick already provides a usable
     volume shelf for this series. Fallback NEVER overwrites, re-scrapes, or touches such a record
@@ -224,20 +232,26 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
       before any fetch, rather than allowed to publish a gate-passing-but-mismatched record.
     """
     if existing_record is not None and existing_record.get("qualified") is True:
-        return None, "skipped_qualified"
+        return None, "skipped_qualified", {}
     if existing_record is not None and existing_record.get("numberingQuirk") is True:
-        return None, "skipped_numbering_quirk"
+        return None, "skipped_numbering_quirk", {}
 
     res = resolve_fallback(series_title)
     if res is None:
-        return None, "no_fallback_data"
+        return None, "no_fallback_data", {}
+
+    # Strip per-volume synopses out BEFORE build_record so they never inline into the record.
+    # The record the app fetches to draw a shelf stays lean; blurbs go to a sibling file the app
+    # lazy-loads per volume. Only Fandom volume entries carry a synopsis key (Wikipedia yields
+    # plain volume dicts), so split_synopses is a no-op for Wikipedia sources.
+    clean_volumes, synopses = fandom_source.split_synopses(res["volumes"])
 
     rec = record.build_record(
         series_title=series_title,
         weebcentral_id=weebcentral_id,
         comick_hid=comick_hid,
         comick_slug=comick_slug,
-        volumes=res["volumes"],
+        volumes=clean_volumes,
         oddball=False,
         scraped_at=scraped_at,
         complete=True,
@@ -247,4 +261,4 @@ def build_fallback_record(series_title, existing_record, comick_hid, comick_slug
         source_url=res["source_url"],
     )
     action = "fallback_qualified" if res["qualified"] else "fallback_unqualified"
-    return rec, action
+    return rec, action, synopses

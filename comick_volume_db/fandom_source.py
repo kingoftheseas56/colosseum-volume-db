@@ -174,27 +174,19 @@ _WIKILINK = re.compile(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]")
 _ITALIC = re.compile(r"'{2,}")
 
 
-def _clean_name(value):
-    """Strip wiki markup + citation refs from a volume-title field value -> plain text or None.
+def _strip_markup(value):
+    """Strip wiki markup + citation refs from any field value -> plain text or None.
 
-    Handles the markup observed in the wild: ''italic'' / '''bold''' (My Hero Academia,
-    Jujutsu Kaisen wrap names in italics), [[wikilink|label]] (keep the label), {{Template|arg}}
-    (keep the first positional arg, which for {{Nihongo|en|ja|rom}} is the English form), and
-    <ref>...</ref> citation refs. Returns the cleaned string, or None when nothing readable
-    remains (a value that was ONLY markup, e.g. an empty '' '' or a lone ref).
+    Shared by _clean_name (volume titles) and _clean_synopsis (volume blurbs). Handles the
+    markup observed in the wild: ''italic'' / '''bold''', [[wikilink|label]] (keep the label),
+    {{Template|arg}} (keep the first positional arg), and <ref>...</ref> citation refs.
+    Returns the cleaned string, or None when nothing readable remains.
     """
     if value is None:
         return None
     s = _REF.sub("", value)
-    # {{Nihongo|English|Japanese|Romaji}} -> keep the first POSITIONAL arg ("English"). The
-    # template name (Nihongo) and named args (k=v) are skipped: split on '|', drop a leading
-    # segment that has no '=' (the template name), then take the first segment that also has no
-    # '=' (the first positional arg). Named args like {{Tpl|en=Foo}} keep their '=' and are not
-    # mistaken for positional. Nested braces are not expected in infobox title fields; the
-    # non-greedy [^{}]* handles a flat template call safely.
     def _tpl_first_positional(m):
         parts = m.group(1).split("|")
-        # drop the template name (first segment, no '='), then find the first positional arg
         body = parts[1:] if parts and "=" not in parts[0] else parts
         for p in body:
             if "=" not in p and p.strip():
@@ -205,6 +197,101 @@ def _clean_name(value):
     s = _ITALIC.sub("", s)
     s = s.strip()
     return s or None
+
+
+def _clean_name(value):
+    """Strip wiki markup + citation refs from a volume-title field value -> plain text or None.
+
+    Thin wrapper over _strip_markup (kept as a named entry point because the volume-title and
+    synopsis paths were historically separate, and the name documents intent at the call site).
+    Returns None when nothing readable remains (a value that was ONLY markup, e.g. an empty
+    '' '' or a lone ref).
+    """
+    return _strip_markup(value)
+
+
+# --- per-volume synopsis (additive, optional, never gates) ---------------------------
+
+# A level-2 (==) section heading whose name matches the publisher's-blurb intent. Fandom wikis
+# use several spellings: "Publisher's summary" (Mushishi -- the publisher's own back-cover
+# blurb), "Summary" (Vinland Saga, Tokyo Ghoul -- fan-written synopsis), "Synopsis",
+# "Description". The apostrophe in "Publisher's" may be a curly ' (U+2019) or straight ', so we
+# match case-insensitively on the alphabetic stem and tolerate any apostrophe shape.
+_SYNOPSIS_HEADING = re.compile(
+    r"^==\s*([^=\n]*?(?:publisher'?s summary|summary|synopsis|description)[^=\n]*?)\s*==\s*$",
+    re.M | re.I)
+
+
+def _extract_synopsis_section(wikitext):
+    """Return the raw text body under the first synopsis-like == heading, or None.
+
+    The body runs from the heading's end to the NEXT level-2 (==) heading (or end of page).
+    Level-3 (===) sub-headings within the summary are kept as part of the body -- a publisher's
+    blurb is a single prose block, and a stray === inside it should not truncate the blurb.
+
+    Returns None when no synopsis-like heading is present (the common case -- many wikis carry
+    no blurb at all, e.g. One Piece). That is a valid, gate-irrelevant absence.
+    """
+    m = _SYNOPSIS_HEADING.search(wikitext)
+    if m is None:
+        return None
+    rest = wikitext[m.end():]
+    nxt = re.search(r"^==\s", rest, re.M)  # next level-2 heading
+    return rest[:nxt.start()] if nxt else rest
+
+
+def _clean_synopsis(value):
+    """Strip wiki markup + blockquote/quote markers from a synopsis body -> plain text or None.
+
+    Same markup discipline as _clean_name (wikilinks, refs, templates, italics), PLUS the
+    shapes a blurb carries that a title does not:
+      - a leading blockquote colon (``: "..."`` -- Mushishi wraps the publisher's blurb in a
+        definition-list blockquote; the colon is MediaWiki markup, not prose)
+      - surrounding straight or curly quotes that wrap the whole blurb (Mushishi's blurb is
+        wrapped in a single pair of double quotes; the quotes are not part of the publisher's
+        text)
+      - leading/trailing whitespace per line and collapsed blank lines
+
+    Multi-paragraph blurbs are joined with a single newline. Returns None when nothing readable
+    remains after stripping (a heading whose body was only markup or empty) -- recording nothing
+    rather than garbage.
+    """
+    if value is None:
+        return None
+    s = _strip_markup(value)
+    if s is None:
+        return None
+    # Drop a leading blockquote colon per line (Mushishi's ': "blurb"' shape).
+    lines = []
+    for ln in s.splitlines():
+        ln = ln.strip()
+        if ln.startswith(":"):
+            ln = ln[1:].strip()
+        if ln:
+            lines.append(ln)
+    if not lines:
+        return None
+    body = "\n".join(lines)
+    # Strip ONE pair of surrounding double quotes if the whole blurb is wrapped (curly or
+    # straight). Mushishi's publisher blurb is wrapped in straight quotes; some wikis use curly.
+    body = body.strip()
+    if len(body) >= 2 and body[0] in '“"„' and body[-1] in '”"':
+        # only strip if they are a matched pair (both opening / both closing variants)
+        if (body[0] == body[-1]) or (body[0] == '“' and body[-1] == '”'):
+            body = body[1:-1].strip()
+    return body or None
+
+
+def _parse_synopsis(wikitext):
+    """Extract a cleaned per-volume synopsis from a Volume_N page, or None when absent.
+
+    Reads the body under the first synopsis-like == heading (see _extract_synopsis_section) and
+    cleans it via _clean_synopsis. Additive + optional: a volume with no summary is normal and
+    NEVER affects the gate. Returns None for both 'no heading' and 'heading present but body
+    unreadable' -- a consumer cannot distinguish them and does not need to (both mean 'no blurb').
+    """
+    raw = _extract_synopsis_section(wikitext)
+    return _clean_synopsis(raw)
 
 
 def _parse_volume_name(fields):
@@ -250,7 +337,7 @@ def _next_volume(fields):
 
 
 def _parse_one_volume(wikitext):
-    """Return (parsed, next_page_title, has_nav_field, name) for a single Volume_N page.
+    """Return (parsed, next_page_title, has_nav_field, name, synopsis) for a Volume_N page.
 
     - parsed: (first, last) chapter strings, or None if the page has no usable chapters field.
     - next_page_title: the canonical next-volume page title (e.g. 'Volume_4'), or None.
@@ -260,6 +347,9 @@ def _parse_one_volume(wikitext):
       links; one that uses neither must be enumerated via category.
     - name: the volume's English display-title (e.g. "Romance Dawn"), or None when the page
       carries none. Additive + optional; NEVER affects the gate (a missing name is valid).
+    - synopsis: the volume's publisher/fan blurb (cleaned plain text), or None when the page
+      carries no synopsis section. Additive + optional; NEVER affects the gate. Read from the
+      SAME page already fetched for chapters+name, so it costs zero extra requests.
     """
     fields = list(_split_fields(wikitext))
     chapters_val = None
@@ -271,7 +361,8 @@ def _parse_one_volume(wikitext):
     field_names = {k for k, _ in fields}
     has_nav = any(n in field_names for n in ("next", "previous"))
     name = _parse_volume_name(fields)
-    return parsed, _next_volume(fields), has_nav, name
+    synopsis = _parse_synopsis(wikitext)
+    return parsed, _next_volume(fields), has_nav, name, synopsis
 
 
 def _walk_via_next_links(host, max_volumes):
@@ -300,7 +391,7 @@ def _walk_via_next_links(host, max_volumes):
             return [], False
         if wt is None:
             break  # no such page -> end (or no wiki at all on the first iteration)
-        parsed, nxt, has_nav, name = _parse_one_volume(wt)
+        parsed, nxt, has_nav, name, synopsis = _parse_one_volume(wt)
         if not has_nav:
             # This wiki does not chain by next/previous links. If we already walked some volumes
             # via links this won't fire (has_nav was True on Volume_1 to get here); reaching here
@@ -312,6 +403,8 @@ def _walk_via_next_links(host, max_volumes):
         entry = {"number": len(volumes) + 1, "chapterStart": first, "chapterEnd": last}
         if name is not None:
             entry["name"] = name  # additive + optional; absent when the page carries no title
+        if synopsis is not None:
+            entry["synopsis"] = synopsis  # additive + optional; absent when no blurb exists
         volumes.append(entry)
         if not nxt:
             return volumes, True  # natural termination on a nav-equipped wiki
@@ -371,13 +464,15 @@ def _enumerate_via_category(host, series_title, max_volumes):
                 return None
             if wt is None:
                 return None  # category listed a page that 404s -> inconsistent, refuse
-            parsed, _, _, name = _parse_one_volume(wt)
+            parsed, _, _, name, synopsis = _parse_one_volume(wt)
             if parsed is None:
                 return None  # hole -> refuse, no partial publish
             first, last = parsed
             entry = {"number": number, "chapterStart": first, "chapterEnd": last}
             if name is not None:
                 entry["name"] = name  # additive + optional; absent when the page carries no title
+            if synopsis is not None:
+                entry["synopsis"] = synopsis  # additive + optional; absent when no blurb exists
             volumes.append(entry)
         if volumes:
             return volumes
@@ -418,3 +513,34 @@ def fandom_volumes(series_title, max_volumes=200):
         return enumerated, f"https://{host}/wiki/Volume_1"
 
     return None
+
+
+def split_synopses(volumes):
+    """Strip per-volume ``synopsis`` keys out of a volumes list -> (clean_volumes, synopses).
+
+    Returns (clean_volumes, synopses) where:
+      - clean_volumes: a NEW list with the same entries minus any ``synopsis`` key. The original
+        list is not mutated. Every volume keeps number/chapterStart/chapterEnd and the optional
+        ``name``. This is the list that goes into the main record the app fetches to draw a
+        shelf -- synopses must NOT ride along (a blurb is 500-1500 chars and One Piece has 117
+        volumes; inlining would bloat the shelf record the app loads in one shot).
+      - synopses: a dict {volume_number (int): blurb (str)} for every volume that carried one.
+        Empty dict when no volume had a synopsis (the common case -- patchy coverage, and many
+        wikis carry no blurb section at all, e.g. One Piece). This dict is written to the SIBLING
+        file ``db/<weebcentral-id>.synopsis.json`` by the caller, so blurbs lazy-load only when a
+        volume is opened, never when the shelf is drawn.
+
+    The split is the ONLY correct place to remove ``synopsis``: the key is threaded into volume
+    entries during the walk because that is where the page is already fetched (zero extra
+    requests), but it must not survive into the record. Splitting here keeps the record- and
+    gate-facing volume shape identical to the pre-synopsis era, so the gate and the app see no
+    new field.
+    """
+    clean = []
+    synopses = {}
+    for v in volumes:
+        entry = {k: val for k, val in v.items() if k != "synopsis"}
+        if "synopsis" in v and v["synopsis"] is not None:
+            synopses[v["number"]] = v["synopsis"]
+        clean.append(entry)
+    return clean, synopses

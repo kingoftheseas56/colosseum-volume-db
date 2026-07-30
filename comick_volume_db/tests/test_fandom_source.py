@@ -79,7 +79,7 @@ def test_split_fields_finds_chapters_under_Volume_Box_template():
 def test_split_fields_matches_chapter_singular():
     # JoJo uses 'chapter' (singular). Must be found by the alias set.
     wt = "{{Volume\n| chapter = 1-8\n}}"
-    parsed, _, _, _ = fs._parse_one_volume(wt)
+    parsed, _, _, _, _ = fs._parse_one_volume(wt)
     assert parsed == ("1", "8")
 
 
@@ -88,7 +88,7 @@ def test_split_fields_matches_chapter_singular():
 def test_parse_one_volume_returns_next_link():
     wt = ("{{Volume\n| chapters = 11\u201315\n"
           "| previous = [[Volume 2]]\n| next = [[Volume 4]]\n}}")
-    parsed, nxt, has_nav, _ = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, _, _ = fs._parse_one_volume(wt)
     assert parsed == ("11", "15")
     # Link target normalised to the canonical underscore form (MediaWiki space == underscore).
     assert nxt == "Volume_4"
@@ -97,7 +97,7 @@ def test_parse_one_volume_returns_next_link():
 
 def test_parse_one_volume_no_next_returns_none_next():
     wt = "{{Volume\n| chapters = 1-5\n}}"  # final volume: no next field
-    parsed, nxt, has_nav, _ = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, _, _ = fs._parse_one_volume(wt)
     assert parsed == ("1", "5")
     assert nxt is None
     # No next/previous field anywhere -> this wiki is NOT link-chained.
@@ -107,7 +107,7 @@ def test_parse_one_volume_no_next_returns_none_next():
 def test_parse_one_volume_no_chapters_field_returns_none_parsed():
     # A page that exists but carries no chapters field -> None, not a guess.
     wt = "{{Volume\n| image = x.jpg\n| pages = 200\n}}"
-    parsed, _, _, _ = fs._parse_one_volume(wt)
+    parsed, _, _, _, _ = fs._parse_one_volume(wt)
     assert parsed is None
 
 
@@ -349,14 +349,14 @@ def test_parse_volume_name_returns_none_when_no_title_field():
 
 def test_parse_one_volume_threads_name_when_present():
     wt = "{{Volume Box\n| chapters = 1 - 8\n| title = ROMANCE DAWN\n}}"
-    parsed, nxt, has_nav, name = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, name, _ = fs._parse_one_volume(wt)
     assert parsed == ("1", "8")
     assert name == "ROMANCE DAWN"
 
 
 def test_parse_one_volume_name_none_when_absent():
     wt = "{{Volume\n| chapters = 11-15\n| next = [[Volume 4]]\n}}"  # Mushishi shape: no title
-    parsed, nxt, has_nav, name = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, name, _ = fs._parse_one_volume(wt)
     assert parsed == ("11", "15")
     assert name is None  # no title field -> name absent (valid, gate-irrelevant)
 
@@ -417,3 +417,94 @@ def test_live_mushishi_has_no_volume_names_and_still_qualifies():
     vols, _ = fs.fandom_volumes("Mushishi")
     assert vols is not None
     assert all("name" not in v for v in vols), "Mushishi volumes should carry no name field"
+
+
+# --- per-volume synopsis (additive, optional, never gates) ---------------------------
+
+def test_parse_synopsis_extracts_publisher_summary_blockquote():
+    # Mushishi shape: '== Publisher's summary ==' heading followed by a blockquote (: "blurb").
+    # The blockquote colon and the wrapping double quotes are markup, not prose -- they must be
+    # stripped. The blurb text itself survives intact.
+    wt = ("{{Volume\n| chapters = 1-5\n| next = [[Volume 2]]\n}}\n"
+          "== Publisher's summary ==\n"
+          ': "They live on the shadowy border between the possible and the impossible."\n')
+    syn = fs._parse_synopsis(wt)
+    assert syn == "They live on the shadowy border between the possible and the impossible."
+
+
+def test_parse_synopsis_extracts_summary_plain_prose():
+    # Vinland Saga / Tokyo Ghoul shape: '== Summary ==' heading followed by plain prose (no
+    # blockquote, no wrapping quotes). Wikilinks inside the prose are stripped to their label.
+    wt = ("{{Volume\n| chapters = 1-5\n}}\n"
+          "== Summary ==\n"
+          "[[Askeladd]] and his band of Vikings leave with the treasury's contents.\n")
+    syn = fs._parse_synopsis(wt)
+    assert syn == "Askeladd and his band of Vikings leave with the treasury's contents."
+
+
+def test_parse_synopsis_none_when_no_summary_section():
+    # One Piece shape: no synopsis-like heading anywhere on the page. -> None (gate-irrelevant).
+    wt = ("{{Volume Box\n| chapters = 1-8\n| title = ROMANCE DAWN\n}}\n"
+          "== Cover and Volume Illustration ==\n[[File:x.png]]\n"
+          "== Chapters ==\nfoo\n")
+    assert fs._parse_synopsis(wt) is None
+
+
+def test_parse_synopsis_strips_refs_and_italics():
+    # Same markup discipline as _clean_name: ''italic'', [[wikilink|label]], <ref>...</ref>.
+    wt = ("{{Volume\n| chapters = 1-5\n}}\n"
+          "== Synopsis ==\n"
+          "The ''first volume'' of [[Mushishi (manga)|Mushishi]] was published<ref>X</ref>.\n")
+    syn = fs._parse_synopsis(wt)
+    assert syn == "The first volume of Mushishi was published."
+
+
+def test_parse_synopsis_tolerant_heading_match():
+    # The heading matcher is tolerant of name and apostrophe shape: 'Synopsis', 'Description',
+    # "Publisher's summary", "Publisher's summary" (curly apostrophe) all match.
+    for heading in ("== Synopsis ==", "== Description ==", "== Publisher's summary ==",
+                    "== Publisher\u2019s summary =="):
+        wt = f"{{{{Volume\n| chapters = 1-5\n}}}}\n{heading}\nSome blurb text.\n"
+        assert fs._parse_synopsis(wt) == "Some blurb text.", f"failed on heading: {heading!r}"
+
+
+def test_parse_synopsis_stops_at_next_level2_heading():
+    # The body runs to the NEXT level-2 (==) heading, so a 'Chapters' section after the summary
+    # does not bleed into the blurb. A level-3 (===) sub-heading inside the summary stays part
+    # of the body (a blurb is one prose block).
+    wt = ("{{Volume\n| chapters = 1-5\n}}\n"
+          "== Summary ==\n"
+          "Blurb paragraph one.\n"
+          "=== A sub-section ===\n"
+          "More blurb.\n"
+          "== Chapters ==\n"
+          "chapter list here\n")
+    syn = fs._parse_synopsis(wt)
+    assert "Blurb paragraph one." in syn
+    assert "More blurb." in syn
+    assert "chapter list here" not in syn
+
+
+def test_split_synopses_strips_synopsis_keys_into_separate_dict():
+    # The split point: volumes carry synopsis inline during the walk (zero extra requests), but
+    # split_synopses removes it before the record is built. clean_volumes has NO synopsis key;
+    # synopses is keyed by volume number.
+    volumes = [
+        {"number": 1, "chapterStart": "1", "chapterEnd": "5", "synopsis": "blurb one"},
+        {"number": 2, "chapterStart": "6", "chapterEnd": "10"},  # no synopsis
+        {"number": 3, "chapterStart": "11", "chapterEnd": "15", "synopsis": "blurb three"},
+    ]
+    clean, synopses = fs.split_synopses(volumes)
+    assert all("synopsis" not in v for v in clean), "clean volumes must not carry synopsis"
+    assert [v["number"] for v in clean] == [1, 2, 3]
+    # name and chapter fields survive the split
+    assert clean[0] == {"number": 1, "chapterStart": "1", "chapterEnd": "5"}
+    assert synopses == {1: "blurb one", 3: "blurb three"}
+
+
+def test_split_synopses_empty_when_no_synopses():
+    # Wikipedia-shaped volumes (no synopsis key) -> clean is a copy, synopses is empty.
+    volumes = [{"number": 1, "chapterStart": "1", "chapterEnd": "5"}]
+    clean, synopses = fs.split_synopses(volumes)
+    assert clean == volumes
+    assert synopses == {}

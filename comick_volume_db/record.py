@@ -22,7 +22,58 @@ sources (no looser fallback gate); only the input ``chapters`` differ -- see ``f
 
 These fields are additive: a record without them (every record in db/ today) is still a valid
 record. ``build_record`` keywords them with defaults so no existing caller needs to change.
+
+PER-VOLUME SYNOPSES live in a SIBLING file, not the record (added 2026-07-30 per Hemanth
+Correction 3). A publisher's blurb is 500-1500 chars; One Piece has 117 volumes. Inlining all
+blurbs into the record would bloat the shelf payload the app fetches in one shot just to draw the
+shelf. So synopses are written to ``db/<weebcentral-id>.synopsis.json`` and the app lazy-loads a
+volume's blurb only when that volume is opened. See ``write_synopsis_sibling`` /
+``synopsis_sibling_path`` below.
 """
+
+import json
+import pathlib
+
+HERE = pathlib.Path(__file__).parent
+DB_DIR = HERE.parent / "db"
+
+
+def synopsis_sibling_path(weebcentral_id):
+    """The sibling-file path for a series' per-volume synopses: ``db/<id>.synopsis.json``.
+
+    Sits next to the record ``db/<id>.json`` so a reader fetching one can find the other by a
+    fixed name transform. The sibling ONLY exists when at least one volume carried a synopsis;
+    a series with no blurbs (the common case) has no sibling file at all.
+    """
+    return DB_DIR / f"{weebcentral_id}.synopsis.json"
+
+
+def write_synopsis_sibling(weebcentral_id, synopses):
+    """Write the per-volume synopsis sibling file for a series.
+
+    ``synopses`` is a {volume_number (int): blurb (str)} dict (see
+    ``fandom_source.split_synopses``). The sibling is written ONLY when it is non-empty -- a
+    series with no blurbs gets no file, so absence of the file is a reliable "no blurbs" signal
+    and the app never wastes a fetch.
+
+    The sibling carries the same provenance discipline as the record: a ``source`` field mirrors
+    the record's source so a consumer knows whether the blurbs are fandom-sourced. It does NOT
+    re-state per-volume chapters or names (those live in the record); it is blurbs-only.
+
+    Returns the path written, or None when nothing was written (empty synopses). ``db/`` is NOT
+    touched by this function in the current proof-and-report phase -- the caller decides whether
+    to actually persist (see fallback.build_fallback_record).
+    """
+    if not synopses:
+        return None
+    sibling = {
+        "weebcentralId": weebcentral_id,
+        "synopses": {str(vol): text for vol, text in synopses.items()},
+    }
+    DB_DIR.mkdir(parents=True, exist_ok=True)
+    path = synopsis_sibling_path(weebcentral_id)
+    path.write_text(json.dumps(sibling, indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
 
 
 def build_record(series_title, weebcentral_id, comick_hid, comick_slug,

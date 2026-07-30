@@ -189,7 +189,7 @@ def test_fence_never_overwrites_qualified_record(monkeypatch):
     wiki_called = []
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: wiki_called.append(t) or (VINLAND_WIKI, "https://en.wikipedia.org/wiki/X"))
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "Bleach", existing, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "skipped_qualified"
     assert rec is None
@@ -211,7 +211,7 @@ def test_fence_refuses_numbering_quirk_series(monkeypatch):
     wiki_called = []
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: wiki_called.append(t) or (VINLAND_WIKI, "https://en.wikipedia.org/wiki/X"))
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "Battle Angel Alita", existing, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "skipped_numbering_quirk"
     assert rec is None
@@ -225,7 +225,7 @@ def test_fence_applies_to_unqualified_record(monkeypatch):
                 "gateReason": "9 chapter(s) in no volume (first: 210)"}
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: (list(VINLAND_WIKI), "https://en.wikipedia.org/wiki/List_of_Vinland_Saga_chapters"))
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "Vinland Saga", existing, "xui1JrAT", "Vinland-Saga",
         "01J76XY7FQY59WRK2YWX5T4E5N", "2026-07-30T00:00:00Z")
     assert action == "fallback_qualified"
@@ -238,7 +238,7 @@ def test_fence_applies_when_no_existing_record(monkeypatch):
     # A series with no prior record at all (first-seen via fallback) -> None existing is eligible.
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: (list(VINLAND_WIKI), "https://en.wikipedia.org/wiki/X"))
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "New Series", None, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "fallback_qualified"
     assert rec["source"] == "wikipedia"
@@ -247,7 +247,7 @@ def test_fence_applies_when_no_existing_record(monkeypatch):
 def test_no_fallback_data_returns_none_action(monkeypatch):
     monkeypatch.setattr(fb, "_try_wikipedia", lambda t: None)
     monkeypatch.setattr(fb, "_try_fandom", lambda t: None)
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "Obscure", None, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "no_fallback_data"
     assert rec is None
@@ -263,12 +263,70 @@ def test_gate_refusal_writes_unqualified_record_with_provenance(monkeypatch):
     ]
     monkeypatch.setattr(fb, "_try_wikipedia",
                         lambda t: (broken, "https://en.wikipedia.org/wiki/X"))
-    rec, action = fb.build_fallback_record(
+    rec, action, _ = fb.build_fallback_record(
         "X", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
     assert action == "fallback_unqualified"
     assert rec["qualified"] is False
     assert rec["source"] == "wikipedia"  # provenance preserved even on refusal
     assert "overlap" in rec["gateReason"]
+
+
+# --- per-volume synopses: separated out, never inlined into the record ---------------
+
+def test_synopses_not_inlined_into_record_volumes(monkeypatch):
+    # The HARD rule (Hemanth Correction 3): synopses must NOT ride along in the record's volumes
+    # list -- a blurb is 500-1500 chars and One Piece has 117 volumes; inlining would bloat the
+    # shelf payload. build_fallback_record returns synopses SEPARATELY; the record's volumes carry
+    # only number/chapterStart/chapterEnd (+ optional name).
+    fandom_vols_with_synopsis = [
+        {"number": 1, "chapterStart": "1", "chapterEnd": "5", "name": "First",
+         "synopsis": "A long publisher's blurb about volume one." * 20},
+        {"number": 2, "chapterStart": "6", "chapterEnd": "10", "name": "Second",
+         "synopsis": "Another long blurb about volume two." * 20},
+    ]
+    monkeypatch.setattr(fb, "_try_wikipedia", lambda t: None)
+    monkeypatch.setattr(fb, "_try_fandom",
+                        lambda t: (fandom_vols_with_synopsis, "https://x.fandom.com/wiki/Volume_1"))
+    rec, action, synopses = fb.build_fallback_record(
+        "Mushishi", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action == "fallback_qualified"
+    # The record's volumes must NOT carry a synopsis key on ANY entry.
+    assert all("synopsis" not in v for v in rec["volumes"]), \
+        "synopsis leaked into the record volumes -- it must be split out"
+    # name + chapter fields survive the split.
+    assert rec["volumes"][0] == {"number": 1, "chapterStart": "1", "chapterEnd": "5", "name": "First"}
+    # Synopses returned separately, keyed by volume number, for sibling-file writing.
+    assert set(synopses.keys()) == {1, 2}
+    assert "volume one" in synopses[1]
+
+
+def test_synopses_empty_for_wikipedia_source(monkeypatch):
+    # Wikipedia volume dicts carry no synopsis key (Wikipedia pages have no summary section).
+    # split_synopses is a no-op: synopses is empty, record volumes are unchanged.
+    wiki_vols = [{"number": 1, "chapterStart": "1", "chapterEnd": "5"}]
+    monkeypatch.setattr(fb, "_try_wikipedia",
+                        lambda t: (list(wiki_vols), "https://en.wikipedia.org/wiki/X"))
+    rec, action, synopses = fb.build_fallback_record(
+        "Vinland Saga", {"qualified": False}, "hid", "slug", "wid", "2026-07-30T00:00:00Z")
+    assert action == "fallback_qualified"
+    assert synopses == {}
+    assert rec["volumes"] == wiki_vols
+
+
+def test_write_synopsis_sibling_only_writes_when_non_empty(tmp_path, monkeypatch):
+    # The sibling file is written ONLY when at least one volume has a blurb. A series with no
+    # blurbs gets no file -- absence of the file is a reliable "no blurbs" signal.
+    import comick_volume_db.record as rec_mod
+    monkeypatch.setattr(rec_mod, "DB_DIR", tmp_path)
+    # Empty -> no file written, returns None.
+    assert rec_mod.write_synopsis_sibling("WID1", {}) is None
+    assert not (tmp_path / "WID1.synopsis.json").exists()
+    # Non-empty -> file written at db/<id>.synopsis.json.
+    path = rec_mod.write_synopsis_sibling("WID2", {1: "blurb one", 3: "blurb three"})
+    assert path == tmp_path / "WID2.synopsis.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["weebcentralId"] == "WID2"
+    assert data["synopses"] == {"1": "blurb one", "3": "blurb three"}  # keys stringified for JSON
 
 
 
