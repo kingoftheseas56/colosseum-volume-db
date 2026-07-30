@@ -1,0 +1,31 @@
+{
+  "population": "40-series gap_rate sample (29q/11f)",
+  "reachVolume1": 18,
+  "total": 40,
+  "counts": {
+    "no_blurb": 2,
+    "has_blurb": 18,
+    "no_vol1": 20
+  },
+  "hasBlurbVolume1": [
+    "Hunter x Hunter",
+    "Toriko",
+    "Black Clover",
+    "Tokyo Ghoul",
+    "Mushishi",
+    "Fire Punch",
+    "Demon Slayer",
+    "The Promised Neverland",
+    "Rurouni Kenshin",
+    "Slam Dunk",
+    "Claymore",
+    "Deadman Wonderland",
+    "Eyeshield 21",
+    "One-Punch Man",
+    "Chainsaw Man",
+    "Oshi no Ko",
+    "Blue Box",
+    "Dandadan"
+  ],
+  "method": "Volume_1 blurb-presence probe (1 fetch/series); full walk proven ~180s/series"
+}
