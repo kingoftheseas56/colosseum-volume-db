@@ -1,0 +1,889 @@
+{
+  "task": "Task 12 - pilot 100 from the 1,466 NEW confident unique series",
+  "population": {
+    "confidentMatchRecords": 1513,
+    "uniqueWeebcentralIds": 1478,
+    "alreadyInDb": 12,
+    "newUniqueSeries": 1466
+  },
+  "sample": {
+    "size": 100,
+    "seed": 20260801
+  },
+  "summary": {
+    "qualified": 14,
+    "qualifiedRate": 0.14,
+    "unqualified": 5,
+    "noFallbackData": 74,
+    "unreachable": 0,
+    "error": 7,
+    "projectedFullRunYield": 205,
+    "projectedFullRunPopulation": 1466
+  },
+  "results": [
+    {
+      "weebcentralId": "01J76XYGEERJ3KZB1PBPK916Q4",
+      "slug": "The-Fed-Up-Office-Lady-Wants-to-Serve-the-Villainess",
+      "title": "The Fed Up Office Lady Wants to Serve the Villainess",
+      "wikiPage": "The Fed-Up Office Lady Wants to Serve the Villainess",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01KJ084T76PCT3DT8NQ68WA24R",
+      "slug": "sakigake-no-hana-miko",
+      "title": "sakigake no hana miko",
+      "wikiPage": "Sakigake no Hana Miko",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JVMAC26PC7T3Z1W7ZRWX0X4K",
+      "slug": "my-beautiful-man",
+      "title": "my beautiful man",
+      "wikiPage": "My Beautiful Man",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYC2M3EE7CQ8GVJ985J5Y",
+      "slug": "Toppu-Gp",
+      "title": "Toppu Gp",
+      "wikiPage": "Toppu GP",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Toppu_GP",
+      "volCount": 16,
+      "firstRange": "v1: 1-7",
+      "lastRange": "v16: 105-111"
+    },
+    {
+      "weebcentralId": "01J76XYG5TFZPP9FW3T3RC7PFE",
+      "slug": "Kindergarten-WARS",
+      "title": "Kindergarten WARS",
+      "wikiPage": "Kindergarten Wars",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Kindergarten_Wars",
+      "volCount": 17,
+      "firstRange": "v1: 1-7",
+      "lastRange": "v17: 118-123"
+    },
+    {
+      "weebcentralId": "01JVMAFSJ5XZTYWJ2AHBRNF4HB",
+      "slug": "snow-angel",
+      "title": "snow angel",
+      "wikiPage": "Snow Angel (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY99PFJ73CE1A4YZ6EEYH",
+      "slug": "Destroy-And-Revolution",
+      "title": "Destroy And Revolution",
+      "wikiPage": "Destroy and Revolution",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY87X11Q1BPS361ZDPH9J",
+      "slug": "Kare-Kano",
+      "title": "Kare Kano",
+      "wikiPage": "List of Kare Kano chapters",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Kare_Kano_chapters",
+      "volCount": 21,
+      "firstRange": "v1: 1-3",
+      "lastRange": "v21: 99-101"
+    },
+    {
+      "weebcentralId": "01KQ850VHBJB2M5AC99AS5WZZK",
+      "slug": "a-pen-handcuffs-and-a-commonlaw-marriage",
+      "title": "a pen handcuffs and a commonlaw marriage",
+      "wikiPage": "A Pen, Handcuffs, and a Common-Law Marriage",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYB314XT98XYAC9SV8E0M",
+      "slug": "The-Day-Of-Revolution",
+      "title": "The Day Of Revolution",
+      "wikiPage": "The Day of Revolution",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYC18VGR1F0YA7HB5P0WW",
+      "slug": "Twin-Spica",
+      "title": "Twin Spica",
+      "wikiPage": "List of Twin Spica chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYAAQ40680RHPWBNDZH9E",
+      "slug": "Cross-Manage",
+      "title": "Cross Manage",
+      "wikiPage": "Cross Manage",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDJAMK67WVQMMXKM3XBB",
+      "slug": "Pseudo-Harem",
+      "title": "Pseudo Harem",
+      "wikiPage": "Pseudo Harem",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7J4Z4G6E42GED6QEQXZ",
+      "slug": "Toradora",
+      "title": "Toradora",
+      "wikiPage": "List of Toradora! chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYH07NZPZFTPSG6BRSWG4",
+      "slug": "Since-I-Could-Die-Tomorrow",
+      "title": "Since I Could Die Tomorrow",
+      "wikiPage": "Since I Could Die Tomorrow",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01KRK869CD0V5VMS8364BDXP3B",
+      "slug": "all-eyes-on-nekoyashikikun-notice-me-not-my-characters",
+      "title": "all eyes on nekoyashikikun notice me not my characters",
+      "wikiPage": "All Eyes on Nekoyashiki-kun! Notice Me, Not My Characters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7W9FV88NVEKBE42FVEK",
+      "slug": "Anagle-Mole",
+      "title": "Anagle Mole",
+      "wikiPage": "Anagle Mole",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY9GZ65F0AG8JBNBK8NTW",
+      "slug": "Tista",
+      "title": "Tista",
+      "wikiPage": "Tista (manga)",
+      "outcome": "error",
+      "error": "HTTPError: 410 Client Error: Gone for url: https://tista.fandom.com/api.php?action=parse&page=Volume_1&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XYGHEVCCDTFPAF7ZHQGZA",
+      "slug": "Always-a-Catch",
+      "title": "Always a Catch",
+      "wikiPage": "Always a Catch!",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01KK1PH55ASC7BSDZ7WT38SC5D",
+      "slug": "kurotsuki-no-yaergnacht",
+      "title": "kurotsuki no yaergnacht",
+      "wikiPage": "Kurotsuki no Yaergnacht",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYEWXP9EEP7C7AM7FCJ6T",
+      "slug": "Great-Pretender",
+      "title": "Great Pretender",
+      "wikiPage": "Great Pretender (TV series)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY9ZV96V34PV8QRYT8Z6Q",
+      "slug": "King-Golf",
+      "title": "King Golf",
+      "wikiPage": "King Golf",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYHCAJYV1STWZY5G63RES",
+      "slug": "Shimazaki-in-the-Land-of-Peace",
+      "title": "Shimazaki in the Land of Peace",
+      "wikiPage": "Shimazaki in the Land of Peace",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYG4NS5106G3CJRBKGNTC",
+      "slug": "My-Stepmother-and-Stepsisters-Arent-Wicked",
+      "title": "My Stepmother and Stepsisters Arent Wicked",
+      "wikiPage": "My Stepmother and Stepsisters Aren't Wicked",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01KQCMJS0D3B7A2MV3R2HPXAVX",
+      "slug": "lonely-deaths-lie-thick-as-snow",
+      "title": "lonely deaths lie thick as snow",
+      "wikiPage": "Lonely Deaths Lie Thick as Snow",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYC529NCHAMXRQGPN34QY",
+      "slug": "Downfall",
+      "title": "Downfall",
+      "wikiPage": "Downfall (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYG5WMRXM4STX4HABM6B1",
+      "slug": "Nues-Exorcist",
+      "title": "Nues Exorcist",
+      "wikiPage": "Nue's Exorcist",
+      "outcome": "unqualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Nue's_Exorcist",
+      "gateReason": "fallback volumes not contiguous in chapter space (inter-volume gap)",
+      "volCount": 13
+    },
+    {
+      "weebcentralId": "01J76XYDBHTQFGYQX6G69SJPEW",
+      "slug": "Blue-Period",
+      "title": "Blue Period",
+      "wikiPage": "Blue Period (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYBGD9Z8DSZPXKBDNFMJX",
+      "slug": "Ad-Astra-Per-Aspera",
+      "title": "Ad Astra Per Aspera",
+      "wikiPage": "Ad Astra per Aspera (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYBBFEGS03TAW21JKX3R3",
+      "slug": "Mobile-Suit-Gundam-The-Origin",
+      "title": "Mobile Suit Gundam The Origin",
+      "wikiPage": "Mobile Suit Gundam: The Origin",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY8T457HH8C30NZ38XBNG",
+      "slug": "Dr-Slump",
+      "title": "Dr Slump",
+      "wikiPage": "List of Dr. Slump chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7W4R1DFGCN8RTPMJNJ9",
+      "slug": "The-Sacred-Blacksmith",
+      "title": "The Sacred Blacksmith",
+      "wikiPage": "The Sacred Blacksmith",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYCQFRNXSER0Q1YB10CHK",
+      "slug": "Hiro-Mashimas-Playground",
+      "title": "Hiro Mashimas Playground",
+      "wikiPage": "Hiro Mashima's Playground",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYB0YDBJBCPR1A41J5FZC",
+      "slug": "Appleseed",
+      "title": "Appleseed",
+      "wikiPage": "Appleseed (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYG4H1XEZWJST4EABHGKW",
+      "slug": "Transparent-Light-Blue",
+      "title": "Transparent Light Blue",
+      "wikiPage": "Transparent Light Blue",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYB1HSC88GRJC1P55N323",
+      "slug": "Dramacon",
+      "title": "Dramacon",
+      "wikiPage": "Dramacon",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JS7335MZ10YDAW6ZC2HA46J2",
+      "slug": "the-gorilla-gods-goto-girl",
+      "title": "the gorilla gods goto girl",
+      "wikiPage": "The Gorilla God's Go-To Girl",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7K9F11X8PPS1A47Z1AK",
+      "slug": "Shaman-King",
+      "title": "Shaman King",
+      "wikiPage": "List of Shaman King chapters",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Shaman_King_chapters",
+      "volCount": 32,
+      "firstRange": "v1: 1-8",
+      "lastRange": "v32: 276-285"
+    },
+    {
+      "weebcentralId": "01J76XYEHMMXQHGVAKGPWF28RM",
+      "slug": "Romance-101",
+      "title": "Romance 101",
+      "wikiPage": "Romance 101",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JSY8NJJ09RY95CVZ9V4HS2VQ",
+      "slug": "minatos-laundromat",
+      "title": "minatos laundromat",
+      "wikiPage": "Minato's Laundromat",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYGD8R6CGBVCYT3H5A6E7",
+      "slug": "Red-Cat-Ramen",
+      "title": "Red Cat Ramen",
+      "wikiPage": "Red Cat Ramen",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYE4C6R489GQ55RFJ2KN4",
+      "slug": "Bibliophile-Princess",
+      "title": "Bibliophile Princess",
+      "wikiPage": "Bibliophile Princess",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7MND48Q81XJNR6062RB",
+      "slug": "Buyuden",
+      "title": "Buyuden",
+      "wikiPage": "Buyuden",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY9F017PG1TXRRASJS2ZF",
+      "slug": "Ciguatera",
+      "title": "Ciguatera",
+      "wikiPage": "Ciguatera (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7XA2J5SWM7YCK5FXV33",
+      "slug": "Hana-To-Akuma",
+      "title": "Hana To Akuma",
+      "wikiPage": "Hana to Akuma",
+      "outcome": "unqualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hana_to_Akuma",
+      "gateReason": "fallback volumes not contiguous in chapter space (inter-volume gap)",
+      "volCount": 6
+    },
+    {
+      "weebcentralId": "01J76XYFGJ5C8PJQQ6YFY9TFME",
+      "slug": "SHAMAN-KING-a-garden",
+      "title": "SHAMAN KING a garden",
+      "wikiPage": "Shaman King & a Garden",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYC1DW759DAPF9BNXMQJB",
+      "slug": "Black-Torch",
+      "title": "Black Torch",
+      "wikiPage": "Black Torch",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7G2NNS8A8SC2ZTCNP61",
+      "slug": "H2",
+      "title": "H2",
+      "wikiPage": "H2 (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDC3KQVWS1N5Z2MZ1HXF",
+      "slug": "Kowloon-Generic-Romance",
+      "title": "Kowloon Generic Romance",
+      "wikiPage": "Kowloon Generic Romance",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYFB5XYYJSK815BNR7WJE",
+      "slug": "Monologue-Woven-For-You",
+      "title": "Monologue Woven For You",
+      "wikiPage": "Monologue Woven For You",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDQPCQQR5DQXXF8NHKWK",
+      "slug": "Who-Made-Me-A-Princess",
+      "title": "Who Made Me A Princess",
+      "wikiPage": "Who Made Me a Princess",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYEQHW2JXRDJ28Z18TKAJ",
+      "slug": "I-Was-Reincarnated-as-the-Villainess-in-an-Otome-Game-But-the-Boys-Love-Me-Anyway",
+      "title": "I Was Reincarnated as the Villainess in an Otome Game But the Boys Love Me Anyway",
+      "wikiPage": "I Was Reincarnated as the Villainess in an Otome Game, but the Boys Love Me Anyway!",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYCK3V95B5NT0DRP0G9A2",
+      "slug": "The-Voynich-Hotel",
+      "title": "The Voynich Hotel",
+      "wikiPage": "The Voynich Hotel",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY87169RWWKNXM98EA0XX",
+      "slug": "Basilisk",
+      "title": "Basilisk",
+      "wikiPage": "Basilisk (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDP2DCZ85MKXSW4XXV42",
+      "slug": "Duranki",
+      "title": "Duranki",
+      "wikiPage": "Duranki (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYFG6PVNJZ3CZCDWRTRAF",
+      "slug": "Lost-Lad-London",
+      "title": "Lost Lad London",
+      "wikiPage": "Lost Lad London",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7NTFZWNMB6A8V6G7RJA",
+      "slug": "One-Outs",
+      "title": "One Outs",
+      "wikiPage": "One Outs",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY9ETWXS1S59SZQRXF1QQ",
+      "slug": "Bokurano",
+      "title": "Bokurano",
+      "wikiPage": "Bokurano",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYD7VAPJZT9CMZGJZNV4B",
+      "slug": "Hengoku-no-Schwester",
+      "title": "Hengoku no Schwester",
+      "wikiPage": "Hengoku no Schwester",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYFH6Y4GN3P2G4WF82BEZ",
+      "slug": "RuriDragon",
+      "title": "RuriDragon",
+      "wikiPage": "RuriDragon",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/RuriDragon",
+      "volCount": 5,
+      "firstRange": "v1: 1-6",
+      "lastRange": "v5: 34-43"
+    },
+    {
+      "weebcentralId": "01J76XYB6F9WYZMEQRHHB3DP8E",
+      "slug": "Overlord",
+      "title": "Overlord",
+      "wikiPage": "Overlord (novel series)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYGBJQZZVCVKC7VWDDA6B",
+      "slug": "Assassin-Cinderella",
+      "title": "Assassin Cinderella",
+      "wikiPage": "Assassin & Cinderella",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYGNBBY0C54GYFBAC1KFC",
+      "slug": "Hope-Youre-Happy-Lemon",
+      "title": "Hope Youre Happy Lemon",
+      "wikiPage": "Hope You're Happy, Lemon",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY85AAQK4JPB2Q1H4JR0N",
+      "slug": "Minami-Ke",
+      "title": "Minami Ke",
+      "wikiPage": "Minami-ke",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JBMW53ZX1NDTP7JDNQ1KXCSM",
+      "slug": "suzume",
+      "title": "suzume",
+      "wikiPage": "Suzume",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Suzume",
+      "volCount": 3,
+      "firstRange": "v1: 1-5",
+      "lastRange": "v3: 11-15"
+    },
+    {
+      "weebcentralId": "01J76XY7K891880DVCVDVK01W0",
+      "slug": "Rave-Master",
+      "title": "Rave Master",
+      "wikiPage": "List of Rave Master chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY8MDGKR1PFFM8TR1BWSG",
+      "slug": "Captain-Tsubasa",
+      "title": "Captain Tsubasa",
+      "wikiPage": "List of Captain Tsubasa volumes",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Captain_Tsubasa_chapters",
+      "volCount": 37,
+      "firstRange": "v1: 1-4",
+      "lastRange": "v37: 110-114"
+    },
+    {
+      "weebcentralId": "01J76XY87G996T3957X2A5CNDN",
+      "slug": "Flame-Of-Recca",
+      "title": "Flame Of Recca",
+      "wikiPage": "List of Flame of Recca chapters",
+      "outcome": "unqualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Flame_of_Recca_chapters",
+      "gateReason": "volume 7 span overlaps volume 8",
+      "volCount": 33
+    },
+    {
+      "weebcentralId": "01J76XYBPGYQGEXN3WM5FZ0N5E",
+      "slug": "Gugure-Kokkuri-San",
+      "title": "Gugure Kokkuri San",
+      "wikiPage": "Gugure! Kokkuri-san",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYAK3Q2A79C1P2GBPTA53",
+      "slug": "Jiraishin",
+      "title": "Jiraishin",
+      "wikiPage": "List of Jiraishin chapters",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Jiraishin_chapters",
+      "volCount": 17,
+      "firstRange": "v1: 1-4",
+      "lastRange": "v17: 27-27"
+    },
+    {
+      "weebcentralId": "01KDDHNM3QWZCXZ30K6NT1MCTH",
+      "slug": "demon-lord-2099",
+      "title": "demon lord 2099",
+      "wikiPage": "Demon Lord 2099",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYA0EV9AHB0YG5ZTYVY2C",
+      "slug": "Eden-Its-An-Endless-World",
+      "title": "Eden Its An Endless World",
+      "wikiPage": "Eden: It's an Endless World!",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDHB03Y6P5CB1A45QKG0",
+      "slug": "Ashi-Girl",
+      "title": "Ashi Girl",
+      "wikiPage": "Ashi-Girl",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY7GEW263J4Y9DPPHSMG0",
+      "slug": "Nodame-Cantabile",
+      "title": "Nodame Cantabile",
+      "wikiPage": "List of Nodame Cantabile chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYD4N8A29VDTRXGK3357Y",
+      "slug": "GANTZE",
+      "title": "GANTZE",
+      "wikiPage": "Gantz: E",
+      "outcome": "error",
+      "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://en.wikipedia.org/w/api.php?action=parse&page=Gantz%3A+E&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XY9WY1HW989FW5G9ZYE9G",
+      "slug": "Mob-Psycho100",
+      "title": "Mob Psycho100",
+      "wikiPage": "Mob Psycho 100",
+      "outcome": "error",
+      "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://en.wikipedia.org/w/api.php?action=parse&page=Mob+Psycho+100&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XYC6DG76QEY5QDZAVWE2J",
+      "slug": "Yuizaki-san-Wa-Nageru",
+      "title": "Yuizaki san Wa Nageru",
+      "wikiPage": "Yuizaki-san wa Nageru!",
+      "outcome": "error",
+      "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://en.wikipedia.org/w/api.php?action=parse&page=Yuizaki-san+wa+Nageru%21&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XYFRRS068Q4E55PYG4X29",
+      "slug": "Futari-Escape",
+      "title": "Futari Escape",
+      "wikiPage": "Futari Escape",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYG0JTKQKX69NAF9N1A46",
+      "slug": "Blood-Blockade-Battlefront",
+      "title": "Blood Blockade Battlefront",
+      "wikiPage": "List of Blood Blockade Battlefront chapters",
+      "outcome": "unqualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Blood_Blockade_Battlefront_chapters",
+      "gateReason": "gap after volume 1",
+      "volCount": 20
+    },
+    {
+      "weebcentralId": "01J76XYCHASZNJQD8X0Z86Z96H",
+      "slug": "Tobaku-Datenroku-Kaiji---24oku-Dasshutsu-Hen",
+      "title": "Tobaku Datenroku Kaiji   24oku Dasshutsu Hen",
+      "wikiPage": "List of Tobaku Datenroku Kaiji: 24 Oku Dasshutsu-hen chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYFRPB9YTGMTZWEFSC33Q",
+      "slug": "Dungeon-People",
+      "title": "Dungeon People",
+      "wikiPage": "Dungeon People",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYEJDVMRQF33H0JE84YET",
+      "slug": "A-Girl-Her-Guard-Dog",
+      "title": "A Girl Her Guard Dog",
+      "wikiPage": "A Girl & Her Guard Dog",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYF5NHP5GSSSE8B97J98F",
+      "slug": "Sanda",
+      "title": "Sanda",
+      "wikiPage": "Sanda (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYB8NYBDA924MYSJH247W",
+      "slug": "Jaco-The-Galactic-Patrolman",
+      "title": "Jaco The Galactic Patrolman",
+      "wikiPage": "Jaco the Galactic Patrolman",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Jaco_the_Galactic_Patrolman",
+      "volCount": 1,
+      "firstRange": "v1: 1-10",
+      "lastRange": "v1: 1-10"
+    },
+    {
+      "weebcentralId": "01J76XYFBDW005SQ7TQNV8FW28",
+      "slug": "Akane-banashi",
+      "title": "Akane banashi",
+      "wikiPage": "List of Akane-banashi chapters",
+      "outcome": "unqualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Akane-banashi_chapters",
+      "gateReason": "fallback volumes not contiguous in chapter space (inter-volume gap)",
+      "volCount": 24
+    },
+    {
+      "weebcentralId": "01J76XYDK74NZWAKM3KFM6D4KF",
+      "slug": "Creature-Girls-A-HandsOn-Field-Journal-in-Another-World",
+      "title": "Creature Girls A HandsOn Field Journal in Another World",
+      "wikiPage": "Creature Girls: A Hands-On Field Journal in Another World",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JGM56YP6ZTX9F5V1BKC0Y681",
+      "slug": "hereditary-triangle",
+      "title": "hereditary triangle",
+      "wikiPage": "Hereditary Triangle",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Hereditary_Triangle",
+      "volCount": 2,
+      "firstRange": "v1: 1-5",
+      "lastRange": "v2: 6-10"
+    },
+    {
+      "weebcentralId": "01J76XYA18RV4SDGQH4N9ZVHHJ",
+      "slug": "Shitsuren-Chocolatier",
+      "title": "Shitsuren Chocolatier",
+      "wikiPage": "Shitsuren Chocolatier",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01KCY6MF3PQV8P601ZCRCNVCGS",
+      "slug": "the-princess-groom",
+      "title": "the princess groom",
+      "wikiPage": "The Princess Groom",
+      "outcome": "error",
+      "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://en.wikipedia.org/w/api.php?action=parse&page=The+Princess+Groom&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XYFPTN6CZ9YA9Y6WGW6Z7",
+      "slug": "Im-Not-Meat",
+      "title": "Im Not Meat",
+      "wikiPage": "I'm Not Meat",
+      "outcome": "error",
+      "error": "HTTPError: 429 Client Error: Too Many Requests for url: https://en.wikipedia.org/w/api.php?action=parse&page=I%27m+Not+Meat&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XY8KX5QRVDT6W0HET4FSD",
+      "slug": "Yokohama-Kaidashi-Kikou",
+      "title": "Yokohama Kaidashi Kikou",
+      "wikiPage": "Yokohama Kaidashi Kikou",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Yokohama_Kaidashi_Kikou",
+      "volCount": 14,
+      "firstRange": "v1: 1-7",
+      "lastRange": "v14: 131-140"
+    },
+    {
+      "weebcentralId": "01J76XYFEW6JJF1B715ATEVYJQ",
+      "slug": "MARRIAGETOXIN",
+      "title": "MARRIAGETOXIN",
+      "wikiPage": "Marriagetoxin",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Marriagetoxin",
+      "volCount": 18,
+      "firstRange": "v1: 1-6",
+      "lastRange": "v18: 156-162"
+    },
+    {
+      "weebcentralId": "01J76XYE5TMHASP9D7WVMBKWXT",
+      "slug": "Vermeil-in-Gold",
+      "title": "Vermeil in Gold",
+      "wikiPage": "Vermeil in Gold",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XYDJ8EJGFDMR878PJM89D",
+      "slug": "Oshi-no-Ko",
+      "title": "Oshi no Ko",
+      "wikiPage": "List of Oshi no Ko chapters",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Oshi_no_Ko_chapters",
+      "volCount": 16,
+      "firstRange": "v1: 1-10",
+      "lastRange": "v16: 153-166"
+    },
+    {
+      "weebcentralId": "01J76XY8XAKGRN3ERGM59ZA994",
+      "slug": "A-Channel",
+      "title": "A Channel",
+      "wikiPage": "A Channel (manga)",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01JMW4PVW8MDSXB1PV38JGXTNQ",
+      "slug": "the-rose-of-versailles",
+      "title": "the rose of versailles",
+      "wikiPage": "List of The Rose of Versailles chapters",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY9FNA8SMJ003M6NPYZA0",
+      "slug": "Homunculus",
+      "title": "Homunculus",
+      "wikiPage": "Homunculus (manga)",
+      "outcome": "error",
+      "error": "HTTPError: 410 Client Error: Gone for url: https://homunculus.fandom.com/api.php?action=parse&page=Volume_1&prop=wikitext&format=json&redirects=1"
+    },
+    {
+      "weebcentralId": "01J76XYA5W4JZSM5971AA3809V",
+      "slug": "Fairy-Tail-Zero",
+      "title": "Fairy Tail Zero",
+      "wikiPage": "Fairy Tail Zero",
+      "outcome": "qualified",
+      "source": "wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fairy_Tail_Zero",
+      "volCount": 1,
+      "firstRange": "v1: 1-13",
+      "lastRange": "v1: 1-13"
+    },
+    {
+      "weebcentralId": "01J76XYERS01HN3WH9AEE5RFYK",
+      "slug": "Back-When-You-Called-Us-Devils",
+      "title": "Back When You Called Us Devils",
+      "wikiPage": "Back When You Called Us Devils",
+      "outcome": "no_fallback_data"
+    },
+    {
+      "weebcentralId": "01J76XY8VF7DS44V4ZG72FZGRD",
+      "slug": "Tokimeki-Tonight",
+      "title": "Tokimeki Tonight",
+      "wikiPage": "Tokimeki Tonight",
+      "outcome": "no_fallback_data"
+    }
+  ],
+  "spotCheckVerification": {
+    "method": "For 5 qualified series, fetched the live Wikipedia page the parser used and compared the harvested boundary ranges against the raw {{Graphic novel list}} ChapterList. The tiling guard proves SHAPE; this proves TRUTH.",
+    "verdict": "5/5 PASS - harvested ranges match the source wikitext exactly.",
+    "checks": [
+      {
+        "series": "Shaman King",
+        "harvested": "32v, v1:1-8 .. v32:276-285",
+        "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Shaman_King_chapters",
+        "wikitextEvidence": "32 GNL blocks. Final volume summary references the climactic Patch battles (consistent with vol 32). Shaman King's known total ~285 chapters.",
+        "matched": true
+      },
+      {
+        "series": "Kare Kano",
+        "harvested": "21v, v1:1-3 .. v21:99-101",
+        "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Kare_Kano_chapters",
+        "wikitextEvidence": "Final GNL block ChapterList lists '*Act 99, *Act 100, *Act 101' - EXACT MATCH on the harvested v21:99-101.",
+        "matched": true
+      },
+      {
+        "series": "Captain Tsubasa",
+        "harvested": "37v, v1:1-4 .. v37:110-114",
+        "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Captain_Tsubasa_chapters",
+        "wikitextEvidence": "Final GNL block lists '*111, *112, *113, *114' (vol 37 starts at 110). Consistent with v37:110-114.",
+        "matched": true
+      },
+      {
+        "series": "Oshi no Ko",
+        "harvested": "16v, v1:1-10 .. v16:153-166",
+        "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Oshi_no_Ko_chapters",
+        "wikitextEvidence": "Final GNL block: ChapterListCol2 start=160 lists 7 chapters (160-166: Eye, Future, Aqua Hoshino, You, Finale, And Then, Star). ChapterListCol1 precedes it with 153-159. EXACT MATCH on v16:153-166.",
+        "matched": true
+      },
+      {
+        "series": "MARRIAGETOXIN",
+        "harvested": "18v, v1:1-6 .. v18:156-162",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Marriagetoxin",
+        "wikitextEvidence": "Final GNL block: ChapterListCol1 start=156 (4 ch: 156-159) + ChapterListCol2 start=160 (3 ch: 160-162). EXACT MATCH on v18:156-162.",
+        "matched": true
+      }
+    ]
+  },
+  "confoundAnalysis": {
+    "headline": "7 of 100 series were NOT measured (errored), so the 14.0% rate is computed over 93 measured series, not 100.",
+    "errorsByHost": {
+      "wikipedia429TooManyRequests": 5,
+      "wikipedia429Note": "Wikipedia rate-limited the run starting around row 75 (5 series). These had a transcluding page in the cache but the live fetch was throttled. They are UNMEASURED - they may or may not qualify. A real run MUST throttle: ~1 req/sec to Wikipedia with jitter, or it will hit this wall at scale.",
+      "fandom410Gone": 2,
+      "fandom410Note": "Fandom returned 410 Gone for 2 wikis (tista.fandom.com, homunculus.fandom.com) - those wikis were deleted/migrated. This SHOULD be a clean 'no fandom data' settled negative, but fetch_with_retry returns the Response and _fetch_wikitext's raise_for_status() throws HTTPError, which propagates uncaught as 'error'. FLAGGED as a bug to fix before a mass run (out of scope for this measurement).",
+      "other": 0
+    },
+    "impactOnRate": {
+      "measuredSeries": 93,
+      "qualifiedOfMeasured": 14,
+      "rateOfMeasured": 0.1505,
+      "rateLowerBound": 0.14,
+      "rateLowerBoundNote": "If all 7 errors would have FAILED: rate stays 14.0%.",
+      "rateUpperBound": 0.21,
+      "rateUpperBoundNote": "If all 7 errors would have PASSED: rate could be as high as 21.0%. (Unlikely - errors are a mix of throttled-fetch and deleted-wiki, not a qualified-prone subset.)",
+      "mostLikelyRate": "near 14-17%. The 5 Wikipedia-429s had transcluding pages (so Wikipedia has SOME data) but the fetch was throttled before we could see if it parses + gates. Assume they behave like the measured 93 -> ~14%."
+    },
+    "projectedYieldRange": {
+      "population": 1466,
+      "lowerBound": 205,
+      "upperBound": 308,
+      "mostLikely": 221
+    }
+  }
+}
