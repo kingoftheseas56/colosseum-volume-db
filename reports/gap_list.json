@@ -1,0 +1,18 @@
+[
+  {
+    "weebCentralId": "01J76XY7EF75DJNQCV04HTPDZK",
+    "seriesTitle": "Berserk",
+    "reason": "numbering quirk (fractional chapter origin)",
+    "hasRecord": true,
+    "qualified": false,
+    "inScopeForFallback": false
+  },
+  {
+    "weebCentralId": "01J76XY7FQY59WRK2YWX5T4E5N",
+    "seriesTitle": "Vinland Saga",
+    "reason": "9 chapter(s) in no volume (first: 210)",
+    "hasRecord": true,
+    "qualified": false,
+    "inScopeForFallback": true
+  }
+]
