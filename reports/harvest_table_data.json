@@ -1,0 +1,102 @@
+[
+  {
+    "series": "Hunter x Hunter",
+    "action": "fallback_unqualified",
+    "source": "wikipedia",
+    "vols": 10,
+    "first": "311-320",
+    "last": "v39:401-410",
+    "v1n": 30,
+    "vNn": 39,
+    "qualified": false,
+    "gateReason": "first mapped volume is 30, not 0/1"
+  },
+  {
+    "series": "JoJo's Bizarre Adventure",
+    "action": "no_fallback_data"
+  },
+  {
+    "series": "Black Clover",
+    "action": "fallback_unqualified",
+    "source": "wikipedia",
+    "vols": 35,
+    "first": "1-7",
+    "last": "v37:370-380",
+    "v1n": 1,
+    "vNn": 37,
+    "qualified": false,
+    "gateReason": "gap after volume 29"
+  },
+  {
+    "series": "Battle Angel Alita",
+    "action": "skipped_numbering_quirk"
+  },
+  {
+    "series": "Demon Slayer",
+    "action": "fallback_qualified",
+    "source": "wikipedia",
+    "vols": 23,
+    "first": "1-7",
+    "last": "v23:197-205",
+    "v1n": 1,
+    "vNn": 23,
+    "qualified": true,
+    "gateReason": ""
+  },
+  {
+    "series": "Soul Eater",
+    "action": "skipped_numbering_quirk"
+  },
+  {
+    "series": "One-Punch Man",
+    "action": "fallback_qualified",
+    "source": "wikipedia",
+    "vols": 37,
+    "first": "1-8",
+    "last": "v37:189-194",
+    "v1n": 1,
+    "vNn": 37,
+    "qualified": true,
+    "gateReason": ""
+  },
+  {
+    "series": "Chainsaw Man",
+    "action": "fallback_unqualified",
+    "source": "wikipedia",
+    "vols": 24,
+    "first": "1-7",
+    "last": "v24:223-232",
+    "v1n": 1,
+    "vNn": 24,
+    "qualified": false,
+    "gateReason": "fallback volumes not contiguous in chapter space (inter-volume gap)"
+  },
+  {
+    "series": "Sakamoto Days",
+    "action": "fallback_qualified",
+    "source": "wikipedia",
+    "vols": 28,
+    "first": "1-7",
+    "last": "v28:246-255",
+    "v1n": 1,
+    "vNn": 28,
+    "qualified": true,
+    "gateReason": ""
+  },
+  {
+    "series": "Dandadan",
+    "action": "fallback_unqualified",
+    "source": "wikipedia",
+    "vols": 25,
+    "first": "6-14",
+    "last": "v26:220-228",
+    "v1n": 2,
+    "vNn": 26,
+    "qualified": false,
+    "gateReason": "first mapped volume is 2, not 0/1"
+  },
+  {
+    "series": "Tower of God",
+    "action": "no_fallback_data"
+  }
+]
