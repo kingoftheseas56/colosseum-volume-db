@@ -1,0 +1,202 @@
+{
+  "seriesTitle": "One-Punch Man",
+  "comickHid": "WfaSlMP9",
+  "comickSlug": "Onepunch-Man",
+  "weebCentral": {
+    "seriesId": "01J76XY7KT7J224EBK6J816Y1Q"
+  },
+  "volumes": [
+    {
+      "number": 1,
+      "chapterStart": "1",
+      "chapterEnd": "8"
+    },
+    {
+      "number": 2,
+      "chapterStart": "9",
+      "chapterEnd": "15"
+    },
+    {
+      "number": 3,
+      "chapterStart": "16",
+      "chapterEnd": "20"
+    },
+    {
+      "number": 4,
+      "chapterStart": "21",
+      "chapterEnd": "24"
+    },
+    {
+      "number": 5,
+      "chapterStart": "25",
+      "chapterEnd": "29"
+    },
+    {
+      "number": 6,
+      "chapterStart": "30",
+      "chapterEnd": "34"
+    },
+    {
+      "number": 7,
+      "chapterStart": "35",
+      "chapterEnd": "37"
+    },
+    {
+      "number": 8,
+      "chapterStart": "38",
+      "chapterEnd": "40"
+    },
+    {
+      "number": 9,
+      "chapterStart": "41",
+      "chapterEnd": "47"
+    },
+    {
+      "number": 10,
+      "chapterStart": "48",
+      "chapterEnd": "55"
+    },
+    {
+      "number": 11,
+      "chapterStart": "56",
+      "chapterEnd": "61"
+    },
+    {
+      "number": 12,
+      "chapterStart": "62",
+      "chapterEnd": "67"
+    },
+    {
+      "number": 13,
+      "chapterStart": "68",
+      "chapterEnd": "71"
+    },
+    {
+      "number": 14,
+      "chapterStart": "72",
+      "chapterEnd": "75"
+    },
+    {
+      "number": 15,
+      "chapterStart": "76",
+      "chapterEnd": "80"
+    },
+    {
+      "number": 16,
+      "chapterStart": "81",
+      "chapterEnd": "84"
+    },
+    {
+      "number": 17,
+      "chapterStart": "85",
+      "chapterEnd": "87"
+    },
+    {
+      "number": 18,
+      "chapterStart": "88",
+      "chapterEnd": "90"
+    },
+    {
+      "number": 19,
+      "chapterStart": "91",
+      "chapterEnd": "94"
+    },
+    {
+      "number": 20,
+      "chapterStart": "95",
+      "chapterEnd": "96"
+    },
+    {
+      "number": 21,
+      "chapterStart": "97",
+      "chapterEnd": "101"
+    },
+    {
+      "number": 22,
+      "chapterStart": "102",
+      "chapterEnd": "106"
+    },
+    {
+      "number": 23,
+      "chapterStart": "107",
+      "chapterEnd": "112"
+    },
+    {
+      "number": 24,
+      "chapterStart": "113",
+      "chapterEnd": "118"
+    },
+    {
+      "number": 25,
+      "chapterStart": "119",
+      "chapterEnd": "125"
+    },
+    {
+      "number": 26,
+      "chapterStart": "126",
+      "chapterEnd": "131"
+    },
+    {
+      "number": 27,
+      "chapterStart": "132",
+      "chapterEnd": "137"
+    },
+    {
+      "number": 28,
+      "chapterStart": "138",
+      "chapterEnd": "143"
+    },
+    {
+      "number": 29,
+      "chapterStart": "144",
+      "chapterEnd": "150"
+    },
+    {
+      "number": 30,
+      "chapterStart": "151",
+      "chapterEnd": "156"
+    },
+    {
+      "number": 31,
+      "chapterStart": "157",
+      "chapterEnd": "161"
+    },
+    {
+      "number": 32,
+      "chapterStart": "162",
+      "chapterEnd": "167"
+    },
+    {
+      "number": 33,
+      "chapterStart": "168",
+      "chapterEnd": "171"
+    },
+    {
+      "number": 34,
+      "chapterStart": "172",
+      "chapterEnd": "175"
+    },
+    {
+      "number": 35,
+      "chapterStart": "176",
+      "chapterEnd": "181"
+    },
+    {
+      "number": 36,
+      "chapterStart": "182",
+      "chapterEnd": "188"
+    },
+    {
+      "number": 37,
+      "chapterStart": "189",
+      "chapterEnd": "194"
+    }
+  ],
+  "numberingQuirk": false,
+  "complete": true,
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-30T00:00:00Z",
+  "source": "wikipedia",
+  "sourceUrl": "https://en.wikipedia.org/wiki/List_of_One-Punch_Man_chapters"
+}

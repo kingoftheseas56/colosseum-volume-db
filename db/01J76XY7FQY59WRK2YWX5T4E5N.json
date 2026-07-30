@@ -8,18 +8,18 @@
   "volumes": [
     {
       "number": 1,
-      "chapterStart": "0",
-      "chapterEnd": "4"
+      "chapterStart": "1",
+      "chapterEnd": "5"
     },
     {
       "number": 2,
-      "chapterStart": "5",
-      "chapterEnd": "16.5"
+      "chapterStart": "6",
+      "chapterEnd": "16"
     },
     {
       "number": 3,
       "chapterStart": "17",
-      "chapterEnd": "21.5"
+      "chapterEnd": "21"
     },
     {
       "number": 4,
@@ -34,7 +34,7 @@
     {
       "number": 6,
       "chapterStart": "36",
-      "chapterEnd": "42.5"
+      "chapterEnd": "42"
     },
     {
       "number": 7,
@@ -54,7 +54,7 @@
     {
       "number": 10,
       "chapterStart": "65",
-      "chapterEnd": "71.5"
+      "chapterEnd": "71"
     },
     {
       "number": 11,
@@ -148,13 +148,15 @@
     },
     {
       "number": 29,
-      "chapterStart": "219",
+      "chapterStart": "210",
       "chapterEnd": "220"
     }
   ],
   "numberingQuirk": false,
   "complete": true,
-  "qualified": false,
-  "gateReason": "9 chapter(s) in no volume (first: 210)",
-  "scrapedAt": "2026-07-29T20:51:33Z"
+  "qualified": true,
+  "gateReason": "",
+  "scrapedAt": "2026-07-30T00:00:00Z",
+  "source": "wikipedia",
+  "sourceUrl": "https://en.wikipedia.org/wiki/List_of_Vinland_Saga_chapters"
 }
