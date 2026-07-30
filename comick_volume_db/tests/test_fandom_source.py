@@ -79,7 +79,7 @@ def test_split_fields_finds_chapters_under_Volume_Box_template():
 def test_split_fields_matches_chapter_singular():
     # JoJo uses 'chapter' (singular). Must be found by the alias set.
     wt = "{{Volume\n| chapter = 1-8\n}}"
-    parsed, _, _ = fs._parse_one_volume(wt)
+    parsed, _, _, _ = fs._parse_one_volume(wt)
     assert parsed == ("1", "8")
 
 
@@ -88,7 +88,7 @@ def test_split_fields_matches_chapter_singular():
 def test_parse_one_volume_returns_next_link():
     wt = ("{{Volume\n| chapters = 11\u201315\n"
           "| previous = [[Volume 2]]\n| next = [[Volume 4]]\n}}")
-    parsed, nxt, has_nav = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, _ = fs._parse_one_volume(wt)
     assert parsed == ("11", "15")
     # Link target normalised to the canonical underscore form (MediaWiki space == underscore).
     assert nxt == "Volume_4"
@@ -97,7 +97,7 @@ def test_parse_one_volume_returns_next_link():
 
 def test_parse_one_volume_no_next_returns_none_next():
     wt = "{{Volume\n| chapters = 1-5\n}}"  # final volume: no next field
-    parsed, nxt, has_nav = fs._parse_one_volume(wt)
+    parsed, nxt, has_nav, _ = fs._parse_one_volume(wt)
     assert parsed == ("1", "5")
     assert nxt is None
     # No next/previous field anywhere -> this wiki is NOT link-chained.
@@ -107,7 +107,7 @@ def test_parse_one_volume_no_next_returns_none_next():
 def test_parse_one_volume_no_chapters_field_returns_none_parsed():
     # A page that exists but carries no chapters field -> None, not a guess.
     wt = "{{Volume\n| image = x.jpg\n| pages = 200\n}}"
-    parsed, _, _ = fs._parse_one_volume(wt)
+    parsed, _, _, _ = fs._parse_one_volume(wt)
     assert parsed is None
 
 
@@ -281,6 +281,100 @@ def test_slugify_strips_punctuation_and_spaces():
     assert fs._slugify("JoJo's Bizarre Adventure") == "jojosbizarreadventure"
 
 
+# --- volume display-name extraction (additive, optional, never gates) ----------------
+
+def test_clean_name_strips_italic_markup():
+    # My Hero Academia / Jujutsu Kaisen wrap names in ''...'' italic.
+    assert fs._clean_name("''Izuku Midoriya: Origin''") == "Izuku Midoriya: Origin"
+    assert fs._clean_name("'''Bold Title'''") == "Bold Title"
+
+
+def test_clean_name_strips_wikilinks_keeping_label():
+    # [[Chapter Page|Display Label]] -> keep the label.
+    assert fs._clean_name("[[Romance Dawn|Romance Dawn]]") == "Romance Dawn"
+    assert fs._clean_name("[[Some Target]]") == "Some Target"
+
+
+def test_clean_name_strips_template_call_keeping_first_arg():
+    # {{Nihongo|English|Japanese|Romaji}} -> keep the English (first positional) arg.
+    assert fs._clean_name("{{Nihongo|Romance Dawn|x|y}}") == "Romance Dawn"
+
+
+def test_clean_name_strips_ref_citations():
+    assert fs._clean_name("Eternal Rivals<ref>some cite</ref>") == "Eternal Rivals"
+    assert fs._clean_name("Title<ref name=\"vol1\"/>") == "Title"
+
+
+def test_clean_name_returns_none_for_empty_or_markup_only():
+    # A value that was only markup (or empty) yields None -- not a name, not a guess.
+    assert fs._clean_name("") is None
+    assert fs._clean_name("''''") is None  # only quote marks
+    assert fs._clean_name("<ref>x</ref>") is None
+    assert fs._clean_name(None) is None
+
+
+def test_clean_name_passes_through_plain_text():
+    # One Piece's title field is already clean prose.
+    assert fs._clean_name("ROMANCE DAWN - The Dawn of the Adventure") == "ROMANCE DAWN - The Dawn of the Adventure"
+
+
+def test_parse_volume_name_prefers_english_field_order():
+    # One Piece Volume_1 shape: title + ename both present. title is tried first (English-first
+    # order in NAME_FIELD_KEYS) and wins.
+    fields = [("title", "ROMANCE DAWN - The Dawn of the Adventure"),
+              ("ename", "Romance Dawn"),
+              ("jname", "ROMANCE DAWN \u2014\u5192\u967a\u306e\u591c\u660e\u3051\u2014"),
+              ("rname", "''Romansu Don''")]
+    assert fs._parse_volume_name(fields) == "ROMANCE DAWN - The Dawn of the Adventure"
+
+
+def test_parse_volume_name_uses_name_when_no_title_or_ename():
+    # My Hero Academia uses 'name' (no title/ename). Falls through to it.
+    fields = [("name", "''Izuku Midoriya: Origin''")]
+    assert fs._parse_volume_name(fields) == "Izuku Midoriya: Origin"
+
+
+def test_parse_volume_name_ignores_jname_and_rname():
+    # A page carrying ONLY jname/rname (Japanese/romanized) yields None -- we do not guess
+    # which transliteration a reader wants.
+    fields = [("jname", "\u5192\u967a"), ("rname", "''Boken''")]
+    assert fs._parse_volume_name(fields) is None
+
+
+def test_parse_volume_name_returns_none_when_no_title_field():
+    # Mushishi Volume_3: no title/ename/name field at all -> None (tankobon genuinely untitled).
+    fields = [("chapters", "11\u201315"), ("pages", "242"), ("isbn", "978-4-06-314312-6")]
+    assert fs._parse_volume_name(fields) is None
+
+
+def test_parse_one_volume_threads_name_when_present():
+    wt = "{{Volume Box\n| chapters = 1 - 8\n| title = ROMANCE DAWN\n}}"
+    parsed, nxt, has_nav, name = fs._parse_one_volume(wt)
+    assert parsed == ("1", "8")
+    assert name == "ROMANCE DAWN"
+
+
+def test_parse_one_volume_name_none_when_absent():
+    wt = "{{Volume\n| chapters = 11-15\n| next = [[Volume 4]]\n}}"  # Mushishi shape: no title
+    parsed, nxt, has_nav, name = fs._parse_one_volume(wt)
+    assert parsed == ("11", "15")
+    assert name is None  # no title field -> name absent (valid, gate-irrelevant)
+
+
+def test_chain_walk_adds_name_to_each_volume(monkeypatch):
+    # Names thread through the next-link walk: a chain where vol 1 has a title and vol 2 does
+    # not produces entries with name present then absent -- both valid, gate unaffected.
+    pages = {
+        "Volume_1": "{{Volume\n| chapters = 1-5\n| title = First Dawn\n| next = [[Volume 2]]\n}}",
+        "Volume_2": "{{Volume\n| chapters = 6-10\n| previous = [[Volume 1]]\n}}",  # no title
+    }
+    monkeypatch.setattr(fs, "_fetch_wikitext", lambda host, page: pages.get(page))
+    monkeypatch.setattr(fs, "_host_for", lambda title: "x.fandom.com")
+    vols, _ = fs.fandom_volumes("Whatever")
+    assert vols[0]["name"] == "First Dawn"
+    assert "name" not in vols[1]  # absent key, not None -- the additive contract
+
+
 # --- LIVE: the two known-good anchors ------------------------------------------------
 
 @pytest.mark.live
@@ -300,3 +394,26 @@ def test_live_one_piece_vol3_18_to_26():
     v3 = next(v for v in vols if v["number"] == 3)
     assert (v3["chapterStart"], v3["chapterEnd"]) == ("18", "26")
     assert url == "https://onepiece.fandom.com/wiki/Volume_1"
+
+
+@pytest.mark.live
+def test_live_one_piece_vol1_has_name_romance_dawn():
+    # Proof case for NAMES present: One Piece vol 1 = "ROMANCE DAWN - The Dawn of the
+    # Adventure" (the fandom title field). The name is additive on the volume entry.
+    vols, _ = fs.fandom_volumes("One Piece")
+    assert vols is not None
+    v1 = next(v for v in vols if v["number"] == 1)
+    assert "name" in v1
+    # English title field; cleaned of markup. The exact phrasing is the fandom title, which
+    # reads "ROMANCE DAWN - The Dawn of the Adventure".
+    assert "ROMANCE DAWN" in v1["name"]
+
+
+@pytest.mark.live
+def test_live_mushishi_has_no_volume_names_and_still_qualifies():
+    # Proof case for NAMES absent: Mushishi's tankobon genuinely carry no volume titles, so NO
+    # volume entry has a 'name' key. The record still qualifies -- a missing name is valid and
+    # NEVER affects the gate. This is the negative control for the names feature.
+    vols, _ = fs.fandom_volumes("Mushishi")
+    assert vols is not None
+    assert all("name" not in v for v in vols), "Mushishi volumes should carry no name field"

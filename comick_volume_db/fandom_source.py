@@ -52,6 +52,16 @@ FETCH_DELAY = 1.0
 # Field names that hold the chapter range/list, across wikis. Match by NAME, never template.
 CHAPTER_FIELD_KEYS = ("chapters", "chapter", "chapter_list", "chapter list", "contents")
 
+# Field names that hold the volume's DISPLAY TITLE (its prose name, e.g. One Piece vol 1 =
+# "Romance Dawn"). Ordered ENGLISH-FIRST: ``title`` and ``ename`` (English name) are tried
+# before ``name``/``volume_title``, because ``jname``/``rname`` (Japanese/romanized) are
+# deliberately excluded -- keeping them would mean guessing which transliteration a reader
+# wants, and the task said "keep the Japanese/romanized only if you can do it without guessing
+# which is which." A volume with none of these keys has no title (Mushishi, Vinland Saga) --
+# that is normal for tankobon that genuinely carry none, not a failure. A missing ``name`` is
+# valid and NEVER affects the gate.
+NAME_FIELD_KEYS = ("title", "ename", "name", "volume_title")
+
 # A chapter label is a whole number with an optional fractional part. Kept as a STRING so
 # fractional forms (25.02) survive byte-for-byte, matching volume_builder's contract. Chapter
 # numbers are NEVER negative, so no leading sign -- a leading '-' here would misread the ASCII
@@ -152,6 +162,76 @@ def parse_chapters_field(value):
     return labels[0], labels[-1]
 
 
+# --- volume display-name extraction (additive, optional, never gates) ----------------
+
+# Markup shapes stripped from a name value. MediaWiki italic/bold ('' / ''' / ''), wikilinks
+# ([[Target|label]] or [[label]] -> keep label), template calls ({{Nihongo|en|ja|rom}} -> keep
+# first arg), and <ref>...</ref> citation refs (including a self-closing <ref/>). Anything left
+# after stripping is the prose title as a reader would see it.
+_REF = re.compile(r"<ref[^>]*?/>|<ref[^>]*?>.*?</ref>", re.S | re.I)
+_TEMPLATE_CALL = re.compile(r"\{\{([^{}]*)\}\}")
+_WIKILINK = re.compile(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]")
+_ITALIC = re.compile(r"'{2,}")
+
+
+def _clean_name(value):
+    """Strip wiki markup + citation refs from a volume-title field value -> plain text or None.
+
+    Handles the markup observed in the wild: ''italic'' / '''bold''' (My Hero Academia,
+    Jujutsu Kaisen wrap names in italics), [[wikilink|label]] (keep the label), {{Template|arg}}
+    (keep the first positional arg, which for {{Nihongo|en|ja|rom}} is the English form), and
+    <ref>...</ref> citation refs. Returns the cleaned string, or None when nothing readable
+    remains (a value that was ONLY markup, e.g. an empty '' '' or a lone ref).
+    """
+    if value is None:
+        return None
+    s = _REF.sub("", value)
+    # {{Nihongo|English|Japanese|Romaji}} -> keep the first POSITIONAL arg ("English"). The
+    # template name (Nihongo) and named args (k=v) are skipped: split on '|', drop a leading
+    # segment that has no '=' (the template name), then take the first segment that also has no
+    # '=' (the first positional arg). Named args like {{Tpl|en=Foo}} keep their '=' and are not
+    # mistaken for positional. Nested braces are not expected in infobox title fields; the
+    # non-greedy [^{}]* handles a flat template call safely.
+    def _tpl_first_positional(m):
+        parts = m.group(1).split("|")
+        # drop the template name (first segment, no '='), then find the first positional arg
+        body = parts[1:] if parts and "=" not in parts[0] else parts
+        for p in body:
+            if "=" not in p and p.strip():
+                return p.strip()
+        return ""
+    s = _TEMPLATE_CALL.sub(_tpl_first_positional, s)
+    s = _WIKILINK.sub(r"\1", s)
+    s = _ITALIC.sub("", s)
+    s = s.strip()
+    return s or None
+
+
+def _parse_volume_name(fields):
+    """Extract the English volume display-name from parsed fields, or None when absent.
+
+    Tries NAME_FIELD_KEYS in English-preferred order (title, ename, name, volume_title) and
+    returns the FIRST one that is present AND cleans to non-empty. The value is markup-stripped
+    via _clean_name. jname/rname are intentionally not consulted (Japanese/romanized -- the task
+    said to keep them only without guessing, and we cannot tell a reader which they want).
+
+    A volume with no title field, or one that cleans to empty, yields None -- that is a valid,
+    gate-irrelevant absence (Mushishi's tankobon genuinely carry no volume titles).
+    """
+    fmap = {}
+    for k, v in fields:
+        if k not in fmap:  # first occurrence wins, mirroring how infoboxes read top-down
+            fmap[k] = v
+    for key in NAME_FIELD_KEYS:
+        raw = fmap.get(key)
+        if raw is None:
+            continue
+        cleaned = _clean_name(raw)
+        if cleaned:
+            return cleaned
+    return None
+
+
 def _next_volume(fields):
     """Volume page title of the next volume, e.g. 'Volume_4', or None when the chain ends.
 
@@ -170,7 +250,7 @@ def _next_volume(fields):
 
 
 def _parse_one_volume(wikitext):
-    """Return (parsed, next_page_title, has_nav_field) for a single Volume_N page.
+    """Return (parsed, next_page_title, has_nav_field, name) for a single Volume_N page.
 
     - parsed: (first, last) chapter strings, or None if the page has no usable chapters field.
     - next_page_title: the canonical next-volume page title (e.g. 'Volume_4'), or None.
@@ -178,6 +258,8 @@ def _parse_one_volume(wikitext):
       the schema signal that distinguishes link-chaining wikis (Mushishi) from
       category-organized ones (One Piece): a wiki that uses next/previous anywhere chains by
       links; one that uses neither must be enumerated via category.
+    - name: the volume's English display-title (e.g. "Romance Dawn"), or None when the page
+      carries none. Additive + optional; NEVER affects the gate (a missing name is valid).
     """
     fields = list(_split_fields(wikitext))
     chapters_val = None
@@ -188,7 +270,8 @@ def _parse_one_volume(wikitext):
     parsed = parse_chapters_field(chapters_val) if chapters_val is not None else None
     field_names = {k for k, _ in fields}
     has_nav = any(n in field_names for n in ("next", "previous"))
-    return parsed, _next_volume(fields), has_nav
+    name = _parse_volume_name(fields)
+    return parsed, _next_volume(fields), has_nav, name
 
 
 def _walk_via_next_links(host, max_volumes):
@@ -217,7 +300,7 @@ def _walk_via_next_links(host, max_volumes):
             return [], False
         if wt is None:
             break  # no such page -> end (or no wiki at all on the first iteration)
-        parsed, nxt, has_nav = _parse_one_volume(wt)
+        parsed, nxt, has_nav, name = _parse_one_volume(wt)
         if not has_nav:
             # This wiki does not chain by next/previous links. If we already walked some volumes
             # via links this won't fire (has_nav was True on Volume_1 to get here); reaching here
@@ -226,7 +309,10 @@ def _walk_via_next_links(host, max_volumes):
         if parsed is None:
             break  # hole -> incomplete, do not publish
         first, last = parsed
-        volumes.append({"number": len(volumes) + 1, "chapterStart": first, "chapterEnd": last})
+        entry = {"number": len(volumes) + 1, "chapterStart": first, "chapterEnd": last}
+        if name is not None:
+            entry["name"] = name  # additive + optional; absent when the page carries no title
+        volumes.append(entry)
         if not nxt:
             return volumes, True  # natural termination on a nav-equipped wiki
         page = nxt
@@ -285,11 +371,14 @@ def _enumerate_via_category(host, series_title, max_volumes):
                 return None
             if wt is None:
                 return None  # category listed a page that 404s -> inconsistent, refuse
-            parsed, _, _ = _parse_one_volume(wt)
+            parsed, _, _, name = _parse_one_volume(wt)
             if parsed is None:
                 return None  # hole -> refuse, no partial publish
             first, last = parsed
-            volumes.append({"number": number, "chapterStart": first, "chapterEnd": last})
+            entry = {"number": number, "chapterStart": first, "chapterEnd": last}
+            if name is not None:
+                entry["name"] = name  # additive + optional; absent when the page carries no title
+            volumes.append(entry)
         if volumes:
             return volumes
     return None
