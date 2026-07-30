@@ -33,12 +33,21 @@ TRAPS ALREADY PAID FOR (do not rediscover):
 """
 import re
 import string
+import time
 
 import requests
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36"
 HEADERS = {"User-Agent": UA, "Accept": "application/json"}
 TIMEOUT = 30
+
+# Polite inter-fetch delay for sequential page walks. The category path lists then fetches every
+# ``Volume_N`` page one by one (One Piece = ~115 sequential fetches); the next-link walk does the
+# same. Without a gap we hammer a fan-maintained wiki whose operators owe us nothing. The sleep
+# is between fetches only -- never after the last one, which would waste wall-clock to no end.
+# (Added 2026-07-30 per Hemanth: "do not hijack fan-wiki servers. One Piece is 115 sequential
+# fetches; a 1s gap is the minimum politeness a fan-maintained resource is owed.)
+FETCH_DELAY = 1.0
 
 # Field names that hold the chapter range/list, across wikis. Match by NAME, never template.
 CHAPTER_FIELD_KEYS = ("chapters", "chapter", "chapter_list", "chapter list", "contents")
@@ -200,6 +209,8 @@ def _walk_via_next_links(host, max_volumes):
         if page in visited:
             break  # defensive: a cycle should not loop forever
         visited.add(page)
+        if volumes:  # not the first fetch -> polite gap between Volume_N fetches
+            time.sleep(FETCH_DELAY)
         try:
             wt = _fetch_wikitext(host, page)
         except requests.RequestException:
@@ -265,7 +276,9 @@ def _enumerate_via_category(host, series_title, max_volumes):
             continue  # this category had no Volume_N pages -> try the other spelling
         numbered.sort()
         volumes = []
-        for number, page in numbered:
+        for idx, (number, page) in enumerate(numbered):
+            if idx > 0:
+                time.sleep(FETCH_DELAY)  # polite gap between sequential Volume_N fetches
             try:
                 wt = _fetch_wikitext(host, page)
             except requests.RequestException:
