@@ -1,0 +1,3282 @@
+{
+  "measuredAt": "2026-07-30T18:22:41Z",
+  "purpose": "Identity-resolution failure rate of weebcentral_client.resolve() across a popularity-stratified MAL manga sample.",
+  "sampleSource": "C:\\Users\\Suprabha\\Desktop\\Brotherhood\\Colosseum\\data\\mal_catalog.db",
+  "sampleSize": 150,
+  "tierStratification": "5 member tiers x ~30 = 150 (type='Manga' only)",
+  "titleFieldQueried": "title_english || title (matches Colosseum app read shape)",
+  "exclusions": "Excludes 11 seeds + 40 already-sampled (measure_gap_rate SAMPLE).",
+  "matchThreshold": 0.8,
+  "summary": {
+    "resolved": 40,
+    "resolvedPercent": 26.7,
+    "refused_total": 110,
+    "refusedPercent": 73.3,
+    "refused_no_match": 84,
+    "refused_no_matchPercent": 56.0,
+    "refused_no_match_definition": "WeebCentral returned candidates but the best scored < 0.8 -- the threshold / romaji-vs-English question.",
+    "refused_no_result": 26,
+    "refused_no_resultPercent": 17.3,
+    "refused_no_result_definition": "WeebCentral's search returned ZERO candidates for the query -- genuinely absent, or the query needs the romaji title.",
+    "unreachable": 0,
+    "unreachablePercent": 0.0,
+    "resolved_near_floor_contains_wrong_series": "TRUE POSITIVE for the load-bearing role of the 0.8 floor: 'Kanon'->'Kanokon' scored 0.8333 and was ACCEPTED as resolved. Kanon (Key) is NOT Kanokon. The current 0.8 floor already lets at least one wrong-series match through; lowering it would admit more."
+  },
+  "refusalAnalysis": {
+    "scoredRefusals": 84,
+    "obviousCandidateDefinition": "a refused_no_match whose best WeebCentral candidate scored > 0.0 (a real candidate existed, just below threshold -- confirmable by a stronger signal like chapter count or alternate titles; NOT a model judgement).",
+    "nearThreshold_count": 57,
+    "nearThreshold_definition": "best score >= 0.5 (clustered near the 0.8 floor -- a THRESHOLD question, tunable by lowering MATCH_THRESHOLD).",
+    "nearZero_count": 27,
+    "nearZero_definition": "best score < 0.5 (romaji-vs-English territory -- no string comparison solves this; needs alternate-title data).",
+    "scoreHistogram": {
+      "0.0": 1,
+      "0.1": 3,
+      "0.2": 4,
+      "0.3": 5,
+      "0.4": 14,
+      "0.5": 15,
+      "0.6": 26,
+      "0.7": 16
+    },
+    "scoreBands": {
+      "0.0-0.2": 4,
+      "0.2-0.4": 9,
+      "0.4-0.5": 15,
+      "0.5-0.7": 42,
+      "0.7-0.8": 14
+    },
+    "obviousCandidate_definition_RETRACTED": "METRIC RETRACTED. 'best score > 0.0' is NOT an obvious-correct signal -- it only means some string overlap, which includes wrong-series hits (e.g. 'Chicago'->'Chichi-Chichi' 0.42, 'Oouso Swing'->'Ookiku-Furikabutte' 0.30 = Big Windup!). Declaring a candidate 'obvious correct' would require a model/external signal, which is out of scope (no LLM in the data path). The score-band split (near-threshold vs near-zero) is the honest data; per-band eyeball characterization is in the report prose.",
+    "nearThreshold_0.7_to_0.8_eyeball": {
+      "count": 14,
+      "sameSeries_differentName_examples": [
+        "Little Witch Academia -> Little-Witch-Academia-satou-Keisuke (different adaptation manga by a different author)",
+        "Neon Genesis Evangelion: The Shinji Ikari Raising Project -> exact prefix match, different subtitle",
+        "Mobile Suit Gundam 0079 -> Mobile-Suit-Gundam-The-Origin (spinoff/retelling)"
+      ],
+      "wrongSeries_examples": [
+        "Suicide Parabellum -> Parabellum (different manga sharing a word)",
+        "Sakura Irony -> Sakuran (different series, shared stem)",
+        "Sword of the Stranger -> sword-of-the-titans (shared word only)",
+        "Sayonara no Jikan -> Sayonara-Nippon (shared word only)"
+      ],
+      "characterization": "MIXED. Even the highest refusal band is NOT cleanly 'same series, tunable'. Roughly half are same-series/different-name (adaptation variants, spinoffs); the other half are wrong-series sharing a word. Lowering the threshold to catch the first half would ALSO admit the second half -- confirmed by the resolved set: 'Kanon'->'Kanokon' (0.833) is a WRONG-SERIES match the current floor already accepts."
+    }
+  },
+  "perSeries": [
+    {
+      "malId": 132333,
+      "titleRomaji": "Mizuki-senpai no Koi Uranai",
+      "titleEnglish": "Mizuki-senpai's Love Fortune-Telling",
+      "members": 5306,
+      "tier": 1,
+      "queriedTitle": "Mizuki-senpai's Love Fortune-Telling",
+      "outcome": "resolved",
+      "bestSlug": "Mizuki-senpais-Love-FortuneTelling",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Mizuki-senpais-Love-FortuneTelling",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1796,
+      "titleRomaji": "Dawn: Tsumetai Te",
+      "titleEnglish": "",
+      "members": 6242,
+      "tier": 1,
+      "queriedTitle": "Dawn: Tsumetai Te",
+      "outcome": "resolved",
+      "bestSlug": "Dawn-Tsumetai-Te",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Dawn-Tsumetai-Te",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 17541,
+      "titleRomaji": "Shinrei Tantei Yakumo",
+      "titleEnglish": "",
+      "members": 19354,
+      "tier": 1,
+      "queriedTitle": "Shinrei Tantei Yakumo",
+      "outcome": "resolved",
+      "bestSlug": "Shinrei-Tantei-Yakumo",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Shinrei-Tantei-Yakumo",
+          "score": 1.0
+        },
+        {
+          "slug": "Shinrei-Tantei-Yakumo-Akai-Hitomi-Wa-Shitteiru",
+          "score": 0.6441
+        },
+        {
+          "slug": "Shinigami-Tantei-To-Yuurei-Gakuen",
+          "score": 0.625
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 97292,
+      "titleRomaji": "Tejina-senpai",
+      "titleEnglish": "Magical Sempai",
+      "members": 14323,
+      "tier": 1,
+      "queriedTitle": "Magical Sempai",
+      "outcome": "refused_no_match",
+      "bestSlug": "Magicalize",
+      "bestScore": 0.6957,
+      "topCandidates": [
+        {
+          "slug": "Magicalize",
+          "score": 0.6957
+        },
+        {
+          "slug": "magical-karina",
+          "score": 0.6923
+        },
+        {
+          "slug": "Magical-Change",
+          "score": 0.6154
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1341,
+      "titleRomaji": "Charisma Doll",
+      "titleEnglish": "Charisma Doll",
+      "members": 7067,
+      "tier": 1,
+      "queriedTitle": "Charisma Doll",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 6812,
+      "titleRomaji": "Kyou kara Ore wa!!",
+      "titleEnglish": "",
+      "members": 20098,
+      "tier": 1,
+      "queriedTitle": "Kyou kara Ore wa!!",
+      "outcome": "resolved",
+      "bestSlug": "Kyou-Kara-Ore-Wa",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Kyou-Kara-Ore-Wa",
+          "score": 1.0
+        },
+        {
+          "slug": "kyou-kara-ore-wa-loli-no-himo",
+          "score": 0.7222
+        },
+        {
+          "slug": "Kyou-Curry",
+          "score": 0.5455
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 37707,
+      "titleRomaji": "Shigatsu wa Kimi no Uso",
+      "titleEnglish": "Your Lie in April",
+      "members": 77384,
+      "tier": 1,
+      "queriedTitle": "Your Lie in April",
+      "outcome": "refused_no_match",
+      "bestSlug": "Shigatsu-Wa-Kimi-No-Uso",
+      "bestScore": 0.1212,
+      "topCandidates": [
+        {
+          "slug": "Shigatsu-Wa-Kimi-No-Uso",
+          "score": 0.1212
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 66247,
+      "titleRomaji": "Ashizuri Suizokukan",
+      "titleEnglish": "",
+      "members": 5001,
+      "tier": 1,
+      "queriedTitle": "Ashizuri Suizokukan",
+      "outcome": "refused_no_match",
+      "bestSlug": "Magmell-Shinkai-Suizokukan",
+      "bestScore": 0.7143,
+      "topCandidates": [
+        {
+          "slug": "Magmell-Shinkai-Suizokukan",
+          "score": 0.7143
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 90190,
+      "titleRomaji": "Isekai Izakaya \"Nobu\"",
+      "titleEnglish": "Otherworldly Izakaya \"Nobu\"",
+      "members": 6647,
+      "tier": 1,
+      "queriedTitle": "Otherworldly Izakaya \"Nobu\"",
+      "outcome": "refused_no_match",
+      "bestSlug": "Isekai-Izakaya-Nobu",
+      "bestScore": 0.6,
+      "topCandidates": [
+        {
+          "slug": "Isekai-Izakaya-Nobu",
+          "score": 0.6
+        },
+        {
+          "slug": "the-otherworldly-nutritionist",
+          "score": 0.56
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 17596,
+      "titleRomaji": "Film Girl",
+      "titleEnglish": "",
+      "members": 9232,
+      "tier": 1,
+      "queriedTitle": "Film Girl",
+      "outcome": "resolved",
+      "bestSlug": "Film-Girl",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Film-Girl",
+          "score": 1.0
+        },
+        {
+          "slug": "Hell-Girl",
+          "score": 0.625
+        },
+        {
+          "slug": "Ashi-Girl",
+          "score": 0.625
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 70815,
+      "titleRomaji": "Death Note: L FILE No. 15",
+      "titleEnglish": "",
+      "members": 6648,
+      "tier": 1,
+      "queriedTitle": "Death Note: L FILE No. 15",
+      "outcome": "refused_no_match",
+      "bestSlug": "Death-Note-Color",
+      "bestScore": 0.6875,
+      "topCandidates": [
+        {
+          "slug": "Death-Note-Color",
+          "score": 0.6875
+        },
+        {
+          "slug": "Death-Note",
+          "score": 0.6667
+        },
+        {
+          "slug": "Death-Field",
+          "score": 0.5
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 122615,
+      "titleRomaji": "Cool Doji Danshi",
+      "titleEnglish": "Play It Cool, Guys",
+      "members": 6301,
+      "tier": 1,
+      "queriedTitle": "Play It Cool, Guys",
+      "outcome": "resolved",
+      "bestSlug": "Play-It-Cool-Guys",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Play-It-Cool-Guys",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 22519,
+      "titleRomaji": "To LOVE-Ru Darkness",
+      "titleEnglish": "To Love Ru: Darkness",
+      "members": 48188,
+      "tier": 1,
+      "queriedTitle": "To Love Ru: Darkness",
+      "outcome": "resolved",
+      "bestSlug": "To-Love-Ru-Darkness",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "To-Love-Ru-Darkness",
+          "score": 1.0
+        },
+        {
+          "slug": "To-L-O-V-E-Ru-Darkness-Full-Color",
+          "score": 0.7805
+        },
+        {
+          "slug": "To-Love-Ru",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 18619,
+      "titleRomaji": "Tokyo ESP",
+      "titleEnglish": "Tokyo ESP",
+      "members": 19728,
+      "tier": 1,
+      "queriedTitle": "Tokyo ESP",
+      "outcome": "resolved",
+      "bestSlug": "Tokyo-E-S-P",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Tokyo-E-S-P",
+          "score": 1.0
+        },
+        {
+          "slug": "Tokyo-Ravens",
+          "score": 0.7368
+        },
+        {
+          "slug": "Tokyo-D-T-E-D",
+          "score": 0.7059
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 37917,
+      "titleRomaji": "Danganronpa: Kibou no Gakuen to Zetsubou no Koukousei",
+      "titleEnglish": "",
+      "members": 6998,
+      "tier": 1,
+      "queriedTitle": "Danganronpa: Kibou no Gakuen to Zetsubou no Koukousei",
+      "outcome": "refused_no_match",
+      "bestSlug": "Danganronpa-2-Goodbye-Despair",
+      "bestScore": 0.338,
+      "topCandidates": [
+        {
+          "slug": "Danganronpa-2-Goodbye-Despair",
+          "score": 0.338
+        },
+        {
+          "slug": "Danganronpa-2---Ultimate-Luck-And-Hope-And-Despair",
+          "score": 0.3023
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 58659,
+      "titleRomaji": "P to JK",
+      "titleEnglish": "My Boy in Blue",
+      "members": 11388,
+      "tier": 1,
+      "queriedTitle": "My Boy in Blue",
+      "outcome": "refused_no_match",
+      "bestSlug": "My-Boo",
+      "bestScore": 0.5,
+      "topCandidates": [
+        {
+          "slug": "My-Boo",
+          "score": 0.5
+        },
+        {
+          "slug": "Blue-Box",
+          "score": 0.4444
+        },
+        {
+          "slug": "Moekare-Wa-Orenji-iro",
+          "score": 0.2069
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 111404,
+      "titleRomaji": "Saenai Ryman to Yankee Joshikousei",
+      "titleEnglish": "Dull Businessman and Naughty High School Girl",
+      "members": 6572,
+      "tier": 1,
+      "queriedTitle": "Dull Businessman and Naughty High School Girl",
+      "outcome": "refused_no_match",
+      "bestSlug": "He-Is-A-High-School-Girl",
+      "bestScore": 0.5517,
+      "topCandidates": [
+        {
+          "slug": "He-Is-A-High-School-Girl",
+          "score": 0.5517
+        },
+        {
+          "slug": "The-Story-Between-a-Dumb-Prefect-and-a-High-School-Girl",
+          "score": 0.5238
+        },
+        {
+          "slug": "Hige-Wo-Soru-Soshite-Joshikosei-Wo-Hirou",
+          "score": 0.274
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 104064,
+      "titleRomaji": "Little Witch Academia",
+      "titleEnglish": "Little Witch Academia",
+      "members": 6305,
+      "tier": 1,
+      "queriedTitle": "Little Witch Academia",
+      "outcome": "refused_no_match",
+      "bestSlug": "Little-Witch-Academia-satou-Keisuke",
+      "bestScore": 0.76,
+      "topCandidates": [
+        {
+          "slug": "Little-Witch-Academia-satou-Keisuke",
+          "score": 0.76
+        },
+        {
+          "slug": "Little-Witchs-Collier",
+          "score": 0.6842
+        },
+        {
+          "slug": "Little-Little",
+          "score": 0.5806
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 44757,
+      "titleRomaji": "Itou Junji Kyoufu Manga Collection: Ayatsuri Yashiki",
+      "titleEnglish": "",
+      "members": 7565,
+      "tier": 1,
+      "queriedTitle": "Itou Junji Kyoufu Manga Collection: Ayatsuri Yashiki",
+      "outcome": "refused_no_match",
+      "bestSlug": "Tombs-Junji-Ito-Story-Collection",
+      "bestScore": 0.4932,
+      "topCandidates": [
+        {
+          "slug": "Tombs-Junji-Ito-Story-Collection",
+          "score": 0.4932
+        },
+        {
+          "slug": "statues-junji-ito-story-collection",
+          "score": 0.48
+        },
+        {
+          "slug": "moan-junji-ito-story-collection",
+          "score": 0.4722
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 51023,
+      "titleRomaji": "Absolute Duo",
+      "titleEnglish": "Absolute Duo",
+      "members": 8007,
+      "tier": 1,
+      "queriedTitle": "Absolute Duo",
+      "outcome": "resolved",
+      "bestSlug": "Absolute-Duo",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Absolute-Duo",
+          "score": 1.0
+        },
+        {
+          "slug": "absolute-reign",
+          "score": 0.6667
+        },
+        {
+          "slug": "absolute-regression",
+          "score": 0.6207
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 45947,
+      "titleRomaji": "Nukozuke!",
+      "titleEnglish": "",
+      "members": 10490,
+      "tier": 1,
+      "queriedTitle": "Nukozuke!",
+      "outcome": "resolved",
+      "bestSlug": "Nukoduke",
+      "bestScore": 0.875,
+      "topCandidates": [
+        {
+          "slug": "Nukoduke",
+          "score": 0.875
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 24822,
+      "titleRomaji": "Trinity Seven: 7-nin no Mashotsukai",
+      "titleEnglish": "Trinity Seven: The Seven Magicians",
+      "members": 42234,
+      "tier": 1,
+      "queriedTitle": "Trinity Seven: The Seven Magicians",
+      "outcome": "refused_no_match",
+      "bestSlug": "Trinity-Seven-Revision",
+      "bestScore": 0.6122,
+      "topCandidates": [
+        {
+          "slug": "Trinity-Seven-Revision",
+          "score": 0.6122
+        },
+        {
+          "slug": "Trinity-Seven",
+          "score": 0.5854
+        },
+        {
+          "slug": "The-Water-Magician",
+          "score": 0.5333
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 110313,
+      "titleRomaji": "Mujirushi",
+      "titleEnglish": "Mujirushi: The Sign of Dreams",
+      "members": 7307,
+      "tier": 1,
+      "queriedTitle": "Mujirushi: The Sign of Dreams",
+      "outcome": "refused_no_match",
+      "bestSlug": "the-sign-of-abyss",
+      "bestScore": 0.5789,
+      "topCandidates": [
+        {
+          "slug": "the-sign-of-abyss",
+          "score": 0.5789
+        },
+        {
+          "slug": "Mujirushi",
+          "score": 0.5455
+        },
+        {
+          "slug": "The-Tale-of-Genji-Dreams-at-Dawn",
+          "score": 0.44
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1111,
+      "titleRomaji": "Buddha",
+      "titleEnglish": "Buddha",
+      "members": 14557,
+      "tier": 1,
+      "queriedTitle": "Buddha",
+      "outcome": "resolved",
+      "bestSlug": "Buddha",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Buddha",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 96194,
+      "titleRomaji": "Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen Dai 1-bu - Hon ga Nai nara Tsukureba Ii!",
+      "titleEnglish": "Ascendance of a Bookworm: I'll do Anything to Become a Librarian! Part 1 - If There Aren't Any Books, I'll Just Have to Make Some!",
+      "members": 12678,
+      "tier": 1,
+      "queriedTitle": "Ascendance of a Bookworm: I'll do Anything to Become a Librarian! Part 1 - If There Aren't Any Books, I'll Just Have to Make Some!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Honzuki-No-Gekokujou",
+      "bestScore": 0.0862,
+      "topCandidates": [
+        {
+          "slug": "Honzuki-No-Gekokujou",
+          "score": 0.0862
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 3044,
+      "titleRomaji": "Working!!",
+      "titleEnglish": "",
+      "members": 10248,
+      "tier": 1,
+      "queriedTitle": "Working!!",
+      "outcome": "resolved",
+      "bestSlug": "Working",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Working",
+          "score": 1.0
+        },
+        {
+          "slug": "Hataraki-Man",
+          "score": 0.4444
+        },
+        {
+          "slug": "Koe-De-Oshigoto",
+          "score": 0.3
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 91,
+      "titleRomaji": "Marmalade Boy",
+      "titleEnglish": "Marmalade Boy",
+      "members": 17432,
+      "tier": 1,
+      "queriedTitle": "Marmalade Boy",
+      "outcome": "resolved",
+      "bestSlug": "Marmalade-Boy",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Marmalade-Boy",
+          "score": 1.0
+        },
+        {
+          "slug": "Marmalade-Boy-Little",
+          "score": 0.8
+        },
+        {
+          "slug": "Orange-Marmalade",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 3493,
+      "titleRomaji": "Otokomae! Beads Club",
+      "titleEnglish": "",
+      "members": 15539,
+      "tier": 1,
+      "queriedTitle": "Otokomae! Beads Club",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 121282,
+      "titleRomaji": "Koko wa Ore ni Makasete Saki ni Ike to Itte kara 10-nen ga Tattara Densetsu ni Natteita.",
+      "titleEnglish": "I Became a Legend after My 10 Year-Long Last Stand",
+      "members": 9159,
+      "tier": 1,
+      "queriedTitle": "I Became a Legend after My 10 Year-Long Last Stand",
+      "outcome": "refused_no_match",
+      "bestSlug": "Koko-wa-Ore-ni-Makasete-Saki-ni-Ike-to-Itte-kara-10-Nen-ga-Tattara-Densetsu-ni-Natteita",
+      "bestScore": 0.3273,
+      "topCandidates": [
+        {
+          "slug": "Koko-wa-Ore-ni-Makasete-Saki-ni-Ike-to-Itte-kara-10-Nen-ga-Tattara-Densetsu-ni-Natteita",
+          "score": 0.3273
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 15343,
+      "titleRomaji": "Mama wa Doukyuusei",
+      "titleEnglish": "",
+      "members": 5260,
+      "tier": 1,
+      "queriedTitle": "Mama wa Doukyuusei",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 87,
+      "titleRomaji": "Tactics",
+      "titleEnglish": "Tactics",
+      "members": 3259,
+      "tier": 2,
+      "queriedTitle": "Tactics",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 51453,
+      "titleRomaji": "Magdala de Nemure",
+      "titleEnglish": "May Your Soul Rest in Magdala",
+      "members": 3417,
+      "tier": 2,
+      "queriedTitle": "May Your Soul Rest in Magdala",
+      "outcome": "refused_no_match",
+      "bestSlug": "return-your-soul",
+      "bestScore": 0.4211,
+      "topCandidates": [
+        {
+          "slug": "return-your-soul",
+          "score": 0.4211
+        },
+        {
+          "slug": "Magdala-De-Nemure",
+          "score": 0.359
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 42339,
+      "titleRomaji": "Black★Rock Shooter: The Game",
+      "titleEnglish": "",
+      "members": 4346,
+      "tier": 2,
+      "queriedTitle": "Black★Rock Shooter: The Game",
+      "outcome": "refused_no_match",
+      "bestSlug": "Black-Rock-Shooter-Innocent-Soul",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Black-Rock-Shooter-Innocent-Soul",
+          "score": 0.6667
+        },
+        {
+          "slug": "the-black-serpent",
+          "score": 0.4737
+        },
+        {
+          "slug": "The-Gamer",
+          "score": 0.4516
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 121870,
+      "titleRomaji": "Dousei Yankee Akamatsu Seven",
+      "titleEnglish": "Bad Boys, Happy Home",
+      "members": 2062,
+      "tier": 2,
+      "queriedTitle": "Bad Boys, Happy Home",
+      "outcome": "resolved",
+      "bestSlug": "bad-boys-happy-home",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "bad-boys-happy-home",
+          "score": 1.0
+        },
+        {
+          "slug": "Happy",
+          "score": 0.4762
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 117590,
+      "titleRomaji": "Houkago Bitchcraft",
+      "titleEnglish": "After School Bitchcraft",
+      "members": 4375,
+      "tier": 2,
+      "queriedTitle": "After School Bitchcraft",
+      "outcome": "resolved",
+      "bestSlug": "After-School-Bitchcraft",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "After-School-Bitchcraft",
+          "score": 1.0
+        },
+        {
+          "slug": "After-School-Nightmare",
+          "score": 0.6829
+        },
+        {
+          "slug": "after-school-etude",
+          "score": 0.6486
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1822,
+      "titleRomaji": "Kanon",
+      "titleEnglish": "",
+      "members": 2591,
+      "tier": 2,
+      "queriedTitle": "Kanon",
+      "outcome": "resolved",
+      "bestSlug": "Kanokon",
+      "bestScore": 0.8333,
+      "topCandidates": [
+        {
+          "slug": "Kanokon",
+          "score": 0.8333
+        },
+        {
+          "slug": "Mel-Kano",
+          "score": 0.6667
+        },
+        {
+          "slug": "Kare-Kano",
+          "score": 0.6154
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 123029,
+      "titleRomaji": "Mutou to Satou",
+      "titleEnglish": "Muto and Sato",
+      "members": 2890,
+      "tier": 2,
+      "queriedTitle": "Muto and Sato",
+      "outcome": "resolved",
+      "bestSlug": "Mutou-and-Satou",
+      "bestScore": 0.9167,
+      "topCandidates": [
+        {
+          "slug": "Mutou-and-Satou",
+          "score": 0.9167
+        },
+        {
+          "slug": "Satoko-and-Nada",
+          "score": 0.5
+        },
+        {
+          "slug": "Asagao-To-Kase-San",
+          "score": 0.3077
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 140072,
+      "titleRomaji": "Tenkou-saki no Seiso Karen na Bishoujo ga, Mukashi Danshi to Omotte Issho ni Asonda Osananajimi Datta Ken",
+      "titleEnglish": "",
+      "members": 2855,
+      "tier": 2,
+      "queriedTitle": "Tenkou-saki no Seiso Karen na Bishoujo ga, Mukashi Danshi to Omotte Issho ni Asonda Osananajimi Datta Ken",
+      "outcome": "refused_no_match",
+      "bestSlug": "danshi-dato-omotteita-osananajimi-tono-shinkon-seikatsu-ga-umaku-ikisugiru-ken-ni-tsuite",
+      "bestScore": 0.4049,
+      "topCandidates": [
+        {
+          "slug": "danshi-dato-omotteita-osananajimi-tono-shinkon-seikatsu-ga-umaku-ikisugiru-ken-ni-tsuite",
+          "score": 0.4049
+        },
+        {
+          "slug": "issho-ni-ken-no-shugyou-o-shita-osananajimi-ga-dorei-ni-natteita-no-de",
+          "score": 0.375
+        },
+        {
+          "slug": "Tenkosaki-The-Neat-and-Pretty-Girl-at-My-New-School",
+          "score": 0.2946
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 120271,
+      "titleRomaji": "Madoka no Himitsu",
+      "titleEnglish": "Madoka's Secret",
+      "members": 3471,
+      "tier": 2,
+      "queriedTitle": "Madoka's Secret",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ayeshahs-Secret",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Ayeshahs-Secret",
+          "score": 0.6667
+        },
+        {
+          "slug": "My-Deepest-Secret",
+          "score": 0.6429
+        },
+        {
+          "slug": "Cactus-Secret",
+          "score": 0.64
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 38123,
+      "titleRomaji": "Riko to Haru to Onsen to Iruka",
+      "titleEnglish": "Rico & Hal, & Irukawa hot springs",
+      "members": 2783,
+      "tier": 2,
+      "queriedTitle": "Rico & Hal, & Irukawa hot springs",
+      "outcome": "refused_no_match",
+      "bestSlug": "Riko-To-Haru-To-Onsen-To-Iruka",
+      "bestScore": 0.4167,
+      "topCandidates": [
+        {
+          "slug": "Riko-To-Haru-To-Onsen-To-Iruka",
+          "score": 0.4167
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 12188,
+      "titleRomaji": "Otome no Iroha!",
+      "titleEnglish": "",
+      "members": 2848,
+      "tier": 2,
+      "queriedTitle": "Otome no Iroha!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Otome-No-Teikoku",
+      "bestScore": 0.6923,
+      "topCandidates": [
+        {
+          "slug": "Otome-No-Teikoku",
+          "score": 0.6923
+        },
+        {
+          "slug": "Mahou-No-Iroha",
+          "score": 0.6667
+        },
+        {
+          "slug": "Secret-Maiden-Revolver",
+          "score": 0.375
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 6748,
+      "titleRomaji": "Flower*Flower",
+      "titleEnglish": "",
+      "members": 2105,
+      "tier": 2,
+      "queriedTitle": "Flower*Flower",
+      "outcome": "resolved",
+      "bestSlug": "Flower-Flower",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Flower-Flower",
+          "score": 1.0
+        },
+        {
+          "slug": "flower-and-wolves",
+          "score": 0.5926
+        },
+        {
+          "slug": "Flow",
+          "score": 0.5
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 65813,
+      "titleRomaji": "Suicide Parabellum",
+      "titleEnglish": "",
+      "members": 2035,
+      "tier": 2,
+      "queriedTitle": "Suicide Parabellum",
+      "outcome": "refused_no_match",
+      "bestSlug": "Parabellum",
+      "bestScore": 0.7407,
+      "topCandidates": [
+        {
+          "slug": "Parabellum",
+          "score": 0.7407
+        },
+        {
+          "slug": "Hatsukoi-Shinjuu",
+          "score": 0.3125
+        },
+        {
+          "slug": "Jisatsutou",
+          "score": 0.2222
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 147541,
+      "titleRomaji": "Yume de Furarete Hajimaru Yuri",
+      "titleEnglish": "Dumped in a Dream. Girls Love That Begins",
+      "members": 2568,
+      "tier": 2,
+      "queriedTitle": "Dumped in a Dream. Girls Love That Begins",
+      "outcome": "refused_no_match",
+      "bestSlug": "yume-de-furarete-hajimaru-yuri",
+      "bestScore": 0.3729,
+      "topCandidates": [
+        {
+          "slug": "yume-de-furarete-hajimaru-yuri",
+          "score": 0.3729
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 8115,
+      "titleRomaji": "Hatsukoi ni Oboreta",
+      "titleEnglish": "",
+      "members": 2440,
+      "tier": 2,
+      "queriedTitle": "Hatsukoi ni Oboreta",
+      "outcome": "refused_no_match",
+      "bestSlug": "hatsukoi-note",
+      "bestScore": 0.7586,
+      "topCandidates": [
+        {
+          "slug": "hatsukoi-note",
+          "score": 0.7586
+        },
+        {
+          "slug": "Hatsukoi-Zombie",
+          "score": 0.6452
+        },
+        {
+          "slug": "Hatsukoi-Canvas",
+          "score": 0.6452
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 21753,
+      "titleRomaji": "Shinseiki Evangelion: Ikari Shinji Tantei Nikki",
+      "titleEnglish": "Neon Genesis Evangelion: The Shinji Ikari Detective Diary",
+      "members": 2141,
+      "tier": 2,
+      "queriedTitle": "Neon Genesis Evangelion: The Shinji Ikari Detective Diary",
+      "outcome": "refused_no_match",
+      "bestSlug": "Neon-Genesis-Evangelion-The-Shinji-Ikari-Raising-Project",
+      "bestScore": 0.7755,
+      "topCandidates": [
+        {
+          "slug": "Neon-Genesis-Evangelion-The-Shinji-Ikari-Raising-Project",
+          "score": 0.7755
+        },
+        {
+          "slug": "Neon-Genesis-Evangelion",
+          "score": 0.6
+        },
+        {
+          "slug": "Neon-Genesis-Evangelion-Campus-Apocalypse",
+          "score": 0.5116
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 4305,
+      "titleRomaji": "Poe no Ichizoku",
+      "titleEnglish": "The Poe Clan",
+      "members": 2682,
+      "tier": 2,
+      "queriedTitle": "The Poe Clan",
+      "outcome": "resolved",
+      "bestSlug": "the-poe-clan",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "the-poe-clan",
+          "score": 1.0
+        },
+        {
+          "slug": "the-cleaner",
+          "score": 0.7
+        },
+        {
+          "slug": "The-Fox-Club",
+          "score": 0.6
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 5734,
+      "titleRomaji": "Cosplay★Animal",
+      "titleEnglish": "Cosplay Animal",
+      "members": 4519,
+      "tier": 2,
+      "queriedTitle": "Cosplay Animal",
+      "outcome": "resolved",
+      "bestSlug": "Cosplay-Animal",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Cosplay-Animal",
+          "score": 1.0
+        },
+        {
+          "slug": "Cosplay-Deka",
+          "score": 0.6667
+        },
+        {
+          "slug": "Anima",
+          "score": 0.5556
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 93689,
+      "titleRomaji": "Hibiki: Shousetsuka ni Naru Houhou",
+      "titleEnglish": "",
+      "members": 2999,
+      "tier": 2,
+      "queriedTitle": "Hibiki: Shousetsuka ni Naru Houhou",
+      "outcome": "resolved",
+      "bestSlug": "Hibiki---Shousetsuka-Ni-Naru-Houhou",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Hibiki---Shousetsuka-Ni-Naru-Houhou",
+          "score": 1.0
+        },
+        {
+          "slug": "The-Writer-and-His-Housekeeper",
+          "score": 0.4
+        },
+        {
+          "slug": "The-Mercenary-and-the-Novelist",
+          "score": 0.2545
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1043,
+      "titleRomaji": "Ourou",
+      "titleEnglish": "King Of Wolves",
+      "members": 4164,
+      "tier": 2,
+      "queriedTitle": "King Of Wolves",
+      "outcome": "refused_no_match",
+      "bestSlug": "King-of-the-East",
+      "bestScore": 0.64,
+      "topCandidates": [
+        {
+          "slug": "King-of-the-East",
+          "score": 0.64
+        },
+        {
+          "slug": "King-Of-Hell",
+          "score": 0.6364
+        },
+        {
+          "slug": "King-of-Eden",
+          "score": 0.6364
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 753,
+      "titleRomaji": "Earthian",
+      "titleEnglish": "Earthian",
+      "members": 2051,
+      "tier": 2,
+      "queriedTitle": "Earthian",
+      "outcome": "refused_no_match",
+      "bestSlug": "Earthchild",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Earthchild",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 59231,
+      "titleRomaji": "Magi: Sinbad no Bouken - Prototype",
+      "titleEnglish": "",
+      "members": 4027,
+      "tier": 2,
+      "queriedTitle": "Magi: Sinbad no Bouken - Prototype",
+      "outcome": "resolved",
+      "bestSlug": "Magi-Sinbad-No-Bouken",
+      "bestScore": 0.8,
+      "topCandidates": [
+        {
+          "slug": "Magi-Sinbad-No-Bouken",
+          "score": 0.8
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 125069,
+      "titleRomaji": "100-nin no Eiyuu wo Sodateta Saikyou Yogensha wa, Boukensha ni Nattemo Sekaijuu no Deshi kara Shitawaretemasu @comic",
+      "titleEnglish": "",
+      "members": 4015,
+      "tier": 2,
+      "queriedTitle": "100-nin no Eiyuu wo Sodateta Saikyou Yogensha wa, Boukensha ni Nattemo Sekaijuu no Deshi kara Shitawaretemasu @comic",
+      "outcome": "refused_no_match",
+      "bestSlug": "100-nin-no-Eiyuu-o-Sodateta-Saikyou-Yogensha-wa",
+      "bestScore": 0.5735,
+      "topCandidates": [
+        {
+          "slug": "100-nin-no-Eiyuu-o-Sodateta-Saikyou-Yogensha-wa",
+          "score": 0.5735
+        },
+        {
+          "slug": "skyuu-boukensha-ga-ayumu-michi-tsuihou-sareta-shounen-wa-shin-no-nouryoku-buki-master-de-sekai-saikyou-ni-itaru",
+          "score": 0.3263
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 14170,
+      "titleRomaji": "Cherries Fight",
+      "titleEnglish": "",
+      "members": 3297,
+      "tier": 2,
+      "queriedTitle": "Cherries Fight",
+      "outcome": "resolved",
+      "bestSlug": "Cherries-Fight",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Cherries-Fight",
+          "score": 1.0
+        },
+        {
+          "slug": "fight-class-3",
+          "score": 0.4167
+        },
+        {
+          "slug": "Kenka-Shoubai",
+          "score": 0.16
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 114623,
+      "titleRomaji": "K-On! Shuffle",
+      "titleEnglish": "K-On! Shuffle",
+      "members": 3418,
+      "tier": 2,
+      "queriedTitle": "K-On! Shuffle",
+      "outcome": "resolved",
+      "bestSlug": "K-ON-Shuffle",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "K-ON-Shuffle",
+          "score": 1.0
+        },
+        {
+          "slug": "Shuffle",
+          "score": 0.8235
+        },
+        {
+          "slug": "K-O-N",
+          "score": 0.4615
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 84675,
+      "titleRomaji": "2.5-jigen Kareshi",
+      "titleEnglish": "",
+      "members": 3361,
+      "tier": 2,
+      "queriedTitle": "2.5-jigen Kareshi",
+      "outcome": "refused_no_match",
+      "bestSlug": "Kedamono-Kareshi",
+      "bestScore": 0.6207,
+      "topCandidates": [
+        {
+          "slug": "Kedamono-Kareshi",
+          "score": 0.6207
+        },
+        {
+          "slug": "Zettai-Kareshi",
+          "score": 0.5926
+        },
+        {
+          "slug": "Hatoful-Kareshi",
+          "score": 0.5
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 983,
+      "titleRomaji": "Crossroad",
+      "titleEnglish": "Crossroad",
+      "members": 2980,
+      "tier": 2,
+      "queriedTitle": "Crossroad",
+      "outcome": "refused_no_match",
+      "bestSlug": "Cross-Game",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Cross-Game",
+          "score": 0.6667
+        },
+        {
+          "slug": "Cross-Days",
+          "score": 0.6667
+        },
+        {
+          "slug": "Cross-Over",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 20598,
+      "titleRomaji": "Gekka Bijin",
+      "titleEnglish": "Blade of the Moon Princess",
+      "members": 2322,
+      "tier": 2,
+      "queriedTitle": "Blade of the Moon Princess",
+      "outcome": "refused_no_match",
+      "bestSlug": "Secret-of-the-Princess",
+      "bestScore": 0.6829,
+      "topCandidates": [
+        {
+          "slug": "Secret-of-the-Princess",
+          "score": 0.6829
+        },
+        {
+          "slug": "The-Falcon-Princess",
+          "score": 0.6667
+        },
+        {
+          "slug": "In-the-Name-of-the-Mermaid-Princess",
+          "score": 0.6275
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 25028,
+      "titleRomaji": "Bijin Kakumei",
+      "titleEnglish": "",
+      "members": 2559,
+      "tier": 2,
+      "queriedTitle": "Bijin Kakumei",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ludwig-Kakumei",
+      "bestScore": 0.64,
+      "topCandidates": [
+        {
+          "slug": "Ludwig-Kakumei",
+          "score": 0.64
+        },
+        {
+          "slug": "Gekka-Bijin",
+          "score": 0.4545
+        },
+        {
+          "slug": "Penguin-Revolution",
+          "score": 0.2759
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 950,
+      "titleRomaji": "Random Walk",
+      "titleEnglish": "",
+      "members": 4038,
+      "tier": 2,
+      "queriedTitle": "Random Walk",
+      "outcome": "refused_no_match",
+      "bestSlug": "random-target",
+      "bestScore": 0.6364,
+      "topCandidates": [
+        {
+          "slug": "random-target",
+          "score": 0.6364
+        },
+        {
+          "slug": "The-Girl-from-Random-Chatting",
+          "score": 0.4
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1343,
+      "titleRomaji": "Sexy Voice and Robo",
+      "titleEnglish": "Sexy Voice and Robo",
+      "members": 1642,
+      "tier": 3,
+      "queriedTitle": "Sexy Voice and Robo",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 140155,
+      "titleRomaji": "Koibito Ijou Yuujin Miman",
+      "titleEnglish": "",
+      "members": 1515,
+      "tier": 3,
+      "queriedTitle": "Koibito Ijou Yuujin Miman",
+      "outcome": "refused_no_match",
+      "bestSlug": "Fuufu-Ijou-Koibito-Miman",
+      "bestScore": 0.5581,
+      "topCandidates": [
+        {
+          "slug": "Fuufu-Ijou-Koibito-Miman",
+          "score": 0.5581
+        },
+        {
+          "slug": "More-Than-Lovers-Less-Than-Friends",
+          "score": 0.1569
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 98225,
+      "titleRomaji": "Yu☆Gi☆Oh!: Transcend Game",
+      "titleEnglish": "Yu-Gi-Oh! Transcend Game",
+      "members": 1945,
+      "tier": 3,
+      "queriedTitle": "Yu-Gi-Oh! Transcend Game",
+      "outcome": "refused_no_match",
+      "bestSlug": "Yu-gi-oh-Arc-v",
+      "bestScore": 0.5517,
+      "topCandidates": [
+        {
+          "slug": "Yu-gi-oh-Arc-v",
+          "score": 0.5517
+        },
+        {
+          "slug": "Yu-gi-oh-R",
+          "score": 0.5385
+        },
+        {
+          "slug": "Yu-gi-oh-Gx",
+          "score": 0.5185
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 46954,
+      "titleRomaji": "Rose Guns Days: Season 1",
+      "titleEnglish": "Rose Guns Days Season 1",
+      "members": 1401,
+      "tier": 3,
+      "queriedTitle": "Rose Guns Days Season 1",
+      "outcome": "resolved",
+      "bestSlug": "Rose-Guns-Days-Season1",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Rose-Guns-Days-Season1",
+          "score": 1.0
+        },
+        {
+          "slug": "Rose-Guns-Days---Season-2",
+          "score": 0.9474
+        },
+        {
+          "slug": "Rose-Guns-Days---Season-3",
+          "score": 0.9474
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 24353,
+      "titleRomaji": "Near Equal",
+      "titleEnglish": "",
+      "members": 1136,
+      "tier": 3,
+      "queriedTitle": "Near Equal",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 3181,
+      "titleRomaji": "Bikou Root",
+      "titleEnglish": "",
+      "members": 1105,
+      "tier": 3,
+      "queriedTitle": "Bikou Root",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 1091,
+      "titleRomaji": "Translucent: Kanojo wa Hantoumei",
+      "titleEnglish": "Translucent",
+      "members": 1035,
+      "tier": 3,
+      "queriedTitle": "Translucent",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 55123,
+      "titleRomaji": "Seishun Shonbori Club",
+      "titleEnglish": "Heart Break Club",
+      "members": 1074,
+      "tier": 3,
+      "queriedTitle": "Heart Break Club",
+      "outcome": "refused_no_match",
+      "bestSlug": "Break-Hands",
+      "bestScore": 0.4167,
+      "topCandidates": [
+        {
+          "slug": "Break-Hands",
+          "score": 0.4167
+        },
+        {
+          "slug": "Seishun-Shonbori-Club",
+          "score": 0.3636
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 206,
+      "titleRomaji": "Kidou Senshi Gundam 0079",
+      "titleEnglish": "Mobile Suit Gundam 0079",
+      "members": 1108,
+      "tier": 3,
+      "queriedTitle": "Mobile Suit Gundam 0079",
+      "outcome": "refused_no_match",
+      "bestSlug": "Mobile-Suit-Gundam-The-Origin",
+      "bestScore": 0.7111,
+      "topCandidates": [
+        {
+          "slug": "Mobile-Suit-Gundam-The-Origin",
+          "score": 0.7111
+        },
+        {
+          "slug": "mobile-suit-gundam-chars-counterattack-beltorchikas-children",
+          "score": 0.4324
+        },
+        {
+          "slug": "Kidou-Senshi-Gundam-Thunderbolt",
+          "score": 0.3333
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 102648,
+      "titleRomaji": "Furuya-sensei wa An-chan no Mono",
+      "titleEnglish": "Furuya-sensei Belongs to An-chan!",
+      "members": 1813,
+      "tier": 3,
+      "queriedTitle": "Furuya-sensei Belongs to An-chan!",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 12941,
+      "titleRomaji": "Dokuro",
+      "titleEnglish": "",
+      "members": 1256,
+      "tier": 3,
+      "queriedTitle": "Dokuro",
+      "outcome": "resolved",
+      "bestSlug": "Dokuro",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Dokuro",
+          "score": 1.0
+        },
+        {
+          "slug": "Dokgo",
+          "score": 0.7273
+        },
+        {
+          "slug": "Dororo",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 114665,
+      "titleRomaji": "Shaman King: Red Crimson",
+      "titleEnglish": "Shaman King: Red Crimson",
+      "members": 1385,
+      "tier": 3,
+      "queriedTitle": "Shaman King: Red Crimson",
+      "outcome": "resolved",
+      "bestSlug": "Shaman-King-Red-Crimson",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Shaman-King-Red-Crimson",
+          "score": 1.0
+        },
+        {
+          "slug": "Shaman-King-Marcos",
+          "score": 0.7222
+        },
+        {
+          "slug": "Shaman-King-Zero",
+          "score": 0.7059
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 70189,
+      "titleRomaji": "Seikai no Monshou",
+      "titleEnglish": "",
+      "members": 1081,
+      "tier": 3,
+      "queriedTitle": "Seikai no Monshou",
+      "outcome": "refused_no_match",
+      "bestSlug": "Seikai-No-Monshou-Y-O-N-E-M-U-R-A-Kouichirou",
+      "bestScore": 0.625,
+      "topCandidates": [
+        {
+          "slug": "Seikai-No-Monshou-Y-O-N-E-M-U-R-A-Kouichirou",
+          "score": 0.625
+        },
+        {
+          "slug": "Shihou-Sekai-No-Ou",
+          "score": 0.6
+        },
+        {
+          "slug": "Seigi-No-Mikata",
+          "score": 0.5
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 24058,
+      "titleRomaji": "Wolf Guy",
+      "titleEnglish": "",
+      "members": 1051,
+      "tier": 3,
+      "queriedTitle": "Wolf Guy",
+      "outcome": "resolved",
+      "bestSlug": "Wolf-Guy",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Wolf-Guy",
+          "score": 1.0
+        },
+        {
+          "slug": "winter-wolf",
+          "score": 0.4706
+        },
+        {
+          "slug": "Spice-And-Wolf",
+          "score": 0.4211
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 95105,
+      "titleRomaji": "Anti Romance",
+      "titleEnglish": "Anti-Romance",
+      "members": 1315,
+      "tier": 3,
+      "queriedTitle": "Anti-Romance",
+      "outcome": "resolved",
+      "bestSlug": "Anti-Romance",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Anti-Romance",
+          "score": 1.0
+        },
+        {
+          "slug": "Ark-Romancer",
+          "score": 0.7273
+        },
+        {
+          "slug": "Drawing-Romance",
+          "score": 0.72
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 44669,
+      "titleRomaji": "Ozmafia!!",
+      "titleEnglish": "",
+      "members": 1794,
+      "tier": 3,
+      "queriedTitle": "Ozmafia!!",
+      "outcome": "resolved",
+      "bestSlug": "Ozmafia",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Ozmafia",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 115891,
+      "titleRomaji": "Yuri Moyou: Sakimiya 4 Shimai no Koi",
+      "titleEnglish": "",
+      "members": 1455,
+      "tier": 3,
+      "queriedTitle": "Yuri Moyou: Sakimiya 4 Shimai no Koi",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 4544,
+      "titleRomaji": "Sakura Irony",
+      "titleEnglish": "",
+      "members": 1031,
+      "tier": 3,
+      "queriedTitle": "Sakura Irony",
+      "outcome": "refused_no_match",
+      "bestSlug": "Sakuran",
+      "bestScore": 0.7778,
+      "topCandidates": [
+        {
+          "slug": "Sakuran",
+          "score": 0.7778
+        },
+        {
+          "slug": "Sakura-Gari",
+          "score": 0.6667
+        },
+        {
+          "slug": "Sakura-Discord",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 2941,
+      "titleRomaji": "Kimi sae mo Ai no Kusari",
+      "titleEnglish": "",
+      "members": 1281,
+      "tier": 3,
+      "queriedTitle": "Kimi sae mo Ai no Kusari",
+      "outcome": "refused_no_match",
+      "bestSlug": "Kimi-No-Sei",
+      "bestScore": 0.5714,
+      "topCandidates": [
+        {
+          "slug": "Kimi-No-Sei",
+          "score": 0.5714
+        },
+        {
+          "slug": "Tomorrow-Make-Me-Yours",
+          "score": 0.3158
+        },
+        {
+          "slug": "Im-Kinda-Chubby-and-Im-Your-Hero",
+          "score": 0.2222
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 7487,
+      "titleRomaji": "Little Jumper",
+      "titleEnglish": "Little Jumper",
+      "members": 1365,
+      "tier": 3,
+      "queriedTitle": "Little Jumper",
+      "outcome": "resolved",
+      "bestSlug": "Little-Jumper",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Little-Jumper",
+          "score": 1.0
+        },
+        {
+          "slug": "Little-Rain",
+          "score": 0.6364
+        },
+        {
+          "slug": "Little-Little",
+          "score": 0.5833
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 28845,
+      "titleRomaji": "Kousha no Ura ni wa Tenshi ga Umerareteiru",
+      "titleEnglish": "",
+      "members": 1426,
+      "tier": 3,
+      "queriedTitle": "Kousha no Ura ni wa Tenshi ga Umerareteiru",
+      "outcome": "resolved",
+      "bestSlug": "Kousha-No-Ura-Ni-Wa-Tenshi-Ga-Umerarete-Iru",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Kousha-No-Ura-Ni-Wa-Tenshi-Ga-Umerarete-Iru",
+          "score": 1.0
+        },
+        {
+          "slug": "gods-games-we-play",
+          "score": 0.28
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 40113,
+      "titleRomaji": "Dennou Alice to Inaba-kun",
+      "titleEnglish": "",
+      "members": 1585,
+      "tier": 3,
+      "queriedTitle": "Dennou Alice to Inaba-kun",
+      "outcome": "refused_no_match",
+      "bestSlug": "Cyber-Alice-And-Inaba-Kun",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Cyber-Alice-And-Inaba-Kun",
+          "score": 0.6667
+        },
+        {
+          "slug": "Alice-To-Taiyou",
+          "score": 0.5294
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 90687,
+      "titleRomaji": "[Shinyaku] Mahou Shoujo Oriko★Magica: Sadness Prayer",
+      "titleEnglish": "[New Testament] Puella Magi Oriko Magica: Sadness Prayer",
+      "members": 1157,
+      "tier": 3,
+      "queriedTitle": "[New Testament] Puella Magi Oriko Magica: Sadness Prayer",
+      "outcome": "resolved",
+      "bestSlug": "Puella-Magi-Oriko-Magica-Sadness-Prayer",
+      "bestScore": 0.85,
+      "topCandidates": [
+        {
+          "slug": "Puella-Magi-Oriko-Magica-Sadness-Prayer",
+          "score": 0.85
+        },
+        {
+          "slug": "Puella-Magi-Oriko-Magica-Extra-Story",
+          "score": 0.6494
+        },
+        {
+          "slug": "Mahou-Shoujo-Oriko-Magica",
+          "score": 0.3824
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 125503,
+      "titleRomaji": "Uza Kawaii Kouhai to Ichaicha suru dake no Anthology Comic",
+      "titleEnglish": "",
+      "members": 1118,
+      "tier": 3,
+      "queriedTitle": "Uza Kawaii Kouhai to Ichaicha suru dake no Anthology Comic",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 12747,
+      "titleRomaji": "Sayonara no Jikan",
+      "titleEnglish": "",
+      "members": 1211,
+      "tier": 3,
+      "queriedTitle": "Sayonara no Jikan",
+      "outcome": "refused_no_match",
+      "bestSlug": "Sayonara-Nippon",
+      "bestScore": 0.7586,
+      "topCandidates": [
+        {
+          "slug": "Sayonara-Nippon",
+          "score": 0.7586
+        },
+        {
+          "slug": "Sayonara-Piano-Sonata",
+          "score": 0.6471
+        },
+        {
+          "slug": "Sayonara-Football",
+          "score": 0.6452
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 12456,
+      "titleRomaji": "Ar Tonelico: Arpeggio",
+      "titleEnglish": "",
+      "members": 1351,
+      "tier": 3,
+      "queriedTitle": "Ar Tonelico: Arpeggio",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 26795,
+      "titleRomaji": "Oouso Swing",
+      "titleEnglish": "",
+      "members": 1857,
+      "tier": 3,
+      "queriedTitle": "Oouso Swing",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ookiku-Furikabutte",
+      "bestScore": 0.2963,
+      "topCandidates": [
+        {
+          "slug": "Ookiku-Furikabutte",
+          "score": 0.2963
+        },
+        {
+          "slug": "Bura-Girl",
+          "score": 0.2222
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 133320,
+      "titleRomaji": "Kanojo to Himitsu to Koi Moyou",
+      "titleEnglish": "",
+      "members": 1134,
+      "tier": 3,
+      "queriedTitle": "Kanojo to Himitsu to Koi Moyou",
+      "outcome": "refused_no_match",
+      "bestSlug": "Kanojo-mo-Kanojo",
+      "bestScore": 0.5641,
+      "topCandidates": [
+        {
+          "slug": "Kanojo-mo-Kanojo",
+          "score": 0.5641
+        },
+        {
+          "slug": "Aitsu-no-Kanojo",
+          "score": 0.3158
+        },
+        {
+          "slug": "Captain-Momos-Secret-Base",
+          "score": 0.2128
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 84913,
+      "titleRomaji": "Binzume no Jigoku",
+      "titleEnglish": "",
+      "members": 1128,
+      "tier": 3,
+      "queriedTitle": "Binzume no Jigoku",
+      "outcome": "refused_no_match",
+      "bestSlug": "Alice-In-Hell",
+      "bestScore": 0.2308,
+      "topCandidates": [
+        {
+          "slug": "Alice-In-Hell",
+          "score": 0.2308
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 8735,
+      "titleRomaji": "Naki Shoujo no Tame no Pavane",
+      "titleEnglish": "Pavane for a Dead Girl",
+      "members": 1059,
+      "tier": 3,
+      "queriedTitle": "Pavane for a Dead Girl",
+      "outcome": "refused_no_match",
+      "bestSlug": "Shindere-Shoujo-To-Kodoku-Na-Shinigami",
+      "bestScore": 0.2353,
+      "topCandidates": [
+        {
+          "slug": "Shindere-Shoujo-To-Kodoku-Na-Shinigami",
+          "score": 0.2353
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 10402,
+      "titleRomaji": "Slayers Light Magic",
+      "titleEnglish": "",
+      "members": 817,
+      "tier": 4,
+      "queriedTitle": "Slayers Light Magic",
+      "outcome": "refused_no_match",
+      "bestSlug": "Knights--Magic",
+      "bestScore": 0.6207,
+      "topCandidates": [
+        {
+          "slug": "Knights--Magic",
+          "score": 0.6207
+        },
+        {
+          "slug": "Magic-Knight-Rayearth",
+          "score": 0.2778
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 121006,
+      "titleRomaji": "Bimyou ni Yasashii Ijimekko",
+      "titleEnglish": "",
+      "members": 809,
+      "tier": 4,
+      "queriedTitle": "Bimyou ni Yasashii Ijimekko",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 46458,
+      "titleRomaji": "Sis Plus",
+      "titleEnglish": "",
+      "members": 738,
+      "tier": 4,
+      "queriedTitle": "Sis Plus",
+      "outcome": "resolved",
+      "bestSlug": "Sis-Plus",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Sis-Plus",
+          "score": 1.0
+        },
+        {
+          "slug": "CitrusPlus",
+          "score": 0.7059
+        },
+        {
+          "slug": "Anima",
+          "score": 0.1667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 130382,
+      "titleRomaji": "Futago Wazurai",
+      "titleEnglish": "Their Will is Complex and White.",
+      "members": 863,
+      "tier": 4,
+      "queriedTitle": "Their Will is Complex and White.",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ghost-In-The-Shell---Stand-Alone-Complex",
+      "bestScore": 0.4483,
+      "topCandidates": [
+        {
+          "slug": "Ghost-In-The-Shell---Stand-Alone-Complex",
+          "score": 0.4483
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 111606,
+      "titleRomaji": "Tamayomi",
+      "titleEnglish": "",
+      "members": 735,
+      "tier": 4,
+      "queriedTitle": "Tamayomi",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 1245,
+      "titleRomaji": "Nasu",
+      "titleEnglish": "Nasu",
+      "members": 679,
+      "tier": 4,
+      "queriedTitle": "Nasu",
+      "outcome": "refused_no_match",
+      "bestSlug": "Nishiki-Kun-No-Nasugamama",
+      "bestScore": 0.3077,
+      "topCandidates": [
+        {
+          "slug": "Nishiki-Kun-No-Nasugamama",
+          "score": 0.3077
+        },
+        {
+          "slug": "Prunus-Girl",
+          "score": 0.2857
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 4060,
+      "titleRomaji": "Andalusia no Koibito",
+      "titleEnglish": "",
+      "members": 733,
+      "tier": 4,
+      "queriedTitle": "Andalusia no Koibito",
+      "outcome": "refused_no_match",
+      "bestSlug": "chie-aru-koibito",
+      "bestScore": 0.5625,
+      "topCandidates": [
+        {
+          "slug": "chie-aru-koibito",
+          "score": 0.5625
+        },
+        {
+          "slug": "Koibito-Play",
+          "score": 0.4828
+        },
+        {
+          "slug": "Koibito-wa-Oni-no-Hime",
+          "score": 0.3889
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 79803,
+      "titleRomaji": "Sora no Method",
+      "titleEnglish": "",
+      "members": 845,
+      "tier": 4,
+      "queriedTitle": "Sora no Method",
+      "outcome": "refused_no_match",
+      "bestSlug": "So-Ra-No-Wo-To",
+      "bestScore": 0.7273,
+      "topCandidates": [
+        {
+          "slug": "So-Ra-No-Wo-To",
+          "score": 0.7273
+        },
+        {
+          "slug": "Sora-No-Otoshimono",
+          "score": 0.5714
+        },
+        {
+          "slug": "Sora-No-Manimani",
+          "score": 0.5385
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 104567,
+      "titleRomaji": "Makui no Rease",
+      "titleEnglish": "Rease of Magic Eater",
+      "members": 629,
+      "tier": 4,
+      "queriedTitle": "Rease of Magic Eater",
+      "outcome": "refused_no_match",
+      "bestSlug": "Man-Eater",
+      "bestScore": 0.56,
+      "topCandidates": [
+        {
+          "slug": "Man-Eater",
+          "score": 0.56
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 5061,
+      "titleRomaji": "Chicago",
+      "titleEnglish": "Chicago",
+      "members": 566,
+      "tier": 4,
+      "queriedTitle": "Chicago",
+      "outcome": "refused_no_match",
+      "bestSlug": "Chichi-Chichi",
+      "bestScore": 0.4211,
+      "topCandidates": [
+        {
+          "slug": "Chichi-Chichi",
+          "score": 0.4211
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 68595,
+      "titleRomaji": "Kitsune no Yomeiri",
+      "titleEnglish": "",
+      "members": 806,
+      "tier": 4,
+      "queriedTitle": "Kitsune no Yomeiri",
+      "outcome": "resolved",
+      "bestSlug": "Kitsune-No-Yomeiri",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Kitsune-No-Yomeiri",
+          "score": 1.0
+        },
+        {
+          "slug": "kitsune-no-oyomechan",
+          "score": 0.7647
+        },
+        {
+          "slug": "Yoi-no-Yomeiri",
+          "score": 0.7143
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 18979,
+      "titleRomaji": "Kare no Ondo",
+      "titleEnglish": "",
+      "members": 712,
+      "tier": 4,
+      "queriedTitle": "Kare no Ondo",
+      "outcome": "refused_no_match",
+      "bestSlug": "Kare-Kano",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Kare-Kano",
+          "score": 0.6667
+        },
+        {
+          "slug": "Kara-no-Kioku",
+          "score": 0.5714
+        },
+        {
+          "slug": "Nanoka-No-Kare",
+          "score": 0.3636
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 7755,
+      "titleRomaji": "Hipira: The Little Vampire",
+      "titleEnglish": "",
+      "members": 616,
+      "tier": 4,
+      "queriedTitle": "Hipira: The Little Vampire",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Maid-and-the-Vampire",
+      "bestScore": 0.619,
+      "topCandidates": [
+        {
+          "slug": "The-Maid-and-the-Vampire",
+          "score": 0.619
+        },
+        {
+          "slug": "The-Pension-Life-Vampire",
+          "score": 0.6047
+        },
+        {
+          "slug": "Dive-in-the-Vampire-Bund",
+          "score": 0.5714
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 5881,
+      "titleRomaji": "Mossore",
+      "titleEnglish": "",
+      "members": 614,
+      "tier": 4,
+      "queriedTitle": "Mossore",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 97040,
+      "titleRomaji": "Fate/Grand Order: Dengeki Comic Anthology",
+      "titleEnglish": "",
+      "members": 830,
+      "tier": 4,
+      "queriedTitle": "Fate/Grand Order: Dengeki Comic Anthology",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 46114,
+      "titleRomaji": "Sanpo Mono",
+      "titleEnglish": "",
+      "members": 741,
+      "tier": 4,
+      "queriedTitle": "Sanpo Mono",
+      "outcome": "refused_no_match",
+      "bestSlug": "mono",
+      "bestScore": 0.6154,
+      "topCandidates": [
+        {
+          "slug": "mono",
+          "score": 0.6154
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1041,
+      "titleRomaji": "Ichiban!!!",
+      "titleEnglish": "",
+      "members": 938,
+      "tier": 4,
+      "queriedTitle": "Ichiban!!!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ichi",
+      "bestScore": 0.7273,
+      "topCandidates": [
+        {
+          "slug": "Ichi",
+          "score": 0.7273
+        },
+        {
+          "slug": "BIchi",
+          "score": 0.6667
+        },
+        {
+          "slug": "Ichiroh",
+          "score": 0.5714
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 4678,
+      "titleRomaji": "Dokuyaku to Otome",
+      "titleEnglish": "Pretty Poison",
+      "members": 564,
+      "tier": 4,
+      "queriedTitle": "Pretty Poison",
+      "outcome": "refused_no_match",
+      "bestSlug": "pretty-collection",
+      "bestScore": 0.7143,
+      "topCandidates": [
+        {
+          "slug": "pretty-collection",
+          "score": 0.7143
+        },
+        {
+          "slug": "Gift-of-Poison",
+          "score": 0.5833
+        },
+        {
+          "slug": "Pretty-Face",
+          "score": 0.5455
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 136757,
+      "titleRomaji": "Soubiwaku Zero no Saikyou Kenshi: demo, Noroi no Soubi (Kawaii) nara 9999-ko Tsuke Houdai",
+      "titleEnglish": "The Strongest Swordsman Has Zero Equipment Slots, but He Can Equip up to 9999 Items if It's (Cute) Cursed Equipment",
+      "members": 903,
+      "tier": 4,
+      "queriedTitle": "The Strongest Swordsman Has Zero Equipment Slots, but He Can Equip up to 9999 Items if It's (Cute) Cursed Equipment",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Strongest-Swordsman-Has-Zero-Equipment-Slots",
+      "bestScore": 0.6269,
+      "topCandidates": [
+        {
+          "slug": "The-Strongest-Swordsman-Has-Zero-Equipment-Slots",
+          "score": 0.6269
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 3911,
+      "titleRomaji": "Minami no Jewel",
+      "titleEnglish": "Minami's Jewel",
+      "members": 1009,
+      "tier": 4,
+      "queriedTitle": "Minami's Jewel",
+      "outcome": "refused_no_match",
+      "bestSlug": "Minami-Ke",
+      "bestScore": 0.7,
+      "topCandidates": [
+        {
+          "slug": "Minami-Ke",
+          "score": 0.7
+        },
+        {
+          "slug": "Minamis-Lover",
+          "score": 0.6667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 112973,
+      "titleRomaji": "Maouritsu Chuu-Boss Yousei Academia",
+      "titleEnglish": "",
+      "members": 698,
+      "tier": 4,
+      "queriedTitle": "Maouritsu Chuu-Boss Yousei Academia",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Mage-Will-Master-Magic",
+      "bestScore": 0.1887,
+      "topCandidates": [
+        {
+          "slug": "The-Mage-Will-Master-Magic",
+          "score": 0.1887
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 403,
+      "titleRomaji": "Kakutou Komusume Juline",
+      "titleEnglish": "Kung-Fu Girl Juline",
+      "members": 611,
+      "tier": 4,
+      "queriedTitle": "Kung-Fu Girl Juline",
+      "outcome": "refused_no_match",
+      "bestSlug": "Tekken-Chinmi",
+      "bestScore": 0.2857,
+      "topCandidates": [
+        {
+          "slug": "Tekken-Chinmi",
+          "score": 0.2857
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 88030,
+      "titleRomaji": "Gion no Tsugai",
+      "titleEnglish": "",
+      "members": 934,
+      "tier": 4,
+      "queriedTitle": "Gion no Tsugai",
+      "outcome": "resolved",
+      "bestSlug": "Gion-No-Tsugai",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Gion-No-Tsugai",
+          "score": 1.0
+        },
+        {
+          "slug": "Yomi-no-Tsugai",
+          "score": 0.75
+        },
+        {
+          "slug": "Torikago-No-Tsugai",
+          "score": 0.7143
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 1060,
+      "titleRomaji": "Sweet Blood",
+      "titleEnglish": "",
+      "members": 843,
+      "tier": 4,
+      "queriedTitle": "Sweet Blood",
+      "outcome": "refused_no_match",
+      "bestSlug": "Sweet-Black",
+      "bestScore": 0.7,
+      "topCandidates": [
+        {
+          "slug": "Sweet-Black",
+          "score": 0.7
+        },
+        {
+          "slug": "B-L-O-O-D-C",
+          "score": 0.625
+        },
+        {
+          "slug": "Sweet-H-R",
+          "score": 0.5882
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 99312,
+      "titleRomaji": "Midori-kun wa Junjou",
+      "titleEnglish": "",
+      "members": 677,
+      "tier": 4,
+      "queriedTitle": "Midori-kun wa Junjou",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Untouchable-Midori-kun",
+      "bestScore": 0.45,
+      "topCandidates": [
+        {
+          "slug": "The-Untouchable-Midori-kun",
+          "score": 0.45
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 78659,
+      "titleRomaji": "Stranger: Mukou Hadan",
+      "titleEnglish": "Sword of the Stranger",
+      "members": 920,
+      "tier": 4,
+      "queriedTitle": "Sword of the Stranger",
+      "outcome": "refused_no_match",
+      "bestSlug": "sword-of-the-titans",
+      "bestScore": 0.7647,
+      "topCandidates": [
+        {
+          "slug": "sword-of-the-titans",
+          "score": 0.7647
+        },
+        {
+          "slug": "Sword-of-the-Falcon",
+          "score": 0.7059
+        },
+        {
+          "slug": "The-Strange-House",
+          "score": 0.6061
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 345,
+      "titleRomaji": "Kidou Senshi Gundam SEED: X Astray",
+      "titleEnglish": "Mobile Suit Gundam SEED X Astray",
+      "members": 925,
+      "tier": 4,
+      "queriedTitle": "Mobile Suit Gundam SEED X Astray",
+      "outcome": "refused_no_match",
+      "bestSlug": "Mobile-Suit-Gundam-The-Origin",
+      "bestScore": 0.6923,
+      "topCandidates": [
+        {
+          "slug": "Mobile-Suit-Gundam-The-Origin",
+          "score": 0.6923
+        },
+        {
+          "slug": "Kidou-Senshi-Gundam-Thunderbolt",
+          "score": 0.3636
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 48387,
+      "titleRomaji": "Kijitora Neko no Koume-san",
+      "titleEnglish": "Plum Crazy! Tales of A Tiger-Striped Cat",
+      "members": 688,
+      "tier": 4,
+      "queriedTitle": "Plum Crazy! Tales of A Tiger-Striped Cat",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 121084,
+      "titleRomaji": "Koko wo Isekai to Suru!",
+      "titleEnglish": "",
+      "members": 586,
+      "tier": 4,
+      "queriedTitle": "Koko wo Isekai to Suru!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Tensei-Kusushi-wa-Isekai-wo-Meguru",
+      "bestScore": 0.5106,
+      "topCandidates": [
+        {
+          "slug": "Tensei-Kusushi-wa-Isekai-wo-Meguru",
+          "score": 0.5106
+        },
+        {
+          "slug": "isekai-tensei-reijou-shuppon-suru",
+          "score": 0.5106
+        },
+        {
+          "slug": "Dungeon-Toilet",
+          "score": 0.3226
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 120458,
+      "titleRomaji": "Chiisana Mori no Ookami-chan",
+      "titleEnglish": "",
+      "members": 903,
+      "tier": 4,
+      "queriedTitle": "Chiisana Mori no Ookami-chan",
+      "outcome": "resolved",
+      "bestSlug": "Chiisana-Mori-no-Ookami-chan",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Chiisana-Mori-no-Ookami-chan",
+          "score": 1.0
+        },
+        {
+          "slug": "Watashi-No-Ookami-San",
+          "score": 0.5714
+        },
+        {
+          "slug": "Ookami-Heika-No-Hanayome",
+          "score": 0.4
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 86696,
+      "titleRomaji": "Neji no Hitobito",
+      "titleEnglish": "",
+      "members": 355,
+      "tier": 5,
+      "queriedTitle": "Neji no Hitobito",
+      "outcome": "refused_no_match",
+      "bestSlug": "Shiinake-No-Hitobito",
+      "bestScore": 0.75,
+      "topCandidates": [
+        {
+          "slug": "Shiinake-No-Hitobito",
+          "score": 0.75
+        },
+        {
+          "slug": "Koudaike-No-Hitobito",
+          "score": 0.6875
+        },
+        {
+          "slug": "Udon-No-Hito",
+          "score": 0.5833
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 3406,
+      "titleRomaji": "Millennium Mirage",
+      "titleEnglish": "",
+      "members": 359,
+      "tier": 5,
+      "queriedTitle": "Millennium Mirage",
+      "outcome": "refused_no_match",
+      "bestSlug": "Yu-GiOh-Millennium-World",
+      "bestScore": 0.5946,
+      "topCandidates": [
+        {
+          "slug": "Yu-GiOh-Millennium-World",
+          "score": 0.5946
+        },
+        {
+          "slug": "Sennen-No-Yuki",
+          "score": 0.2857
+        },
+        {
+          "slug": "A-Thousand-Years-Ninetails",
+          "score": 0.1026
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 151220,
+      "titleRomaji": "Henkyou no Renkinjutsushi: Imasara Yosan Zero no Shokuba ni Modoru toka Mou Muri",
+      "titleEnglish": "The Frontier Alchemist: I Can't Go Back to That Job After You Made My Budget Zero",
+      "members": 392,
+      "tier": 5,
+      "queriedTitle": "The Frontier Alchemist: I Can't Go Back to That Job After You Made My Budget Zero",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Frontier-Alchemist",
+      "bestScore": 0.4762,
+      "topCandidates": [
+        {
+          "slug": "The-Frontier-Alchemist",
+          "score": 0.4762
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 5904,
+      "titleRomaji": "Nibelung no Yubiwa",
+      "titleEnglish": "",
+      "members": 323,
+      "tier": 5,
+      "queriedTitle": "Nibelung no Yubiwa",
+      "outcome": "resolved",
+      "bestSlug": "Niebelungen-No-Yubiwa",
+      "bestScore": 0.9143,
+      "topCandidates": [
+        {
+          "slug": "Niebelungen-No-Yubiwa",
+          "score": 0.9143
+        },
+        {
+          "slug": "Harlock-Saga-The-Ring-Of-The-Nibelung",
+          "score": 0.3404
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 11499,
+      "titleRomaji": "Bounen no Xamdou: Junreisha no Compass",
+      "titleEnglish": "Xam'd: Lost Memories - Pilgrim of the Compass",
+      "members": 561,
+      "tier": 5,
+      "queriedTitle": "Xam'd: Lost Memories - Pilgrim of the Compass",
+      "outcome": "refused_no_match",
+      "bestSlug": "Zennou-No-Noa-The-World-Of-Lost-Memories",
+      "bestScore": 0.4118,
+      "topCandidates": [
+        {
+          "slug": "Zennou-No-Noa-The-World-Of-Lost-Memories",
+          "score": 0.4118
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 21075,
+      "titleRomaji": "Kamisama Onegai!",
+      "titleEnglish": "",
+      "members": 454,
+      "tier": 5,
+      "queriedTitle": "Kamisama Onegai!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Kamisama-Dolls",
+      "bestScore": 0.6667,
+      "topCandidates": [
+        {
+          "slug": "Kamisama-Dolls",
+          "score": 0.6667
+        },
+        {
+          "slug": "Kamisama-No-Inai-Nichiyoubi",
+          "score": 0.6316
+        },
+        {
+          "slug": "Kamisama-Ga-Uso-O-Tsuku",
+          "score": 0.6061
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 2926,
+      "titleRomaji": "Ikenai Navigation",
+      "titleEnglish": "",
+      "members": 400,
+      "tier": 5,
+      "queriedTitle": "Ikenai Navigation",
+      "outcome": "refused_no_match",
+      "bestSlug": "Navigatoria",
+      "bestScore": 0.5926,
+      "topCandidates": [
+        {
+          "slug": "Navigatoria",
+          "score": 0.5926
+        },
+        {
+          "slug": "Oyome-Ni-Ikenai",
+          "score": 0.4138
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 20987,
+      "titleRomaji": "KimiKiss: After Days",
+      "titleEnglish": "",
+      "members": 356,
+      "tier": 5,
+      "queriedTitle": "KimiKiss: After Days",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 144736,
+      "titleRomaji": "Dungeon Busters: Chuunen Otoko desu ga Niwa ni Dungeon ga Shutsugen shita node Sekai wo Sukuimasu",
+      "titleEnglish": "Dungeon Busters: I Am Just Middle-Aged Man, But I Save the World Because of Appeared the Dungeon in My Home Garden.",
+      "members": 452,
+      "tier": 5,
+      "queriedTitle": "Dungeon Busters: I Am Just Middle-Aged Man, But I Save the World Because of Appeared the Dungeon in My Home Garden.",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 104652,
+      "titleRomaji": "Hana ni Somu",
+      "titleEnglish": "",
+      "members": 342,
+      "tier": 5,
+      "queriedTitle": "Hana ni Somu",
+      "outcome": "refused_no_match",
+      "bestSlug": "Hana-Ni-Nare",
+      "bestScore": 0.6,
+      "topCandidates": [
+        {
+          "slug": "Hana-Ni-Nare",
+          "score": 0.6
+        },
+        {
+          "slug": "Hana-Ni-Kedamono",
+          "score": 0.5833
+        },
+        {
+          "slug": "Hana-Haru",
+          "score": 0.5556
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 43747,
+      "titleRomaji": "Mou Shoujo Manga nante",
+      "titleEnglish": "",
+      "members": 518,
+      "tier": 5,
+      "queriedTitle": "Mou Shoujo Manga nante",
+      "outcome": "refused_no_match",
+      "bestSlug": "Mahou-Shoujo-ni-Akogarete",
+      "bestScore": 0.6829,
+      "topCandidates": [
+        {
+          "slug": "Mahou-Shoujo-ni-Akogarete",
+          "score": 0.6829
+        },
+        {
+          "slug": "Mahou-Shoujo-Site",
+          "score": 0.6471
+        },
+        {
+          "slug": "Mahou-Shoujo-Ore",
+          "score": 0.6061
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 16708,
+      "titleRomaji": "Karasu",
+      "titleEnglish": "",
+      "members": 417,
+      "tier": 5,
+      "queriedTitle": "Karasu",
+      "outcome": "refused_no_match",
+      "bestSlug": "Katsu",
+      "bestScore": 0.7273,
+      "topCandidates": [
+        {
+          "slug": "Katsu",
+          "score": 0.7273
+        },
+        {
+          "slug": "Dolkara",
+          "score": 0.6154
+        },
+        {
+          "slug": "Karin",
+          "score": 0.5455
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 138827,
+      "titleRomaji": "Karada wa Kodomo, Nakami wa Ossan no Nariagari Boukenki",
+      "titleEnglish": "",
+      "members": 401,
+      "tier": 5,
+      "queriedTitle": "Karada wa Kodomo, Nakami wa Ossan no Nariagari Boukenki",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 93563,
+      "titleRomaji": "Juuza no Ulna",
+      "titleEnglish": "Ulna at the Emplacement",
+      "members": 398,
+      "tier": 5,
+      "queriedTitle": "Ulna at the Emplacement",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 66161,
+      "titleRomaji": "Cyborg 009 Kanketsu-hen: Conclusion God's War",
+      "titleEnglish": "",
+      "members": 436,
+      "tier": 5,
+      "queriedTitle": "Cyborg 009 Kanketsu-hen: Conclusion God's War",
+      "outcome": "resolved",
+      "bestSlug": "Cyborg009-Conclusion-Gods-War",
+      "bestScore": 0.8254,
+      "topCandidates": [
+        {
+          "slug": "Cyborg009-Conclusion-Gods-War",
+          "score": 0.8254
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 20004,
+      "titleRomaji": "Excite Love Joutou!",
+      "titleEnglish": "",
+      "members": 482,
+      "tier": 5,
+      "queriedTitle": "Excite Love Joutou!",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 23166,
+      "titleRomaji": "Mokuyoubi no Furutto",
+      "titleEnglish": "Furutto on Thursday",
+      "members": 332,
+      "tier": 5,
+      "queriedTitle": "Furutto on Thursday",
+      "outcome": "refused_no_match",
+      "bestSlug": "Mokuyoubi-Wa-Kimi-To-Nakitai",
+      "bestScore": 0.3415,
+      "topCandidates": [
+        {
+          "slug": "Mokuyoubi-Wa-Kimi-To-Nakitai",
+          "score": 0.3415
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 82941,
+      "titleRomaji": "Subete ga Chottozutsu Yasashii Sekai",
+      "titleEnglish": "",
+      "members": 437,
+      "tier": 5,
+      "queriedTitle": "Subete ga Chottozutsu Yasashii Sekai",
+      "outcome": "refused_no_match",
+      "bestSlug": "Subarashii-Sekai",
+      "bestScore": 0.5957,
+      "topCandidates": [
+        {
+          "slug": "Subarashii-Sekai",
+          "score": 0.5957
+        },
+        {
+          "slug": "Yasashii-Sekai-No-Tsukurikata",
+          "score": 0.4483
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 120600,
+      "titleRomaji": "Kojika Counter!",
+      "titleEnglish": "",
+      "members": 451,
+      "tier": 5,
+      "queriedTitle": "Kojika Counter!",
+      "outcome": "refused_no_match",
+      "bestSlug": "Countach",
+      "bestScore": 0.4762,
+      "topCandidates": [
+        {
+          "slug": "Countach",
+          "score": 0.4762
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 133870,
+      "titleRomaji": "Gestalt",
+      "titleEnglish": "",
+      "members": 403,
+      "tier": 5,
+      "queriedTitle": "Gestalt",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 131911,
+      "titleRomaji": "Kimi no Kao ga Suki da",
+      "titleEnglish": "Lovin' Your Face",
+      "members": 468,
+      "tier": 5,
+      "queriedTitle": "Lovin' Your Face",
+      "outcome": "refused_no_match",
+      "bestSlug": "To-Love-Our-Enemies",
+      "bestScore": 0.4828,
+      "topCandidates": [
+        {
+          "slug": "To-Love-Our-Enemies",
+          "score": 0.4828
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 68601,
+      "titleRomaji": "Dream Hunter Rem Alternative",
+      "titleEnglish": "",
+      "members": 398,
+      "tier": 5,
+      "queriedTitle": "Dream Hunter Rem Alternative",
+      "outcome": "refused_no_match",
+      "bestSlug": "Muv-Luv-Alternative",
+      "bestScore": 0.619,
+      "topCandidates": [
+        {
+          "slug": "Muv-Luv-Alternative",
+          "score": 0.619
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 92493,
+      "titleRomaji": "Shokubutsu Zukan",
+      "titleEnglish": "",
+      "members": 419,
+      "tier": 5,
+      "queriedTitle": "Shokubutsu Zukan",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Illustrated-Guide-to-Monster-Girls",
+      "bestScore": 0.1667,
+      "topCandidates": [
+        {
+          "slug": "The-Illustrated-Guide-to-Monster-Girls",
+          "score": 0.1667
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 115790,
+      "titleRomaji": "Konna Joushi ni Okomari deshitara",
+      "titleEnglish": "The Trouble With My Boss",
+      "members": 355,
+      "tier": 5,
+      "queriedTitle": "The Trouble With My Boss",
+      "outcome": "refused_no_match",
+      "bestSlug": "dont-mess-with-my-duke-dubless",
+      "bestScore": 0.4889,
+      "topCandidates": [
+        {
+          "slug": "dont-mess-with-my-duke-dubless",
+          "score": 0.4889
+        },
+        {
+          "slug": "Konna-Joushi-Ni-Okomari-Deshitara",
+          "score": 0.2041
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 13903,
+      "titleRomaji": "Ai ga Nakucha ne!",
+      "titleEnglish": "",
+      "members": 443,
+      "tier": 5,
+      "queriedTitle": "Ai ga Nakucha ne!",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 146479,
+      "titleRomaji": "Ore no Kiss dake Oboete yo",
+      "titleEnglish": "",
+      "members": 322,
+      "tier": 5,
+      "queriedTitle": "Ore no Kiss dake Oboete yo",
+      "outcome": "refused_no_match",
+      "bestSlug": "Ore-Wo-Suki-Nano-Wa-Omae-Dake-Ka-Yo",
+      "bestScore": 0.4583,
+      "topCandidates": [
+        {
+          "slug": "Ore-Wo-Suki-Nano-Wa-Omae-Dake-Ka-Yo",
+          "score": 0.4583
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 156255,
+      "titleRomaji": "Sekai ni Hitori, Zenzokusei Mahou no Tsukaite",
+      "titleEnglish": "The Only in the World, Omnipotent Wizard",
+      "members": 516,
+      "tier": 5,
+      "queriedTitle": "The Only in the World, Omnipotent Wizard",
+      "outcome": "refused_no_match",
+      "bestSlug": "The-Other-Worlds-Wizard-Does-Not-Chant",
+      "bestScore": 0.5538,
+      "topCandidates": [
+        {
+          "slug": "The-Other-Worlds-Wizard-Does-Not-Chant",
+          "score": 0.5538
+        },
+        {
+          "slug": "A-Useless-Idol-and-the-Only-Fan-in-the-World",
+          "score": 0.5
+        },
+        {
+          "slug": "The-World-God-Only-Knows",
+          "score": 0.4528
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 88125,
+      "titleRomaji": "Kominami Shoutarou, Ie kara Deru wo Hajimemashita.",
+      "titleEnglish": "Shut-In Shoutarou Kominami Takes on the World",
+      "members": 382,
+      "tier": 5,
+      "queriedTitle": "Shut-In Shoutarou Kominami Takes on the World",
+      "outcome": "resolved",
+      "bestSlug": "Shut-in-Shoutarou-Kominami-Takes-On-The-World",
+      "bestScore": 1.0,
+      "topCandidates": [
+        {
+          "slug": "Shut-in-Shoutarou-Kominami-Takes-On-The-World",
+          "score": 1.0
+        }
+      ],
+      "error": null
+    },
+    {
+      "malId": 144067,
+      "titleRomaji": "Ikemen Douryou ga Ore no Juukakin Fan deshita",
+      "titleEnglish": "",
+      "members": 433,
+      "tier": 5,
+      "queriedTitle": "Ikemen Douryou ga Ore no Juukakin Fan deshita",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    },
+    {
+      "malId": 7155,
+      "titleRomaji": "Mondoumuyou!",
+      "titleEnglish": "",
+      "members": 521,
+      "tier": 5,
+      "queriedTitle": "Mondoumuyou!",
+      "outcome": "refused_no_result",
+      "bestSlug": null,
+      "bestScore": null,
+      "topCandidates": [],
+      "error": "search returned 0 candidates"
+    }
+  ]
+}
