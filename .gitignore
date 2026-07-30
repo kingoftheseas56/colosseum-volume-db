@@ -3,3 +3,6 @@ __pycache__/
 .pytest_cache/
 .venv/
 rebuild.log
+# regenerable discovery caches (wikipedia transclusion list, etc.) -- produced by the code on demand
+cache/
+
