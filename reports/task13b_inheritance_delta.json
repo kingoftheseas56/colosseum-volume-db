@@ -1,0 +1,165 @@
+{
+  "task": "Task 13b sub-chapter tag inheritance -- faithful re-gate delta",
+  "records_gated": 14,
+  "records_flipped_by_inheritance": 0,
+  "requirement1_zero_flips_met": true,
+  "requirement2_berserk_qualifies_met": false,
+  "berserk_before_qualified": false,
+  "berserk_after_qualified": false,
+  "per_record": [
+    {
+      "title": "Bleach",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Naruto",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "One Piece",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Berserk",
+      "source": "comick",
+      "db_qualified": false,
+      "oddball": true,
+      "before_qualified": false,
+      "before_reason": "2 chapter(s) in no volume (first: 356)",
+      "after_qualified": false,
+      "after_reason": "1 chapter(s) in no volume (first: 383)",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Vinland Saga",
+      "source": "wikipedia",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Death Note",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": false,
+      "before_reason": "6 chapter(s) in no volume (first: 109)",
+      "after_qualified": false,
+      "after_reason": "6 chapter(s) in no volume (first: 109)",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Fullmetal Alchemist",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Vagabond",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "One-Punch Man",
+      "source": "wikipedia",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "20th Century Boys",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Demon Slayer",
+      "source": "wikipedia",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Sakamoto Days",
+      "source": "wikipedia",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "My Hero Academia",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    },
+    {
+      "title": "Chainsmoker Cat",
+      "source": "comick",
+      "db_qualified": true,
+      "oddball": false,
+      "before_qualified": true,
+      "before_reason": "",
+      "after_qualified": true,
+      "after_reason": "",
+      "flipped_by_change": false
+    }
+  ]
+}

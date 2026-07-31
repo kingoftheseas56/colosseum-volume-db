@@ -75,19 +75,76 @@ def _fix_stray_tags(assign):
     return settled
 
 
+def _inherit_from_subchapters(assign, present_wholes):
+    """A whole chapter N that is PRESENT in the source but WHOLLY UNASSIGNED inherits the volume
+    its OWN sub-chapters (N.x) carry -- 356.1 IS chapter 356, so its tag is direct evidence about
+    356, not a guess across a gap. Berserk: chapter 356 is present in every language's listing but
+    untagged by every scanlator, while its two halves 356.1 and 356.2 both read vol 40, so 356
+    inherits 40 and vol 40's span (351-357) becomes honestly complete.
+
+    PRESENT-WHOLE GATE (the load-bearing qualifier). Inheritance fills a chapter that EXISTS in the
+    source but is untagged; it must NEVER invent a chapter the source does not contain. A rowset
+    with only 110.5 and 110.30 has no chapter 110 at all -- inventing one would claim a chapter
+    WeebCentral does not list, breaking the app's join and drifting a volume's start. So only whole
+    numbers in ``present_wholes`` (chapters that appear as a whole label in the input, tagged or
+    not) are eligible. A whole implied only by its sub-chapters' existence stays absent.
+
+    This is NOT interpolation and must not be read as such. Interpolation would invent a boundary
+    the source does not state (e.g. "8 is untagged, 7 says vol 1 and 9 says vol 2, so split the
+    difference"). Here the source STATES, via the halves it did tag, which book a chapter it DOES
+    contain is in -- a half and its whole are the same chapter, just sub-divided. We are reading
+    that statement, not manufacturing a chapter or a boundary.
+
+    If the sub-chapters DISAGREE with each other (356.1 says vol 40, 356.2 says vol 41), that is
+    genuinely ambiguous and we assign nothing -- ambiguous means refuse, exactly as a dead tie in
+    the majority vote does. The hole then reaches the gate and the series falls back to a chapter
+    list rather than a guessed shelf.
+
+    Only WHOLLY UNASSIGNED whole chapters are filled: a whole chapter that already has a volume
+    (from its own rows, or from _fix_stray_tags) is never overridden, so this pass can never
+    reshape a run the rows already settled -- it only fills silence.
+    """
+    # whole_n -> set of distinct volumes its ASSIGNED sub-chapters carry
+    whole_to_subvols = {}
+    for (whole, sub, _digits), vnum in assign.items():
+        if sub != -1:  # a side chapter (N.x)
+            whole_to_subvols.setdefault(whole, set()).add(vnum)
+    inherited = dict(assign)
+    for whole, subvols in whole_to_subvols.items():
+        if whole not in present_wholes:
+            continue  # the whole chapter is not in the source at all -- do not invent it
+        whole_key = (whole, -1, "")
+        if whole_key in assign:
+            continue  # the whole chapter already has a volume; never override
+        if len(subvols) == 1:
+            inherited[whole_key] = next(iter(subvols))  # sub-chapters unanimous -> inherit
+        # len(subvols) != 1 (0 can't happen here; >=2 means disagreement) -> leave unassigned
+    return inherited
+
+
 def majority_assign(chapters):
     """{chapter_key: volume(int)} -- each chapter goes to the volume the most rows voted for,
-    then lone stray tags are pulled back to their neighbours (see _fix_stray_tags).
+    then lone stray tags are pulled back to their neighbours (see _fix_stray_tags), then a
+    source-present but wholly unassigned whole chapter inherits its own sub-chapters' volume (see
+    _inherit_from_subchapters).
 
     Rows missing chap or vol don't vote. A dead tie means the sources genuinely contradict each
     other, so the chapter is left UNASSIGNED rather than guessed -- the hole is then the gate's
     to judge.
     """
     votes = {}
+    # whole chapter numbers that appear as a whole label in the input (tagged or not). An untagged
+    # whole (Berserk 356) lands here; a whole implied only by sub-chapters (no "110" row, only
+    # 110.5/110.30) does not -- _inherit_from_subchapters must not invent the latter.
+    present_wholes = set()
     for ch in chapters:
         vol_key = _to_num(ch.get("vol"))
         chap_key = _to_num(ch.get("chap"))
-        if vol_key is None or chap_key is None:
+        if chap_key is None:
+            continue
+        if not _is_side_chapter(chap_key):
+            present_wholes.add(chap_key[0])
+        if vol_key is None:
             continue
         per_volume = votes.setdefault(chap_key, {})
         per_volume[vol_key[0]] = per_volume.get(vol_key[0], 0) + 1
@@ -98,7 +155,7 @@ def majority_assign(chapters):
         winners = [vol for vol, count in per_volume.items() if count == most]
         if len(winners) == 1:
             assign[chap_key] = winners[0]
-    return _fix_stray_tags(assign)
+    return _inherit_from_subchapters(_fix_stray_tags(assign), present_wholes)
 
 
 def group_volumes(chapters):
@@ -156,12 +213,14 @@ def gate(volumes, numbering_quirk, chapters):
 
     NOTE: removing the blanket refuse is necessary but may not be SUFFICIENT for a given series to
     qualify -- the structural checks still apply. Berserk's fractional prologue (0.001-0.14 in vols
-    1-5) is no longer refused on the flag alone, but Berserk's CURRENT comick data has a SEPARATE
-    coverage gap (chapters 356-357 untagged by scanlators) that fails check 5 independently. That
-    is a data-completeness issue, not a numbering-scheme issue, and is out of scope for this fix.
-    (Hemanth ruling 2026-07-30: greenlit; proof bar met = zero existing qualified records flip,
-    verified by per-record before/after delta. The flag was already a no-op for every qualified
-    record since they all carry numberingQuirk=False.)
+    1-5) is no longer refused on the flag alone. Berserk's CURRENT comick data also has a coverage
+    gap (chapter 356 untagged by scanlators in every language), but that gap is now CLOSED at the
+    assignment step, not the gate: ``majority_assign`` runs ``_inherit_from_subchapters``, and 356's
+    own halves 356.1/356.2 both carry vol 40, so 356 inherits 40 and coverage sees a complete shelf.
+    See the Task 13b commit (2026-07-30) for the inheritance rule and proof.
+    (Hemanth ruling 2026-07-30 on the flag: greenlit; proof bar met = zero existing qualified
+    records flip, verified by per-record before/after delta. The flag was already a no-op for every
+    qualified record since they all carry numberingQuirk=False.)
 
     Coverage is one rule doing three jobs: it catches chapters stranded at the seam BETWEEN two
     volumes (Vinland Saga 210-218, untagged in every language, while the volume numbers 1..29 read

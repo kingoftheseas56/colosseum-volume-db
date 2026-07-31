@@ -133,6 +133,63 @@ def test_stray_tag_moves_but_the_consensus_never_does():
     assert {v for k, v in assign.items() if k != "106.5"} == {15}
 
 
+def test_unassigned_whole_inherits_unanimous_subchapter_volume():
+    # SUB-CHAPTER TAG INHERITANCE (Task 13b, 2026-07-30). Berserk chapter 356 is untagged by every
+    # scanlator in every language, but its two halves 356.1 and 356.2 both read vol 40. A half IS
+    # its whole, so 356 inherits 40 -- reading the tag the source DID state, not guessing one it
+    # did not. The hole that used to fail coverage (check 5) is closed at the assignment step.
+    chapters = [{"chap": str(c), "vol": "40"} for c in range(351, 356) for _ in range(3)]
+    chapters += [{"chap": "356", "vol": None}]                  # wholly untagged, no language has it
+    chapters += [{"chap": "356.1", "vol": "40"}]                # the whole's own first half
+    chapters += [{"chap": "356.2", "vol": "40"}]                # the whole's own second half
+    chapters += [{"chap": str(c), "vol": "40"} for c in range(357, 358) for _ in range(3)]
+    chapters += [{"chap": str(c), "vol": "41"} for c in range(358, 365) for _ in range(3)]
+    assign = _labels(majority_assign(chapters))
+    assert assign["356"] == 40                                  # inherited from its own halves
+
+
+def test_subchapter_disagreement_leaves_whole_unassigned():
+    # The AMBIGUOUS case, which must REFUSE: 356.1 says vol 40 and 356.2 says vol 41. The halves
+    # disagree, so there is no honest answer for 356 -- assign nothing and let the gate strand it.
+    # This is the same "ambiguous means refuse" as a dead tie in the majority vote.
+    chapters = [{"chap": str(c), "vol": "40"} for c in range(351, 356) for _ in range(3)]
+    chapters += [{"chap": "356", "vol": None}]
+    chapters += [{"chap": "356.1", "vol": "40"}, {"chap": "356.2", "vol": "41"}]
+    chapters += [{"chap": str(c), "vol": "41"} for c in range(357, 365) for _ in range(3)]
+    assign = _labels(majority_assign(chapters))
+    assert "356" not in assign                                  # disagreement -> unassigned -> gate strands
+
+
+def test_inheritance_never_overrides_an_assigned_whole():
+    # A whole chapter that ALREADY has a volume (from its own rows) is never touched by the
+    # inheritance pass, even if its sub-chapters disagree. The rows already settled it.
+    chapters = [{"chap": "356", "vol": "39"}]                   # 356 itself is tagged vol 39
+    chapters += [{"chap": "356.1", "vol": "40"}, {"chap": "356.2", "vol": "41"}]  # halves disagree
+    assign = _labels(majority_assign(chapters))
+    assert assign["356"] == 39                                  # own tag wins; inheritance does not override
+
+
+def test_inheritance_needs_a_subchapter_it_cannot_invent_one():
+    # 8 is untagged and has no sub-chapters at all -> nothing to inherit from. Must stay
+    # unassigned. (This is also what test_monotonic_correction_never_invents_an_assignment asserts
+    # for the stray-tag pass; stated again here for the inheritance pass specifically.)
+    chapters = [{"chap": "7", "vol": "1"}, {"chap": "8", "vol": None}, {"chap": "9", "vol": "2"}]
+    assign = _labels(majority_assign(chapters))
+    assert "8" not in assign
+
+
+def test_inheritance_does_not_invent_a_whole_implied_only_by_its_subchapters():
+    # The PRESENT-WHOLE GUARD. If the source contains ONLY sub-chapters (110.5, 110.30) and no
+    # chapter-110 row at all, inheritance must NOT conjure a 110. Inventing it would claim a chapter
+    # WeebCentral does not list and drift the volume's start to a non-existent chapter. A whole is
+    # eligible only when it appears in the input as a whole label.
+    chapters = [{"chap": "110.5", "vol": "9"}, {"chap": "110.30", "vol": "9"}]
+    assign = _labels(majority_assign(chapters))
+    assert "110" not in assign                       # no 110 row -> 110 is never invented
+    vols = group_volumes(chapters)
+    assert vols == [{"number": 9, "chapterStart": "110.5", "chapterEnd": "110.30"}]
+
+
 def test_a_run_that_stays_out_of_order_never_reaches_the_shelf():
     # Two adjacent mis-tags are not a lone stray, so nothing corrects them. The volumes then
     # overlap, and the gate refuses -- the series falls back to a chapter list rather than
