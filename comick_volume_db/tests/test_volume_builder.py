@@ -273,7 +273,32 @@ def test_gate_allows_a_subchapter_between_volumes():
     assert ok, reason
 
 
-def test_gate_rejects_quirk_and_empty():
-    assert not gate([{"number": 1, "chapterStart": "1", "chapterEnd": "9"}],
-                    True, [])[0]                    # Berserk-class
+def test_gate_rejects_empty():
+    # No volumes -> not a shelf, regardless of the numbering flag.
     assert not gate([], False, [])[0]
+    assert not gate([], True, [])[0]
+
+
+def test_gate_accepts_fractional_origin_when_structurally_sound():
+    # FRACTIONAL-ORIGIN FIX (2026-07-30): a numbering_quirk=True series is no longer
+    # blanket-refused. Berserk's prologue (0.001-0.14 bound into vols 1-5) is a legitimate
+    # published numbering scheme. The structural checks (run / span-overlap / coverage) are the
+    # guard; the flag alone is not a disqualifier. This series has a clean fractional start but
+    # tiles correctly and covers its whole chapters -> it qualifies.
+    vols = [{"number": 1, "chapterStart": "0.01", "chapterEnd": "5"},
+            {"number": 2, "chapterStart": "6", "chapterEnd": "10"}]
+    rows = [{"chap": "0.01", "vol": "1"}]
+    rows += [{"chap": str(c), "vol": "1"} for c in range(1, 6)]
+    rows += [{"chap": str(c), "vol": "2"} for c in range(6, 11)]
+    ok, reason = gate(vols, True, rows)
+    assert ok, f"fractional-origin series should qualify when structurally sound: {reason}"
+
+
+def test_gate_flag_ignored_for_refusal_but_still_passed_through():
+    # The gate no longer refuses on numbering_quirk=True, but it still ACCEPTS the parameter
+    # (callers pass it; records store it as metadata). Same volumes + rows qualify whether the
+    # flag is True or False -- the structural checks decide, not the flag.
+    vols = [{"number": 1, "chapterStart": "1", "chapterEnd": "5"}]
+    rows = [{"chap": str(c), "vol": "1"} for c in range(1, 6)]
+    assert gate(vols, True, rows)[0] is True
+    assert gate(vols, False, rows)[0] is True

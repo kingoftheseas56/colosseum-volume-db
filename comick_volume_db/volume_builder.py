@@ -139,13 +139,29 @@ def gate(volumes, numbering_quirk, chapters):
     boundaries, which Hemanth explicitly rejected.
 
     Checks, in order:
-      1. no numbering quirk;
-      2. at least one volume;
-      3. the first volume is 0 or 1;
-      4. the volume numbers are one unbroken run;
-      5. no volume's chapter span runs into the next one's;
-      6. COVERAGE -- every whole chapter between the first volume's chapterStart and the last
+      1. at least one volume;
+      2. the first volume is 0 or 1;
+      3. the volume numbers are one unbroken run;
+      4. no volume's chapter span runs into the next one's;
+      5. COVERAGE -- every whole chapter between the first volume's chapterStart and the last
          volume's chapterEnd is assigned to some volume.
+
+    FRACTIONAL-ORIGIN SERIES (Berserk 0.001-0.03 prologue, Battle Angel Alita, Soul Eater) are
+    NOT blanket-refused: a fractional chapter origin is a legitimate published numbering scheme,
+    and the structural checks below (run, span-overlap, coverage) already catch genuinely broken
+    data. ``numbering_is_oddball`` still DETECTS a fractional origin and the record still STORES
+    it as ``numberingQuirk: True`` (useful metadata for the app), but the gate no longer treats
+    that flag as a disqualifier. The blanket refuse was added before the structural checks existed;
+    with them in place it is redundant AND wrong for legitimate fractional-origin series.
+
+    NOTE: removing the blanket refuse is necessary but may not be SUFFICIENT for a given series to
+    qualify -- the structural checks still apply. Berserk's fractional prologue (0.001-0.14 in vols
+    1-5) is no longer refused on the flag alone, but Berserk's CURRENT comick data has a SEPARATE
+    coverage gap (chapters 356-357 untagged by scanlators) that fails check 5 independently. That
+    is a data-completeness issue, not a numbering-scheme issue, and is out of scope for this fix.
+    (Hemanth ruling 2026-07-30: greenlit; proof bar met = zero existing qualified records flip,
+    verified by per-record before/after delta. The flag was already a no-op for every qualified
+    record since they all carry numberingQuirk=False.)
 
     Coverage is one rule doing three jobs: it catches chapters stranded at the seam BETWEEN two
     volumes (Vinland Saga 210-218, untagged in every language, while the volume numbers 1..29 read
@@ -172,8 +188,11 @@ def gate(volumes, numbering_quirk, chapters):
     The longest run observed anywhere in the corpus is 2 (measured 2026-07-29), against the 9 it
     would take to matter. If that ever grows, revisit this with the evidence rather than a guess.
     """
-    if numbering_quirk:
-        return False, "numbering quirk (fractional chapter origin)"
+    # numbering_quirk is NOT a disqualifier: see the FRACTIONAL-ORIGIN SERIES note above. The
+    # record still stores the flag (via build_record's `oddball`), but the gate lets the
+    # structural checks below decide qualification. A genuinely broken numbering scheme fails
+    # one of them (coverage / span-overlap / run), so blanket-refusing on the flag alone is both
+    # redundant and wrong for legitimate fractional-origin series like Berserk.
     if not volumes:
         return False, "no mapped volumes"
 
