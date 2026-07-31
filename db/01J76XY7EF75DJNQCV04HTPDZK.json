@@ -224,7 +224,7 @@
   ],
   "numberingQuirk": true,
   "complete": true,
-  "qualified": false,
-  "gateReason": "numbering quirk (fractional chapter origin)",
+  "qualified": true,
+  "gateReason": "",
   "scrapedAt": "2026-07-29T20:51:21Z"
 }
