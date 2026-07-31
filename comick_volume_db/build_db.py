@@ -34,6 +34,30 @@ def build_one(title):
     return rec, sid
 
 
+def would_downgrade(existing_path, rec):
+    """True when writing `rec` would turn a published qualified record unqualified.
+
+    NOT the fallback path's blanket "never overwrite qualified" fence — that would
+    freeze the DB, and an ongoing series must be able to gain volumes on a re-scrape.
+    The narrower rule: a rebuild may UPDATE a qualified record, and may PROMOTE an
+    unqualified one, but may never DEMOTE. A demotion is always a regression here,
+    because the shelf a reader already has silently turns back into a flat chapter list
+    with no error anywhere.
+
+    Concretely (2026-07-31): Berserk is published qualified after Hemanth's ruling, but a
+    rebuild re-gates it from Comick's rows, still finds chapter 383 untagged, and would
+    write qualified:false straight back over it. A malformed or unreadable existing file
+    is treated as absent — a rebuild is exactly how you'd want to repair one.
+    """
+    if not existing_path.exists():
+        return False
+    try:
+        prev = json.loads(existing_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return bool(prev.get("qualified")) and not rec["qualified"]
+
+
 def main():
     DB.mkdir(exist_ok=True)
     for t in json.loads(SEEDS.read_text(encoding="utf-8")):
@@ -41,7 +65,13 @@ def main():
         if rec is None:
             print("SKIP", t, "-", key)
             continue
-        (DB / f"{key}.json").write_text(json.dumps(rec, indent=2, ensure_ascii=False), encoding="utf-8")
+        path = DB / f"{key}.json"
+        if would_downgrade(path, rec):
+            print("KEEP", t, "->", key,
+                  f"(published qualified; this rebuild says: {rec['gateReason'] or 'not qualified'})")
+            time.sleep(1.0)
+            continue
+        path.write_text(json.dumps(rec, indent=2, ensure_ascii=False), encoding="utf-8")
         print("OK  ", t, "->", key, f"({len(rec['volumes'])} vols)")
         time.sleep(1.0)  # be polite
 
